@@ -1,4 +1,4 @@
-# 🎓 EduPredict Pro
+#  EduPredict Pro
 
 **AI Degree Program Planning & Decision Intelligence Tool**
 
@@ -8,25 +8,25 @@ A professional dashboard for College Deans to evaluate launching AI degree progr
 
 ---
 
-## 🎯 What It Does
+## What It Does
 
 EduPredict helps higher education leadership make data-driven decisions about launching AI degree programs:
 
-- **📊 3-Year Enrollment Forecasting** - Project student enrollment across scenarios
-- **💰 ROI Analysis** - Calculate tuition revenue vs. program costs
-- **💼 Workforce Intelligence** - State-level AI job market data
-- **✅ Go/No-Go Recommendations** - Data-driven decision support
-- **📄 Professional Reports** - Downloadable PDF reports for presentations
+- **3-Year Enrollment Forecasting** - Project student enrollment across scenarios
+- **ROI Analysis** - Calculate tuition revenue vs. program costs
+- **Workforce Intelligence** - State-level AI job market data
+- **Go/No-Go Recommendations** - Data-driven decision support
+- **Professional Reports** - Downloadable PDF reports for presentations
 
 ---
 
-## 🚀 Live Demo
+##  Live Demo
 
-**🌐 Try it live:** [Insert Streamlit Cloud URL here after deployment]
+**Try it live:** [Insert Streamlit Cloud URL here after deployment]
 
 ---
 
-## 📋 Inputs (5 Simple Dropdowns)
+##  Inputs (5 Simple Dropdowns)
 
 1. **Program Type:** MS in AI, BS in AI, AI in Cybersecurity
 2. **Student Type:** International or Domestic
@@ -36,7 +36,7 @@ EduPredict helps higher education leadership make data-driven decisions about la
 
 ---
 
-## 📊 Outputs
+##  Outputs
 
 - **Enrollment Projection:** 3-year forecast with Year 1, 2, 3 breakdown
 - **3-Year Pool:** Total projected candidate pool
@@ -46,7 +46,7 @@ EduPredict helps higher education leadership make data-driven decisions about la
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 - **Frontend:** Streamlit
 - **Visualizations:** Plotly (3D charts, interactive graphs)
@@ -56,7 +56,7 @@ EduPredict helps higher education leadership make data-driven decisions about la
 
 ---
 
-## 🏃‍♂️ Running Locally
+##  Running Locally
 
 ```bash
 # Clone the repository
@@ -74,7 +74,7 @@ The app will open at `http://localhost:8501`
 
 ---
 
-## 🌐 Deployment
+##  Deployment
 
 ### Deploy to Streamlit Cloud (Recommended)
 
@@ -86,7 +86,7 @@ The app will open at `http://localhost:8501`
 
 ---
 
-## 📈 Success Criteria
+##  Success Criteria
 
 **Test Scenario:** MS in AI + International + FA26 + Baseline + CT
 
@@ -98,7 +98,7 @@ The app will open at `http://localhost:8501`
 
 ---
 
-## 📄 Professional Reports
+##  Professional Reports
 
 Generate and download PDF reports including:
 - Executive Summary
@@ -109,7 +109,7 @@ Generate and download PDF reports including:
 
 ---
 
-## 🎓 For Professors
+##  For Professors
 
 This tool demonstrates:
 - Data-driven decision making
@@ -120,15 +120,7 @@ This tool demonstrates:
 
 ---
 
-## 📞 Contact
-
-**Developer:** Taraka Naga Ganesh Munagala  
-**Email:** [Your Email]  
-**GitHub:** [github.com/GaneshMunagala714](https://github.com/GaneshMunagala714)
-
----
-
-## 📚 Data Sources
+##  Data Sources
 
 - **BLS Occupational Employment Statistics** (May 2023)
 - **IPEDS Institutional Data** (2023-2024)
