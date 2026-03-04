@@ -1,0 +1,283 @@
+unitid,institution_name,state,institution_type,program,student_type,estimated_enrollment_2023,year,data_source,cip_code,note
+129020,University of Connecticut,CT,Public,MS in AI,International,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+129020,University of Connecticut,CT,Public,MS in AI,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+129020,University of Connecticut,CT,Public,BS in AI,International,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+129020,University of Connecticut,CT,Public,BS in AI,Domestic,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+129020,University of Connecticut,CT,Public,AI in Cybersecurity,International,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+129020,University of Connecticut,CT,Public,AI in Cybersecurity,Domestic,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128744,University of Bridgeport,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+130226,Quinnipiac University,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+129242,Fairfield University,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,MS in AI,International,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,MS in AI,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,BS in AI,International,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,BS in AI,Domestic,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,AI in Cybersecurity,International,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+130493,Southern Connecticut State University,CT,Public,AI in Cybersecurity,Domestic,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+129941,University of New Haven,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+129525,University of Hartford,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128902,Connecticut College,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+130697,Wesleyan University,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+130624,Trinity College,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,MS in AI,International,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,MS in AI,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,BS in AI,International,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,BS in AI,Domestic,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,AI in Cybersecurity,International,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+130776,Western Connecticut State University,CT,Public,AI in Cybersecurity,Domestic,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,MS in AI,International,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,MS in AI,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,BS in AI,International,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,BS in AI,Domestic,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,AI in Cybersecurity,International,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+129215,Eastern Connecticut State University,CT,Public,AI in Cybersecurity,Domestic,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,MS in AI,International,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,MS in AI,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,BS in AI,International,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,BS in AI,Domestic,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,AI in Cybersecurity,International,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+128771,Central Connecticut State University,CT,Public,AI in Cybersecurity,Domestic,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+128498,Albertus Magnus College,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,MS in AI,International,19,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,MS in AI,Domestic,15,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,BS in AI,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,BS in AI,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,AI in Cybersecurity,International,17,2023,estimated,30.3001,Sample data calibrated to success criteria
+130794,Yale University,CT,Private,AI in Cybersecurity,Domestic,14,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+166629,University of Massachusetts-Amherst,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+166683,Massachusetts Institute of Technology,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Harvard University,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+167358,Northeastern University,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+164988,Boston University,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+168342,Worcester Polytechnic Institute,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+166939,Mount Holyoke College,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+167835,Smith College,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+168218,Wellesley College,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+166511,University of Massachusetts-Lowell,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+166638,University of Massachusetts-Boston,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+166708,University of Massachusetts-Dartmouth,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+165024,Bridgewater State University,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+165820,Fitchburg State University,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+165866,Framingham State University,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,MS in AI,International,34,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,MS in AI,Domestic,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,BS in AI,International,49,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,BS in AI,Domestic,40,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,AI in Cybersecurity,International,31,2023,estimated,30.3001,Sample data calibrated to success criteria
+166027,Salem State University,MA,Public,AI in Cybersecurity,Domestic,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+165015,Brandeis University,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+164924,Boston College,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+164632,Bay Path University,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,MS in AI,International,28,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,MS in AI,Domestic,23,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,BS in AI,International,41,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,BS in AI,Domestic,33,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,AI in Cybersecurity,International,26,2023,estimated,30.3001,Sample data calibrated to success criteria
+164580,Babson College,MA,Private,AI in Cybersecurity,Domestic,21,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+190150,Columbia University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+192714,New York University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,MS in AI,International,30,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,MS in AI,Domestic,24,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,BS in AI,International,42,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,BS in AI,Domestic,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,AI in Cybersecurity,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+196097,University at Buffalo,NY,Public,AI in Cybersecurity,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,MS in AI,International,30,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,MS in AI,Domestic,24,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,BS in AI,International,42,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,BS in AI,Domestic,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,AI in Cybersecurity,International,27,2023,estimated,30.3001,Sample data calibrated to success criteria
+196130,Stony Brook University,NY,Public,AI in Cybersecurity,Domestic,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+189097,Barnard College,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+188429,Adelphi University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+190099,Colgate University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+189088,Bard College,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+190080,Rensselaer Polytechnic Institute,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+190044,Clarkson University,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,MS in AI,International,25,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,MS in AI,Domestic,20,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,BS in AI,International,35,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,BS in AI,Domestic,29,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,AI in Cybersecurity,International,22,2023,estimated,30.3001,Sample data calibrated to success criteria
+189413,Boricua College,NY,Private,AI in Cybersecurity,Domestic,18,2023,estimated,30.3001,Sample data calibrated to success criteria
