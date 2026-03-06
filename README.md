@@ -78,7 +78,7 @@ Unlike typical forecasting tools, EduPredict **admits when it's uncertain**:
 6. The app auto-starts at port 8501
 7. Click **"Open in Browser"** when prompted
 
-✅ **Done!** The app runs entirely in GitHub's cloud - no local setup needed.
+ **Done!** The app runs entirely in GitHub's cloud - no local setup needed.
 
 ### Option 2: Run Locally
 
