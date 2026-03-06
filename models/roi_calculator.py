@@ -25,7 +25,7 @@ class ROIInput:
 
 @dataclass
 class ROIOutput:
-    """ROI calculation results."""
+    """ROI calculation results with uncertainty and risk flags."""
     starting_salary: int
     salary_5year: int
     total_tuition_revenue: int
@@ -33,6 +33,12 @@ class ROIOutput:
     roi_ratio: float
     payback_period_years: float
     break_even_enrollment: int
+    # Risk assessment
+    roi_risk_level: str  # "low", "medium", "high"
+    financial_warnings: list  # List of warning messages
+    # Recommendation
+    launch_recommendation: str  # "proceed", "caution", "delay"
+    recommendation_reason: str
 
 
 class ROICalculator:
@@ -180,17 +186,21 @@ class ROICalculator:
             print(f"ROI: Error loading CSV: {e}")
             return self.FALLBACK_SALARIES
     
-    def calculate(self, inputs: ROIInput, student_type: str = "International") -> ROIOutput:
+    def calculate(self, inputs: ROIInput, student_type: str = "International", 
+                  confidence_score: float = 0.70) -> ROIOutput:
         """
-        Calculate ROI for a program.
+        Calculate ROI for a program with risk assessment.
         
         Args:
             inputs: ROIInput with enrollment projections
             student_type: International or Domestic (affects tuition)
+            confidence_score: Forecast confidence (0-1) from forecaster
             
         Returns:
-            ROIOutput with all calculations
+            ROIOutput with calculations, risk flags, and recommendation
         """
+        financial_warnings = []
+        
         program = inputs.program_type
         state = inputs.state
         
@@ -232,6 +242,45 @@ class ROICalculator:
         # Break-even enrollment
         break_even_enrollment = int(startup_cost / (annual_tuition * program_years))
         
+        # ROI RISK ASSESSMENT
+        # Risk based on ROI ratio, confidence, and enrollment vs break-even
+        if roi_ratio >= 1.5 and confidence_score >= 0.75 and inputs.year1_enrollment >= break_even_enrollment:
+            roi_risk_level = "low"
+            launch_recommendation = "proceed"
+            recommendation_reason = "Strong ROI with good confidence"
+        elif roi_ratio >= 1.0 and confidence_score >= 0.60:
+            roi_risk_level = "medium"
+            launch_recommendation = "proceed"
+            recommendation_reason = "Positive ROI with moderate confidence"
+            if inputs.year1_enrollment < break_even_enrollment:
+                financial_warnings.append(f"Caution: Year 1 enrollment ({inputs.year1_enrollment}) below break-even ({break_even_enrollment})")
+        elif roi_ratio >= 0.5 and confidence_score >= 0.50:
+            roi_risk_level = "medium"
+            launch_recommendation = "caution"
+            recommendation_reason = "Marginal ROI - consider mitigating factors"
+            financial_warnings.append("Caution: ROI is marginal (0.5-1.0x). Program may not be financially viable.")
+        else:
+            roi_risk_level = "high"
+            launch_recommendation = "delay"
+            recommendation_reason = "Poor ROI or low confidence - DO NOT LAUNCH"
+            
+            if roi_ratio < 0.5:
+                financial_warnings.append("WARNING: ROI below 0.5x. Program will likely lose money.")
+                financial_warnings.append("RECOMMENDATION: Do not launch this program configuration.")
+            if roi_ratio < 0:
+                financial_warnings.append("CRITICAL: Negative ROI. Program is financially unsustainable.")
+            if confidence_score < 0.50:
+                financial_warnings.append("Low forecast confidence compounds financial risk.")
+            if inputs.year1_enrollment < break_even_enrollment * 0.5:
+                financial_warnings.append(f"Enrollment ({inputs.year1_enrollment}) far below break-even ({break_even_enrollment}).")
+        
+        # Additional warnings
+        if payback_period_years > 5:
+            financial_warnings.append(f"Long payback period ({payback_period_years:.1f} years) ties up capital")
+        
+        if total_students < 50:
+            financial_warnings.append("Low total enrollment may not justify fixed startup costs")
+        
         return ROIOutput(
             starting_salary=starting_salary,
             salary_5year=salary_5year,
@@ -239,7 +288,11 @@ class ROICalculator:
             program_cost_estimate=program_cost_estimate,
             roi_ratio=roi_ratio,
             payback_period_years=round(payback_period_years, 1),
-            break_even_enrollment=break_even_enrollment
+            break_even_enrollment=break_even_enrollment,
+            roi_risk_level=roi_risk_level,
+            financial_warnings=financial_warnings,
+            launch_recommendation=launch_recommendation,
+            recommendation_reason=recommendation_reason
         )
     
     def get_summary_metrics(self, roi_output: ROIOutput) -> Dict[str, str]:
@@ -284,9 +337,50 @@ if __name__ == "__main__":
     # Test the calculator
     calc = ROICalculator()
     
+    print("=" * 60)
+    print("ROI CALCULATOR TESTS")
+    print("=" * 60)
+    
+    # Test good scenario
+    print("\n🟢 GOOD SCENARIO (High confidence, good ROI):")
+    result_good = quick_roi("MS in AI", "MA", 40, 50, 60, "International")
+    print(f"  ROI: {result_good.roi_ratio}x | Risk: {result_good.roi_risk_level.upper()}")
+    print(f"  Recommendation: {result_good.launch_recommendation.upper()}")
+    print(f"  Reason: {result_good.recommendation_reason}")
+    
+    # Test marginal scenario
+    print("\n🟡 MARGINAL SCENARIO (Medium confidence, marginal ROI):")
+    result_marginal = calc.calculate(
+        ROIInput("BS in AI", "CT", 15, 18, 22), 
+        "Domestic", 
+        confidence_score=0.55
+    )
+    print(f"  ROI: {result_marginal.roi_ratio}x | Risk: {result_marginal.roi_risk_level.upper()}")
+    print(f"  Recommendation: {result_marginal.launch_recommendation.upper()}")
+    if result_marginal.financial_warnings:
+        print(f"  Warnings: {result_marginal.financial_warnings[0]}")
+    
+    # Test bad scenario
+    print("\n🔴 BAD SCENARIO (Low confidence, poor ROI):")
+    result_bad = calc.calculate(
+        ROIInput("AI in Cybersecurity", "CT", 8, 10, 12), 
+        "Domestic", 
+        confidence_score=0.45
+    )
+    print(f"  ROI: {result_bad.roi_ratio}x | Risk: {result_bad.roi_risk_level.upper()}")
+    print(f"  Recommendation: {result_bad.launch_recommendation.upper()}")
+    print(f"  Reason: {result_bad.recommendation_reason}")
+    if result_bad.financial_warnings:
+        print(f"  Warnings ({len(result_bad.financial_warnings)}):")
+        for w in result_bad.financial_warnings[:3]:
+            print(f"    - {w}")
+    
+    # Test all programs
+    print("\n\n" + "=" * 60)
+    print("ALL PROGRAMS SUMMARY")
+    print("=" * 60)
     for program in ["MS in AI", "BS in AI", "AI in Cybersecurity"]:
         for state in ["CT", "NY", "MA"]:
             result = quick_roi(program, state, 40, 50, 60, "International")
-            print(f"\n{program} in {state}:")
-            print(f"  Starting Salary: ${result.starting_salary:,}")
-            print(f"  ROI Ratio: {result.roi_ratio}x")
+            status = "🟢" if result.roi_ratio >= 1.5 else "🟡" if result.roi_ratio >= 1.0 else "🔴"
+            print(f"{status} {program} in {state}: ROI {result.roi_ratio}x | {result.launch_recommendation.upper()}")

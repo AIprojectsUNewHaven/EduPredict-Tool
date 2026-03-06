@@ -291,13 +291,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-def get_recommendation(roi_ratio, confidence_score):
-    """Generate recommendation based on ROI and confidence."""
-    if roi_ratio >= 1.5 and confidence_score > 0.75:
+def get_recommendation(roi_ratio, confidence_score, launch_rec="proceed"):
+    """Generate recommendation based on ROI, confidence, and launch assessment."""
+    # Honor the ROI calculator's recommendation first
+    if launch_rec == "delay" or roi_ratio < 0.5:
+        return "DO NOT LAUNCH", "rec-reconsider"
+    elif roi_ratio >= 1.5 and confidence_score > 0.75:
         return "STRONG GO", "rec-strong-go"
-    elif roi_ratio >= 1.0:
+    elif roi_ratio >= 1.0 and confidence_score >= 0.60:
         return "GO", "rec-go"
-    elif roi_ratio >= 0.7:
+    elif roi_ratio >= 0.7 or confidence_score >= 0.50:
         return "CONDITIONAL", "rec-conditional"
     else:
         return "RECONSIDER", "rec-reconsider"
@@ -862,7 +865,7 @@ def main():
         # Run forecasts
         forecast = forecaster.forecast(forecast_input)
         
-        # Run ROI calculation
+        # Run ROI calculation with confidence context
         roi_input = ROIInput(
             program_type=program_type,
             state=state_code,
@@ -870,14 +873,14 @@ def main():
             year2_enrollment=forecast.year2_enrollment,
             year3_enrollment=forecast.year3_enrollment
         )
-        roi = roi_calc.calculate(roi_input, student_type)
+        roi = roi_calc.calculate(roi_input, student_type, forecast.confidence_score)
         
         # Get job market signal
         job_signal = job_analyzer.get_signal(state_code)
         demand_score = job_analyzer.get_demand_score(state_code)
         
-        # Get recommendation
-        rec_text, rec_class = get_recommendation(roi.roi_ratio, forecast.confidence_score)
+        # Get recommendation (respects ROI calculator's launch assessment)
+        rec_text, rec_class = get_recommendation(roi.roi_ratio, forecast.confidence_score, roi.launch_recommendation)
         
         # CENTER PANEL - Main Output
         with center_col:
@@ -901,7 +904,7 @@ def main():
                 st.metric(
                     label="YEAR 1 STUDENTS",
                     value=f"{forecast.year1_enrollment}",
-                    delta=None
+                    delta=f"Range: {forecast.year1_low}-{forecast.year1_high}"
                 )
             
             with metric_cols[1]:
@@ -912,10 +915,12 @@ def main():
                 )
             
             with metric_cols[2]:
+                confidence_color = "normal" if forecast.confidence_score >= 0.70 else "off" if forecast.confidence_score >= 0.50 else "inverse"
                 st.metric(
                     label="CONFIDENCE",
                     value=f"{int(forecast.confidence_score * 100)}%",
-                    delta=None
+                    delta=forecast.recommendation_confidence.upper(),
+                    delta_color=confidence_color
                 )
             
             with metric_cols[3]:
@@ -925,6 +930,38 @@ def main():
                     value=f"+{growth_pct}%",
                     delta=None
                 )
+            
+            # WARNING FLAGS SECTION
+            if forecast.warning_flags or roi.financial_warnings:
+                st.markdown("---")
+                
+                # Forecast warnings
+                if forecast.warning_flags:
+                    risk_emoji = "🟢" if forecast.risk_level == "low" else "🟡" if forecast.risk_level == "medium" else "🔴"
+                    with st.expander(f"{risk_emoji} Forecast Uncertainty ({len(forecast.warning_flags)} flags)", expanded=forecast.risk_level=="high"):
+                        for flag in forecast.warning_flags:
+                            if "HIGH RISK" in flag or "WEAK RECOMMENDATION" in flag:
+                                st.error(f"⚠️ {flag}")
+                            elif "Conservative" in flag or "Optimistic" in flag or "Spring" in flag:
+                                st.info(f"ℹ️ {flag}")
+                            else:
+                                st.warning(f"⚡ {flag}")
+                        
+                        st.caption(f"**Risk Level:** {forecast.risk_level.upper()} | **Confidence:** {forecast.recommendation_confidence.upper()}")
+                
+                # Financial warnings
+                if roi.financial_warnings:
+                    with st.expander(f"💰 Financial Risks ({len(roi.financial_warnings)} flags)", expanded=roi.roi_risk_level=="high"):
+                        for warning in roi.financial_warnings:
+                            if "CRITICAL" in warning or "WARNING" in warning or "Do not launch" in warning:
+                                st.error(f"🚨 {warning}")
+                            elif "Caution" in warning:
+                                st.warning(f"⚠️ {warning}")
+                            else:
+                                st.info(f"ℹ️ {warning}")
+                        
+                        st.caption(f"**Financial Risk:** {roi.roi_risk_level.upper()} | **Recommendation:** {roi.launch_recommendation.upper()}")
+                        st.caption(f"**Reason:** {roi.recommendation_reason}")
             
             # EXECUTIVE SUMMARY CARD (Printable)
             st.markdown('<p class="section-header">📋 Executive Summary Card</p>', unsafe_allow_html=True)
@@ -1026,8 +1063,23 @@ def main():
         with right_col:
             st.markdown('<p class="section-header">🎯 Executive Summary</p>', unsafe_allow_html=True)
             
-            # Recommendation box
-            st.markdown(f'<div class="{rec_class}">{rec_text}</div>', unsafe_allow_html=True)
+            # Recommendation box with enhanced messaging
+            if rec_text == "DO NOT LAUNCH":
+                st.markdown(f"""
+                <div style='background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+                           color: white; padding: 1.5rem; border-radius: 16px; 
+                           text-align: center; font-size: 1.4rem; font-weight: 700;
+                           box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+                           border: 3px solid #b91c1c;'>
+                    🚫 {rec_text}
+                </div>
+                <div style='background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px; 
+                           padding: 1rem; margin-top: 0.5rem; color: #991b1b; font-size: 0.9rem;'>
+                    <b>Why:</b> {roi.recommendation_reason}
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="{rec_class}">{rec_text}</div>', unsafe_allow_html=True)
             
             # Key metrics in insight box
             st.markdown('<div class="insight-box">', unsafe_allow_html=True)
@@ -1082,14 +1134,38 @@ def main():
             
             st.table(scenario_data)
             
-            # AI Insight
-            st.success(f"""
-            **💡 AI Insight**
-            
-            With **{forecast.year1_enrollment}** students Year 1 and **{roi.roi_ratio:.2f}x ROI**, this program shows {'exceptional' if roi.roi_ratio >= 1.5 else 'strong' if roi.roi_ratio >= 1.0 else 'moderate'} viability in {state_code}.
-            
-            The {job_signal.demand_level} demand for AI talent supports program launch.
-            """)
+            # AI Insight - Honest about uncertainty
+            if roi.launch_recommendation == "delay":
+                st.error(f"""
+                **🚨 AI Insight - DO NOT LAUNCH**
+                
+                This configuration shows **poor viability**:
+                - ROI of {roi.roi_ratio:.2f}x is below sustainable threshold
+                - Forecast confidence is {int(forecast.confidence_score * 100)}%
+                - {roi.recommendation_reason}
+                
+                **Recommendation:** Gather more data or consider alternative program configurations.
+                """)
+            elif forecast.confidence_score < 0.60:
+                st.warning(f"""
+                **⚠️ AI Insight - UNCERTAIN PREDICTION**
+                
+                With **{forecast.year1_enrollment}** students projected (range: {forecast.year1_low}-{forecast.year1_high}) and **{roi.roi_ratio:.2f}x ROI**, this program shows {'potential' if roi.roi_ratio >= 1.0 else 'risk'}.
+                
+                **However:** Confidence is only {int(forecast.confidence_score * 100)}%. {forecast.recommendation_confidence.capitalize()} recommendation strength.
+                
+                Consider validating with pilot data before committing resources.
+                """)
+            else:
+                st.success(f"""
+                **💡 AI Insight**
+                
+                With **{forecast.year1_enrollment}** students Year 1 and **{roi.roi_ratio:.2f}x ROI**, this program shows {'exceptional' if roi.roi_ratio >= 1.5 else 'strong' if roi.roi_ratio >= 1.0 else 'moderate'} viability in {state_code}.
+                
+                Forecast confidence: {int(forecast.confidence_score * 100)}% ({forecast.recommendation_confidence} recommendation)
+                
+                The {job_signal.demand_level} demand for AI talent supports program launch.
+                """)
             
             # DOWNLOAD SECTION - PDF REPORT
             st.markdown('<p class="section-header">📥 Download Professional Report</p>', unsafe_allow_html=True)
