@@ -1,155 +1,191 @@
 # AWS EC2 Deployment Guide (Student Account)
 
-Deploy EduPredict Pro to your own AWS server - **free for 12 months** with student account.
+Deploy EduPredict Pro to AWS EC2 using AWS Academy Learner Lab.
+
+**Time needed:** ~10 minutes (mostly waiting for auto-deploy)
 
 ---
 
-## Quick Start (5 minutes)
+## Prerequisites
 
-### Step 1: Launch EC2 Instance
+- AWS Academy Learner Lab access
+- Security group with ports 22 (SSH) and 8501 (Streamlit) open
 
-1. **Log into AWS Console:** https://aws.amazon.com/console
-2. **Go to EC2 → Instances → Launch Instances**
-3. **Name:** `EduPredict-Pro`
-4. **AMI:** Ubuntu Server 22.04 LTS (Free tier eligible)
-5. **Instance type:** t2.micro (Free tier eligible ✓)
-6. **Key pair:** Create new or use existing (download .pem file)
-7. **Network settings:**
-   - Create security group
-   - **Allow SSH (port 22)** from your IP
-   - **Allow Custom TCP (port 8501)** from anywhere (0.0.0.0/0) ← **IMPORTANT**
-8. **Storage:** 8 GB (default)
-9. **Click "Launch instance"**
+---
 
-### Step 2: Connect to Instance
+## Step 1: Start Your Lab
+
+1. Go to **AWS Academy** > **Learner Lab**
+2. Click **Start Lab** (wait for green circle)
+3. Click **AWS** to open the console
+4. Make sure region is **us-east-1** (N. Virginia)
+
+---
+
+## Step 2: Launch EC2 Instance
+
+1. Go to **EC2** > **Launch Instance**
+2. Configure:
+
+| Setting | Value |
+|---------|-------|
+| Name | `edupredict-pro` |
+| AMI | **Ubuntu Server 24.04 LTS** (Free tier) |
+| Instance type | **t2.micro** (Free tier) |
+| Key pair | Create new or select existing |
+| Network | Allow SSH (port 22) from My IP |
+
+3. **Security Group** -- Click "Edit" next to Network settings:
+   - Keep SSH (port 22) rule
+   - Click **Add security group rule**:
+     - Type: **Custom TCP**
+     - Port range: **8501**
+     - Source: **0.0.0.0/0** (Anywhere)
+     - Description: `Streamlit App`
+
+4. **Advanced Details** (expand at bottom):
+   - Scroll to **User data**
+   - Paste this entire script:
 
 ```bash
-# On your local machine, in terminal:
-chmod 400 your-key.pem
-ssh -i your-key.pem ubuntu@YOUR-EC2-PUBLIC-IP
-```
+#!/bin/bash
+exec > /var/log/edupredict-deploy.log 2>&1
+set -e
 
-**Find your public IP:** EC2 Console → Instances → Click instance → "Public IPv4 address"
+apt-get update -y
+apt-get install -y python3 python3-pip python3-venv git curl
 
-### Step 3: Deploy App (Run on EC2)
-
-Once connected to your EC2 instance via SSH, run:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/GaneshMunagala714/Edupredict-Pro/main/aws-deploy.sh | bash
-```
-
-**Or manually:**
-```bash
-# Update system
-sudo apt-get update -y
-
-# Install Python
-sudo apt-get install -y python3 python3-pip git
-
-# Clone repo
+cd /home/ubuntu
 git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
 cd Edupredict-Pro
 
-# Install dependencies
-pip3 install -r requirements.txt
+python3 -m pip install --break-system-packages -r requirements.txt
 
-# Run app
-streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
+cat > /etc/systemd/system/edupredict.service <<SVCEOF
+[Unit]
+Description=EduPredict Pro Streamlit App
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Edupredict-Pro
+ExecStart=/usr/bin/python3 -m streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+Restart=always
+RestartSec=5
+Environment=HOME=/home/ubuntu
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+chown -R ubuntu:ubuntu /home/ubuntu/Edupredict-Pro
+systemctl daemon-reload
+systemctl enable edupredict
+systemctl start edupredict
 ```
 
-### Step 4: Access Your App
-
-**Your app is live at:**
-```
-http://YOUR-EC2-PUBLIC-IP:8501
-```
-
-**Example:** `http://3.84.123.45:8501`
+5. Click **Launch instance**
 
 ---
 
-## Keep App Running 24/7 (Auto-restart)
+## Step 3: Access Your App
 
-If you used the `aws-deploy.sh` script, the app is already set up as a service and will auto-start if the server reboots.
+1. Wait **3-5 minutes** for auto-deploy to finish
+2. Go to **EC2** > **Instances**
+3. Click on your instance
+4. Copy the **Public IPv4 address**
+5. Open in browser: `http://<YOUR-IP>:8501`
 
-**Check status:**
+The app should be live with the full dashboard.
+
+---
+
+## Troubleshooting
+
+### App not loading after 5 minutes?
+
+SSH into the instance and check the deploy log:
+
+```bash
+ssh -i your-key.pem ubuntu@<PUBLIC-IP>
+sudo cat /var/log/edupredict-deploy.log
+```
+
+Check if the service is running:
+
 ```bash
 sudo systemctl status edupredict
 ```
 
-**View logs:**
-```bash
-sudo journalctl -u edupredict -f
-```
+Restart the service:
 
-**Restart:**
 ```bash
 sudo systemctl restart edupredict
+```
+
+### Security group not working?
+
+Make sure port 8501 is open:
+1. Go to **EC2** > **Security Groups**
+2. Select your instance's security group
+3. **Inbound rules** > **Edit** > Add rule:
+   - Type: Custom TCP
+   - Port: 8501
+   - Source: 0.0.0.0/0
+
+### Lab session timing out?
+
+AWS Academy labs have a ~4 hour limit. The app only runs while the lab is active. For permanent hosting, use [Streamlit Cloud](https://share.streamlit.io).
+
+---
+
+## Alternative: Docker on EC2
+
+If you prefer Docker, SSH into your instance and run:
+
+```bash
+sudo apt-get update -y && sudo apt-get install -y docker.io
+sudo systemctl start docker
+cd /home/ubuntu
+git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
+cd Edupredict-Pro
+sudo docker build -t edupredict-pro .
+sudo docker run -d -p 8501:8501 --restart always edupredict-pro
+```
+
+---
+
+## Architecture
+
+```
+User Browser
+     |
+     v
+AWS EC2 (t2.micro, Ubuntu 24.04)
+     |
+     +-- systemd service (auto-start)
+     |      |
+     |      +-- Streamlit (port 8501)
+     |             |
+     |             +-- ui/app.py (dashboard)
+     |             +-- models/ (forecasting, ROI, job market)
+     |             +-- data/raw/ (BLS, IPEDS CSVs)
+     |
+     +-- Security Group
+            +-- Port 22 (SSH)
+            +-- Port 8501 (Streamlit)
 ```
 
 ---
 
 ## Cost
 
-| Service | Cost |
-|---------|------|
-| t2.micro EC2 | **FREE** for 12 months (750 hours/month) |
-| Data transfer | First 1 GB/month free |
-| **Total** | **$0 for first year** |
-
-After 12 months: ~$8/month if you keep it running 24/7.
+- **t2.micro:** Free tier eligible (750 hours/month)
+- **Storage:** 8 GB EBS (free tier)
+- **Data transfer:** Minimal
+- **Total:** $0 with student account
 
 ---
 
-## Security Group Setup (Critical!)
-
-Your security group must have these inbound rules:
-
-| Type | Protocol | Port Range | Source | Purpose |
-|------|----------|------------|--------|---------|
-| SSH | TCP | 22 | Your IP | Connect to server |
-| Custom TCP | TCP | 8501 | 0.0.0.0/0 | Streamlit app |
-
-**To edit security group:**
-1. EC2 Console → Security Groups
-2. Find your instance's security group
-3. Edit inbound rules
-4. Add rule: Custom TCP, port 8501, source 0.0.0.0/0
-5. Save
-
----
-
-## Troubleshooting
-
-### App not loading?
-1. Check security group allows port 8501
-2. Check app is running: `sudo systemctl status edupredict`
-3. Check logs: `sudo journalctl -u edupredict`
-
-### Permission denied on SSH?
-```bash
-chmod 400 your-key.pem
-```
-
-### Port already in use?
-```bash
-sudo lsof -ti:8501 | xargs sudo kill -9
-```
-
----
-
-## Your App is Now
-
-- ✅ Running on your own AWS server
-- ✅ Accessible 24/7 (as long as EC2 is running)
-- ✅ Free for 12 months
-- ✅ No Streamlit Cloud subscription needed
-- ✅ Permanent URL (until you stop the instance)
-
-**Landing page:** `https://GaneshMunagala714.github.io/Edupredict-Pro`  
-**Live app:** `http://YOUR-EC2-IP:8501`
-
----
-
-*Deploy once, use forever (or at least 12 months free)*
+*For permanent deployment, use [Streamlit Cloud](https://share.streamlit.io) -- it's free and doesn't expire.*
