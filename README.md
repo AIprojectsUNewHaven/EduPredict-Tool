@@ -2,118 +2,139 @@
 
 **AI Degree Program Planning & Decision Intelligence Tool**
 
-A professional dashboard for College Deans to evaluate launching AI degree programs. Built with Streamlit, Plotly 3D, and Python.
+A professional dashboard for College Deans to evaluate launching AI degree programs. Built with **Flask** (no Streamlit), HTML/CSS/JS, and Plotly.js.
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.31-FF4B4B?logo=streamlit)
+![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
-## Live Demo
+## What's Different
 
-| Platform | Link |
-|----------|------|
-| **AWS EC2** | Deployed on AWS (see [Deployment Guide](AWS-DEPLOY.md)) |
-| **GitHub Codespaces** | [Open in Codespaces](https://github.com/codespaces/new?repo=GaneshMunagala714%2FEdupredict-Pro) |
-| **GitHub Pages** | [Landing Page](https://ganeshmunagala714.github.io/Edupredict-Pro) |
-
----
-
-## What It Does
-
-EduPredict helps higher education leadership make data-driven decisions about launching AI degree programs:
-
-- **3-Year Enrollment Forecasting** with prediction intervals and confidence scores
-- **ROI Analysis** with financial risk flags and break-even calculations
-- **Workforce Intelligence** -- state-level AI job market data (CT, NY, MA)
-- **Honest Recommendations** -- STRONG GO / GO / CONDITIONAL / RECONSIDER / DO NOT LAUNCH
-- **Uncertainty Quantification** -- the model admits when it's uncertain
-- **Professional PDF Reports** -- downloadable executive summaries
-
----
-
-## Inputs (5 Dropdowns)
-
-| Input | Options |
-|-------|---------|
-| Program Type | MS in AI, BS in AI, AI in Cybersecurity |
-| Student Type | International, Domestic |
-| Academic Term | FA26 (Fall 2026), SP27 (Spring 2027), FA28 (Fall 2028) |
-| Scenario | Baseline, Optimistic, Conservative |
-| State | CT (Connecticut), NY (New York), MA (Massachusetts) |
-
-**162 total input combinations**, all validated.
-
----
-
-## Outputs
-
-- **Enrollment Projection** -- 3-year forecast with prediction ranges (e.g., "40 students, range: 15-65")
-- **Confidence Score** -- 0-100% with risk level (low/medium/high)
-- **Warning Flags** -- model explains when and why it's uncertain
-- **ROI Ratio** -- return on investment with financial risk assessment
-- **Workforce Outlook** -- job growth, demand level, salary data
-- **Recommendation** -- STRONG GO / GO / CONDITIONAL / RECONSIDER / DO NOT LAUNCH
-- **3D Visualizations** -- interactive scenario surfaces and state comparisons
-- **PDF Report** -- downloadable executive summary
-
----
-
-## Key Feature: Honest Predictions
-
-Unlike typical forecasting tools, EduPredict **admits when it's uncertain**:
-- Shows prediction ranges, not just point estimates
-- Flags scenarios with low confidence
-- Tells you "DO NOT LAUNCH" when ROI is poor
-- Explains why predictions are risky
+Unlike other AI education tools, EduPredict:
+- **No Streamlit** -- Pure Flask + HTML/CSS/JS for professional deployment
+- **Anthropic 2026 Research** -- Latest AI labor market data (Massenkoff & McCrory)
+- **Observed Exposure** -- Real usage data, not just theoretical capabilities
+- **Honest Predictions** -- Shows coverage gaps, hiring slowdowns, and warnings
+- **AWS EC2 Ready** -- Production deployment with Gunicorn + Nginx
 
 ---
 
 ## Technology Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Frontend | Streamlit |
-| Visualizations | Plotly (3D surfaces, interactive charts) |
-| Data Processing | Pandas, NumPy |
-| Reports | FPDF2 (PDF generation) |
-| Data Sources | BLS 2023, IPEDS 2023-2024 |
-| Deployment | Streamlit Cloud, AWS EC2, Docker |
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Flask + Gunicorn |
+| **Frontend** | HTML5, CSS3, Vanilla JS |
+| **Charts** | Plotly.js (3D surfaces, interactive) |
+| **Data** | Pandas, NumPy |
+| **Deployment** | AWS EC2, Docker, Gunicorn |
 
 ---
 
-## Run Locally
+## Quick Start (Local)
 
 ```bash
 git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
 cd Edupredict-Pro
 pip install -r requirements.txt
-streamlit run ui/app.py
+python app.py
 ```
 
-Opens at `http://localhost:8501`
+Open: `http://localhost:5000`
 
 ---
 
-## Deploy
+## Deploy to AWS EC2 (Student Account)
 
-### Option 1: AWS EC2 (Primary Deployment)
+### 1. Start Your Lab
+- AWS Academy → Learner Lab → Start Lab
+- Make sure you're in **us-east-1** (N. Virginia)
 
-See [AWS-DEPLOY.md](AWS-DEPLOY.md) for the full step-by-step guide.
+### 2. Launch EC2 Instance
 
-Quick version: Launch a t2.micro Ubuntu instance, paste the user-data script, open port 8501. App auto-deploys in ~3 minutes. No SSH required.
+**EC2** → **Launch Instance**
 
-### Option 2: Docker
+| Setting | Value |
+|---------|-------|
+| Name | `edupredict-pro` |
+| AMI | Ubuntu Server 24.04 LTS |
+| Type | t2.micro (Free tier) |
+| Key pair | Create new or select |
 
+**Security Group:**
+- SSH (port 22) - My IP
+- HTTP (port 80) - 0.0.0.0/0
+
+**Advanced Details → User Data:**
 ```bash
-docker build -t edupredict-pro .
-docker run -p 8501:8501 edupredict-pro
+#!/bin/bash
+exec > /var/log/edupredict-deploy.log 2>&1
+set -e
+
+echo "=== EduPredict Pro Flask Auto-Deploy ==="
+
+apt-get update -y
+apt-get install -y python3 python3-pip git nginx
+
+cd /home/ubuntu
+git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
+cd Edupredict-Pro
+
+pip3 install --break-system-packages -r requirements.txt
+
+cat > /etc/systemd/system/edupredict.service <<'EOF'
+[Unit]
+Description=EduPredict Pro Flask App
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Edupredict-Pro
+ExecStart=/usr/bin/python3 -m gunicorn -w 2 -b 0.0.0.0:5000 app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/nginx/sites-available/edupredict <<'EOF'
+server {
+    listen 80;
+    server_name _;
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+EOF
+
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/edupredict /etc/nginx/sites-enabled/
+
+chown -R ubuntu:ubuntu /home/ubuntu/Edupredict-Pro
+
+systemctl daemon-reload
+systemctl enable edupredict
+systemctl start edupredict
+systemctl restart nginx
+
+echo "=== DEPLOY COMPLETE ==="
+echo "App URL: http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
 ```
 
-### Option 3: GitHub Codespaces
+### 3. Access Your App
 
-Click "Create codespace on main" from the repo page. The app auto-starts.
+Wait **3-5 minutes**, then visit:
+```
+http://<YOUR-EC2-PUBLIC-IP>
+```
+
+No port number needed (port 80).
 
 ---
 
@@ -121,19 +142,59 @@ Click "Create codespace on main" from the repo page. The app auto-starts.
 
 ```
 Edupredict-Pro/
-├── ui/app.py                  # Main Streamlit dashboard
+├── app.py                      # Flask application (main entry point)
 ├── models/
-│   ├── forecasting.py         # Enrollment forecasting engine
-│   ├── roi_calculator.py      # ROI and financial analysis
-│   └── job_market.py          # Workforce intelligence
-├── data/raw/                  # CSV data files (BLS, IPEDS)
-├── tests/                     # Validation tests
-├── .streamlit/config.toml     # Streamlit theme config
-├── Dockerfile                 # Docker deployment
-├── ec2-userdata.sh            # AWS EC2 auto-deploy script
-├── index.html                 # GitHub Pages landing page
-└── requirements.txt           # Python dependencies
+│   ├── forecasting.py          # Enrollment forecasting engine
+│   ├── roi_calculator.py       # ROI and financial analysis
+│   └── job_market.py           # AI exposure analysis (Anthropic 2026)
+├── templates/
+│   └── index.html              # Main dashboard UI (pink theme)
+├── static/                     # CSS, JS, assets
+├── data/raw/                   # CSV data files
+├── requirements.txt            # Flask dependencies (no Streamlit)
+├── Dockerfile                  # Container config
+├── ec2-userdata.sh            # AWS auto-deploy script
+└── AWS-DEPLOY.md              # Detailed deployment guide
 ```
+
+---
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Main dashboard |
+| `/api/forecast` | POST | Generate enrollment forecast |
+| `/api/scenarios` | POST | Compare all scenarios |
+| `/api/states` | POST | Compare all states |
+| `/api/validate` | GET | Validate all 162 combinations |
+| `/health` | GET | Health check |
+
+---
+
+## Key Features
+
+### 1. AI Exposure Analysis (Anthropic 2026)
+- **Observed Exposure**: Real Claude usage data
+- **Coverage Gap**: 61% gap between theory (94%) and reality (33%)
+- **BLS Impact**: -0.6pp employment growth per 10% exposure
+- **Young Worker Alert**: -14% hiring for age 22-25 in exposed roles
+
+### 2. Enrollment Forecasting
+- 3-year projections with confidence intervals
+- 162 validated input combinations
+- Scenario analysis (Baseline/Optimistic/Conservative)
+
+### 3. ROI Calculator
+- Tuition revenue vs. program costs
+- Break-even analysis
+- Payback period calculations
+
+### 4. Interactive Visualizations
+- Enrollment projection charts (Plotly.js)
+- ROI pie charts
+- Scenario comparison bar charts
+- State comparison charts
 
 ---
 
@@ -141,26 +202,27 @@ Edupredict-Pro/
 
 **Test:** MS in AI + International + FA26 + Baseline + CT
 
-| Metric | Expected |
-|--------|----------|
-| Year 1 Enrollment | ~40 students (range: ~15-65) |
-| Confidence | ~65% (Moderate) |
-| 3-Year Pool | ~131 students |
-| ROI | ~3.43x |
-| Recommendation | STRONG GO |
+| Metric | Expected | Actual |
+|--------|----------|--------|
+| Year 1 | 40 students | ✅ 40 |
+| 3-Year Pool | 131 students | ✅ 131 |
+| ROI | 3.43x | ✅ 3.43x |
+| AI Exposure | 65% (HIGH) | ✅ Data Scientists |
+| Demand Score | 80/100 | ✅ 80 |
 
 ---
 
 ## Data Sources
 
 - **BLS Occupational Employment Statistics** (May 2023)
+- **Anthropic Economic Index** (March 2026)
+  - Massenkoff & McCrory: "Labor market impacts of AI: A new measure and early evidence"
 - **IPEDS Institutional Data** (2023-2024)
-- **Industry Job Market Reports**
 
 ---
 
 ## Author
 
-**Ganesh Munagala** -- [GitHub](https://github.com/GaneshMunagala714) | [Portfolio](https://ganeshmunagala714.github.io/Ganesh-Portfolio)
+**Ganesh Munagala** — [GitHub](https://github.com/GaneshMunagala714) | [Portfolio](https://ganeshmunagala714.github.io/Ganesh-Portfolio)
 
 Built for higher education leadership decision-making.
