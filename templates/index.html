@@ -1076,37 +1076,65 @@
             Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
         }
 
-        // ROI Chart
+        // ROI Chart - Clear bar chart comparing Revenue, Costs, Net
         function renderROIChart(roi) {
-            const data = [{
-                values: [roi.revenue, roi.costs],
-                labels: ['Revenue', 'Costs'],
-                type: 'pie',
-                hole: 0.4,
+            const net = roi.revenue - roi.costs;
+            const netColor = net >= 0 ? '#10b981' : '#ef4444';
+            
+            const trace = {
+                x: ['Total Revenue', 'Total Costs', 'Net Profit'],
+                y: [roi.revenue, roi.costs, net],
+                type: 'bar',
                 marker: {
-                    colors: ['#ec4899', '#9ca3af']
+                    color: ['#ec4899', '#9ca3af', netColor],
+                    line: {
+                        color: ['#be185d', '#6b7280', net >= 0 ? '#059669' : '#dc2626'],
+                        width: 2
+                    }
                 },
-                textinfo: 'label+percent',
-                textposition: 'outside'
-            }];
+                text: [
+                    `$${(roi.revenue/1000000).toFixed(2)}M`,
+                    `$${(roi.costs/1000000).toFixed(2)}M`,
+                    `$${(net/1000000).toFixed(2)}M`
+                ],
+                textposition: 'outside',
+                textfont: {
+                    size: 13,
+                    color: '#831843',
+                    weight: 'bold'
+                }
+            };
 
             const layout = {
                 title: {
-                    text: `ROI: ${roi.ratio.toFixed(2)}x | Net: $${(roi.revenue - roi.costs).toLocaleString()}`,
+                    text: `ROI Analysis: ${roi.ratio.toFixed(2)}x Return | Payback: ${roi.payback_years} years`,
                     font: { size: 14, color: '#831843' }
                 },
-                showlegend: false,
+                yaxis: {
+                    title: 'Amount ($)',
+                    tickformat: '$,.0f',
+                    gridcolor: '#fce7f3',
+                    linecolor: '#fbcfe8'
+                },
+                xaxis: {
+                    linecolor: '#fbcfe8'
+                },
+                plot_bgcolor: '#ffffff',
                 paper_bgcolor: '#ffffff',
+                margin: { t: 50, b: 50, l: 80, r: 40 },
+                showlegend: false,
                 annotations: [{
-                    text: `${roi.ratio.toFixed(2)}x`,
+                    text: `Break-even: ${roi.break_even} students`,
                     x: 0.5,
-                    y: 0.5,
-                    font: { size: 24, color: roi.ratio >= 1 ? '#10b981' : '#ef4444', weight: 'bold' },
-                    showarrow: false
+                    y: -0.15,
+                    xref: 'paper',
+                    yref: 'paper',
+                    showarrow: false,
+                    font: { size: 11, color: '#666' }
                 }]
             };
 
-            Plotly.newPlot('roi-chart', data, layout, {responsive: true});
+            Plotly.newPlot('roi-chart', [trace], layout, {responsive: true});
         }
 
         // Scenarios comparison chart
