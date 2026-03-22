@@ -570,12 +570,24 @@
                 <div class="form-group">
                     <label class="form-label">
                         Academic Term
-                        <span class="help-icon">?<span class="help-text">Intake term: FA26 (Fall 2026), SP27 (Spring 2027), FA28 (Fall 2028). Fall terms typically have 35% higher enrollment than Spring.</span></span>
+                        <span class="help-icon">?<span class="help-text">Intake term selection: Fall has highest enrollment (100%), Spring is moderate (60-65%), Summer is very low (30%) and not recommended for new program launches.</span></span>
                     </label>
                     <select class="form-select" id="term">
-                        <option value="FA26">FA26 (Fall 2026)</option>
-                        <option value="SP27">SP27 (Spring 2027)</option>
-                        <option value="FA28">FA28 (Fall 2028)</option>
+                        <optgroup label="2026">
+                            <option value="SP26">SP26 (Spring 2026)</option>
+                            <option value="SU26">SU26 (Summer 2026)</option>
+                            <option value="FA26" selected>FA26 (Fall 2026)</option>
+                        </optgroup>
+                        <optgroup label="2027">
+                            <option value="SP27">SP27 (Spring 2027)</option>
+                            <option value="SU27">SU27 (Summer 2027)</option>
+                            <option value="FA27">FA27 (Fall 2027)</option>
+                        </optgroup>
+                        <optgroup label="2028">
+                            <option value="SP28">SP28 (Spring 2028)</option>
+                            <option value="SU28">SU28 (Summer 2028)</option>
+                            <option value="FA28">FA28 (Fall 2028)</option>
+                        </optgroup>
                     </select>
                 </div>
 

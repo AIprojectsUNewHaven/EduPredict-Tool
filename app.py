@@ -40,7 +40,7 @@ ai_db = AIOccupationDatabase()
 # Configuration
 PROGRAMS = ["MS in AI", "BS in AI", "AI in Cybersecurity"]
 STUDENT_TYPES = ["International", "Domestic"]
-TERMS = ["FA26", "SP27", "FA28"]
+TERMS = ["SP26", "SU26", "FA26", "SP27", "SU27", "FA27", "SP28", "SU28", "FA28"]
 SCENARIOS = ["Baseline", "Optimistic", "Conservative"]
 STATES = ["CT", "NY", "MA"]
 

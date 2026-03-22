@@ -60,9 +60,15 @@ class EnrollmentForecaster:
     
     # Term adjustment factors
     TERM_FACTORS = {
-        "FA26": 1.0,      # Fall is primary enrollment period
-        "SP27": 0.65,     # Spring typically lower
-        "FA28": 1.05      # Slight growth by 2028
+        "SP26": 0.60,     # Spring 2026 - lower enrollment
+        "SU26": 0.30,     # Summer 2026 - very low (usually not for new programs)
+        "FA26": 1.0,      # Fall 2026 - primary enrollment period
+        "SP27": 0.65,     # Spring 2027 - moderate enrollment
+        "SU27": 0.30,     # Summer 2027 - very low
+        "FA27": 1.03,     # Fall 2027 - slight growth
+        "SP28": 0.68,     # Spring 2028 - moderate with growth
+        "SU28": 0.32,     # Summer 2028 - very low
+        "FA28": 1.05      # Fall 2028 - continued growth
     }
     
     # Fallback baseline calibrated to professor's success criteria
@@ -262,10 +268,13 @@ class EnrollmentForecaster:
             confidence -= 0.10  # Small penalty for estimated data
             warning_flags.append("Enrollment forecast calibrated from IPEDS institutional data patterns")
         
-        # Adjust for Spring term (less predictable)
-        if inputs.start_term == "SP27":
+        # Adjust for term predictability
+        if inputs.start_term.startswith("SP"):
             confidence -= 0.05
-            warning_flags.append("Spring launch has higher uncertainty than Fall")
+            warning_flags.append("Spring intake has higher uncertainty than Fall")
+        elif inputs.start_term.startswith("SU"):
+            confidence -= 0.15
+            warning_flags.append("Summer intake has very low enrollment - not recommended for new programs")
         
         # Cap confidence
         confidence = min(max(confidence, 0.30), 0.95)
