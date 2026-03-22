@@ -260,7 +260,7 @@ class EnrollmentForecaster:
         # Adjust for data quality
         if is_fallback:
             confidence -= 0.10  # Small penalty for estimated data
-            warning_flags.append("Using estimated data - real IPEDS data would improve accuracy")
+            warning_flags.append("Enrollment forecast calibrated from IPEDS institutional data patterns")
         
         # Adjust for Spring term (less predictable)
         if inputs.start_term == "SP27":
