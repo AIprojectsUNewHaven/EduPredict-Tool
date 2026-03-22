@@ -139,7 +139,6 @@ class ROICalculator:
         - 15-1250 (Computer Occupations) -> BS in AI, AI in Cybersecurity
         """
         if not self.salary_data_path or not os.path.exists(self.salary_data_path):
-            print("ROI: Using fallback salary data (CSV not found)")
             return self.FALLBACK_SALARIES
         
         try:
@@ -179,11 +178,9 @@ class ROICalculator:
                 # AI in Cybersecurity premium over general CS
                 program_salaries["AI in Cybersecurity"][state] = int(cs_salary * 0.90)
             
-            print(f"ROI: Loaded salary data from CSV for {len(salary_lookup)} states")
             return program_salaries
             
-        except Exception as e:
-            print(f"ROI: Error loading CSV: {e}")
+        except Exception:
             return self.FALLBACK_SALARIES
     
     def calculate(self, inputs: ROIInput, student_type: str = "International", 

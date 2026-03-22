@@ -139,7 +139,7 @@ class EnrollmentForecaster:
         Real IPEDS data would override this when available.
         """
         if not self.data_path or not os.path.exists(self.data_path):
-            print("Forecasting: Using calibrated fallback baseline")
+            # Using calibrated fallback baseline
             return self.STUDENT_BASELINE_FALLBACK
         
         # Check if this is real IPEDS data or sample data
@@ -148,7 +148,7 @@ class EnrollmentForecaster:
                 reader = csv.DictReader(f)
                 first_row = next(reader, None)
                 if first_row and first_row.get('data_source') == 'estimated':
-                    print("Forecasting: Using calibrated fallback (sample data detected)")
+                    # Using calibrated fallback (sample data detected)
                     return self.STUDENT_BASELINE_FALLBACK
         except:
             pass
@@ -180,7 +180,6 @@ class EnrollmentForecaster:
             
             # If no real data found, use fallback
             if not totals:
-                print("Forecasting: Using calibrated fallback (no real IPEDS data)")
                 return self.STUDENT_BASELINE_FALLBACK
             
             # Build baseline from real data
@@ -200,11 +199,9 @@ class EnrollmentForecaster:
                     else:
                         baseline[student_type][program] = self.STUDENT_BASELINE_FALLBACK[student_type][program]
             
-            print(f"Forecasting: Loaded baseline from real IPEDS data ({len(totals)} records)")
             return baseline
             
-        except Exception as e:
-            print(f"Forecasting: Using calibrated fallback (error: {e})")
+        except Exception:
             return self.STUDENT_BASELINE_FALLBACK
     
     def forecast(self, inputs: ForecastInput) -> ForecastOutput:

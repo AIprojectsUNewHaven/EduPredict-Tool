@@ -20,6 +20,14 @@ from models.forecasting import ForecastInput, EnrollmentForecaster, quick_foreca
 from models.roi_calculator import ROIInput, ROICalculator, quick_roi
 from models.job_market import JobMarketAnalyzer, quick_ai_report, AIOccupationDatabase
 
+# PDF generation
+try:
+    from fpdf import FPDF
+    FPDF_AVAILABLE = True
+except ImportError:
+    FPDF_AVAILABLE = False
+    print("Warning: FPDF not available. PDF export disabled.")
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'edupredict-pro-secret-key'
 
@@ -253,6 +261,208 @@ def api_ai_report(program):
 def health():
     """Health check endpoint for AWS."""
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+
+
+@app.route('/api/report', methods=['POST'])
+def api_report():
+    """Generate and download PDF report."""
+    if not FPDF_AVAILABLE:
+        return jsonify({'success': False, 'error': 'PDF generation not available'}), 503
+    
+    data = request.get_json()
+    
+    program = data.get('program', 'MS in AI')
+    student_type = data.get('student_type', 'International')
+    term = data.get('term', 'FA26')
+    scenario = data.get('scenario', 'Baseline')
+    state = data.get('state', 'CT')
+    
+    # Get all data
+    forecast = quick_forecast(program, student_type, term, scenario, state)
+    roi = quick_roi(program, state,
+                   forecast.year1_enrollment,
+                   forecast.year2_enrollment,
+                   forecast.year3_enrollment,
+                   student_type)
+    job_signal = job_analyzer.get_signal(state, program)
+    ai_exposure = ai_db.get_program_exposure(program)
+    rec = job_analyzer.get_program_recommendation(state, program)
+    
+    # Determine recommendation
+    if roi.roi_ratio >= 1.5 and forecast.confidence_score >= 0.75:
+        recommendation = "STRONG GO"
+    elif roi.roi_ratio >= 1.0 and forecast.confidence_score >= 0.60:
+        recommendation = "GO"
+    elif roi.roi_ratio >= 0.7 or forecast.confidence_score >= 0.50:
+        recommendation = "CONDITIONAL"
+    else:
+        recommendation = "RECONSIDER"
+    
+    if roi.launch_recommendation == "delay":
+        recommendation = "DO NOT LAUNCH"
+    
+    # Generate PDF
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Header
+    pdf.set_font('Arial', 'B', 24)
+    pdf.set_text_color(236, 72, 153)
+    pdf.cell(0, 20, 'EduPredict Pro', 0, 1, 'C')
+    pdf.set_font('Arial', '', 12)
+    pdf.set_text_color(100, 100, 100)
+    pdf.cell(0, 10, 'AI Degree Program Planning Report', 0, 1, 'C')
+    pdf.cell(0, 10, f'Generated: {datetime.now().strftime("%B %d, %Y at %I:%M %p")}', 0, 1, 'C')
+    pdf.ln(10)
+    
+    # Executive Summary Box
+    pdf.set_fill_color(253, 242, 248)
+    pdf.rect(10, pdf.get_y(), 190, 35, 'F')
+    pdf.set_xy(15, pdf.get_y() + 5)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.set_text_color(131, 24, 67)
+    pdf.cell(0, 10, 'EXECUTIVE SUMMARY', 0, 1)
+    pdf.set_xy(15, pdf.get_y())
+    pdf.set_font('Arial', '', 11)
+    pdf.cell(95, 8, f'Program: {program}', 0, 0)
+    pdf.cell(95, 8, f'State: {state}', 0, 1)
+    pdf.set_xy(15, pdf.get_y())
+    pdf.cell(95, 8, f'Student Type: {student_type}', 0, 0)
+    pdf.cell(95, 8, f'Scenario: {scenario}', 0, 1)
+    pdf.set_xy(15, pdf.get_y())
+    pdf.cell(95, 8, f'Launch Term: {term}', 0, 1)
+    pdf.ln(20)
+    
+    # Recommendation
+    pdf.set_font('Arial', 'B', 16)
+    if recommendation == "STRONG GO":
+        pdf.set_text_color(16, 185, 129)
+    elif recommendation == "GO":
+        pdf.set_text_color(236, 72, 153)
+    elif recommendation == "CONDITIONAL":
+        pdf.set_text_color(245, 158, 11)
+    else:
+        pdf.set_text_color(239, 68, 68)
+    pdf.cell(0, 15, f'Recommendation: {recommendation}', 0, 1, 'C')
+    pdf.ln(5)
+    
+    # Key Metrics
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'Key Metrics', 0, 1)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(5)
+    
+    pdf.set_font('Arial', '', 11)
+    metrics = [
+        ("Year 1 Enrollment", f"{forecast.year1_enrollment} students (range: {forecast.year1_low}-{forecast.year1_high})"),
+        ("3-Year Student Pool", f"{forecast.projected_pool} students"),
+        ("Forecast Confidence", f"{int(forecast.confidence_score * 100)}% ({forecast.recommendation_confidence.upper()} confidence)"),
+        ("ROI Ratio", f"{roi.roi_ratio}x"),
+        ("Starting Salary", f"${roi.starting_salary:,}"),
+        ("Program Revenue (3yr)", f"${roi.total_tuition_revenue:,}"),
+        ("Break-Even Enrollment", f"{roi.break_even_enrollment} students"),
+        ("Payback Period", f"{roi.payback_period_years} years"),
+    ]
+    
+    for label, value in metrics:
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(80, 8, label + ':', 0, 0)
+        pdf.set_font('Arial', '', 10)
+        pdf.cell(110, 8, value, 0, 1)
+    
+    pdf.ln(10)
+    
+    # AI Labor Market Analysis
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'AI Labor Market Analysis', 0, 1)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(5)
+    
+    pdf.set_font('Arial', '', 11)
+    pdf.cell(80, 8, 'AI Exposure:', 0, 0)
+    pdf.cell(110, 8, f"{int(ai_exposure.observed_exposure * 100)}% ({ai_exposure.risk_level.value.upper()} risk)", 0, 1)
+    pdf.cell(80, 8, 'Coverage Gap:', 0, 0)
+    pdf.cell(110, 8, f"{int(ai_exposure.coverage_gap * 100)}% (theory vs. reality)", 0, 1)
+    pdf.cell(80, 8, 'BLS 2034 Impact:', 0, 0)
+    pdf.cell(110, 8, f"{ai_exposure.bls_growth_projection_2034:.1f} percentage points", 0, 1)
+    pdf.cell(80, 8, 'Job Market Growth:', 0, 0)
+    pdf.cell(110, 8, f"{job_signal.job_growth_rate}% annually", 0, 1)
+    pdf.ln(5)
+    pdf.set_font('Arial', 'I', 9)
+    pdf.multi_cell(0, 5, f"Key Finding: {ai_exposure.key_finding}")
+    pdf.ln(10)
+    
+    # 3-Year Enrollment Projection
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, '3-Year Enrollment Projection', 0, 1)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(5)
+    
+    pdf.set_font('Arial', 'B', 11)
+    pdf.cell(60, 10, 'Year', 1, 0, 'C')
+    pdf.cell(65, 10, 'Enrollment', 1, 0, 'C')
+    pdf.cell(65, 10, 'Confidence Range', 1, 1, 'C')
+    
+    pdf.set_font('Arial', '', 11)
+    years = [
+        ("Year 1", forecast.year1_enrollment, f"{forecast.year1_low}-{forecast.year1_high}"),
+        ("Year 2", forecast.year2_enrollment, "-"),
+        ("Year 3", forecast.year3_enrollment, f"{forecast.year3_low}-{forecast.year3_high}"),
+    ]
+    for year, enrollment, range_str in years:
+        pdf.cell(60, 10, year, 1, 0, 'C')
+        pdf.cell(65, 10, f"{enrollment} students", 1, 0, 'C')
+        pdf.cell(65, 10, range_str, 1, 1, 'C')
+    pdf.ln(10)
+    
+    # Warnings and Opportunities
+    if forecast.warning_flags or roi.financial_warnings:
+        pdf.set_font('Arial', 'B', 14)
+        pdf.set_text_color(220, 38, 38)
+        pdf.cell(0, 10, 'Warnings & Considerations', 0, 1)
+        pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+        pdf.ln(5)
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Arial', '', 10)
+        for warning in forecast.warning_flags[:3]:
+            pdf.cell(10, 6, '-', 0, 0)
+            pdf.multi_cell(180, 6, warning)
+        for warning in roi.financial_warnings[:3]:
+            pdf.cell(10, 6, '-', 0, 0)
+            pdf.multi_cell(180, 6, warning)
+        pdf.ln(10)
+    
+    if rec['opportunities']:
+        pdf.set_font('Arial', 'B', 14)
+        pdf.set_text_color(22, 163, 74)
+        pdf.cell(0, 10, 'Opportunities', 0, 1)
+        pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+        pdf.ln(5)
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Arial', '', 10)
+        for opp in rec['opportunities'][:3]:
+            pdf.cell(10, 6, '+', 0, 0)
+            pdf.multi_cell(180, 6, opp)
+        pdf.ln(10)
+    
+    # Footer
+    pdf.set_y(-30)
+    pdf.set_font('Arial', 'I', 8)
+    pdf.set_text_color(128, 128, 128)
+    pdf.cell(0, 10, f'EduPredict Pro | Data: BLS 2023, Anthropic Economic Index 2026, IPEDS 2023-2024 | Report generated {datetime.now().strftime("%Y-%m-%d %H:%M")}', 0, 0, 'C')
+    
+    # Save to buffer
+    pdf_buffer = BytesIO()
+    pdf.output(pdf_buffer)
+    pdf_buffer.seek(0)
+    
+    return send_file(
+        pdf_buffer,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f'EduPredict_Report_{state}_{term}_{program.replace(" ", "_")}.pdf'
+    )
 
 
 if __name__ == '__main__':

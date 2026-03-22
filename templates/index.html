@@ -20,6 +20,104 @@
             color: #831843;
         }
 
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .header, .left-panel, .footer, .btn-primary, .btn-secondary {
+                display: none !important;
+            }
+            .container {
+                grid-template-columns: 1fr !important;
+                max-width: 100%;
+            }
+            .center-panel, .right-panel {
+                display: block !important;
+            }
+            .results-section {
+                display: block !important;
+            }
+            .card, .chart-container, .metric-card, .summary-card {
+                break-inside: avoid;
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #ec4899;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #831843;
+            color: white;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            font-weight: 400;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #831843 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Secondary button */
+        .btn-secondary {
+            width: 100%;
+            padding: 0.75rem;
+            background: white;
+            color: #ec4899;
+            border: 2px solid #ec4899;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.75rem;
+        }
+
+        .btn-secondary:hover {
+            background: #fdf2f8;
+            transform: translateY(-1px);
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #9d174d;
+            text-align: center;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
         /* Header */
         .header {
             background: white;
@@ -438,7 +536,10 @@
                 <div class="card-title">📋 Input Parameters</div>
                 
                 <div class="form-group">
-                    <label class="form-label">Program Type</label>
+                    <label class="form-label">
+                        Program Type 
+                        <span class="tooltip">ℹ️<span class="tooltiptext">Select the degree program type: MS in AI (graduate), BS in AI (undergraduate), or AI in Cybersecurity (specialized)</span></span>
+                    </label>
                     <select class="form-select" id="program">
                         {% for p in programs %}
                         <option value="{{ p }}">{{ p }}</option>
@@ -447,7 +548,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Student Type</label>
+                    <label class="form-label">
+                        Student Type
+                        <span class="tooltip">ℹ️<span class="tooltiptext">International students typically pay higher tuition but may face visa challenges. Domestic students have lower tuition but different enrollment patterns.</span></span>
+                    </label>
                     <select class="form-select" id="student_type">
                         {% for s in student_types %}
                         <option value="{{ s }}">{{ s }}</option>
@@ -456,7 +560,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Academic Term</label>
+                    <label class="form-label">
+                        Academic Term
+                        <span class="tooltip">ℹ️<span class="tooltiptext">FA = Fall (primary enrollment period), SP = Spring. Fall typically has 35% higher enrollment than Spring launches.</span></span>
+                    </label>
                     <select class="form-select" id="term">
                         <option value="FA26">FA26 (Fall 2026)</option>
                         <option value="SP27">SP27 (Spring 2027)</option>
@@ -465,7 +572,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Scenario</label>
+                    <label class="form-label">
+                        Scenario
+                        <span class="tooltip">ℹ️<span class="tooltiptext">Economic scenario: Baseline (normal conditions), Optimistic (strong economy), Conservative (recession/caution)</span></span>
+                    </label>
                     <select class="form-select" id="scenario">
                         {% for s in scenarios %}
                         <option value="{{ s }}">{{ s }}</option>
@@ -474,7 +584,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Target State</label>
+                    <label class="form-label">
+                        Target State
+                        <span class="tooltip">ℹ️<span class="tooltiptext">CT (Connecticut), NY (New York), MA (Massachusetts). Different states have varying job markets, salaries, and student demand.</span></span>
+                    </label>
                     <select class="form-select" id="state">
                         <option value="CT">CT - Connecticut</option>
                         <option value="NY">NY - New York</option>
@@ -484,6 +597,14 @@
 
                 <button class="btn-primary" id="generate-btn" onclick="generateForecast()">
                     🚀 Generate Forecast
+                </button>
+                
+                <button class="btn-secondary" id="download-btn" onclick="downloadReport()" style="display: none;">
+                    📄 Download PDF Report
+                </button>
+                
+                <button class="btn-secondary" onclick="window.print()">
+                    🖨️ Print This Page
                 </button>
             </div>
 
@@ -552,7 +673,10 @@
                     </div>
                     <div class="metric-card">
                         <div class="metric-value" id="metric-confidence">-</div>
-                        <div class="metric-label">Confidence</div>
+                        <div class="metric-label">
+                            Confidence
+                            <span class="tooltip" style="border-bottom: 1px dotted #ec4899; cursor: help;">ℹ️<span class="tooltiptext">Statistical confidence in the forecast based on data quality, scenario volatility, and term predictability. Higher is better.</span></span>
+                        </div>
                         <div class="metric-delta" id="metric-risk">-</div>
                     </div>
                     <div class="metric-card">
@@ -602,6 +726,7 @@
                     <div class="card-title">🎯 Recommendation</div>
                     <div id="recommendation-badge" class="rec-badge rec-go">-</div>
                     <div id="recommendation-rationale" style="font-size: 0.875rem; color: #666; text-align: center;">-</div>
+                    <div id="report-timestamp" class="timestamp"></div>
                 </div>
 
                 <div class="summary-card">
@@ -648,7 +773,10 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">🤖 AI Exposure Analysis</div>
+                    <div class="card-title">
+                        🤖 AI Exposure Analysis
+                        <span class="tooltip">ℹ️<span class="tooltiptext">Based on Anthropic Economic Index 2026 research. Shows how much AI could impact jobs in this field. Coverage Gap = difference between AI's theoretical capability and actual workplace usage.</span></span>
+                    </div>
                     <div class="info-box">
                         <div class="info-row">
                             <span class="info-label">Observed Exposure:</span>
@@ -695,6 +823,48 @@
     </footer>
 
     <script>
+        // Download PDF report
+        async function downloadReport() {
+            if (!window.lastForecastData) {
+                alert('Please generate a forecast first');
+                return;
+            }
+            
+            const inputs = window.lastForecastData.inputs;
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Generating PDF...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(inputs)
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `EduPredict_Report_${inputs.state}_${inputs.term}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('Error generating PDF. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
         // Generate forecast
         async function generateForecast() {
             const btn = document.getElementById('generate-btn');
@@ -733,6 +903,9 @@
                     displayResults(data);
                     results.classList.add('active');
                     summaryResults.classList.add('active');
+                    document.getElementById('download-btn').style.display = 'block';
+                    // Store data for PDF download
+                    window.lastForecastData = data;
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -762,6 +935,10 @@
             document.getElementById('recommendation-badge').textContent = rec.text;
             document.getElementById('recommendation-badge').className = 'rec-badge rec-' + rec.class;
             document.getElementById('recommendation-rationale').textContent = rec.rationale;
+            
+            // Timestamp
+            const now = new Date();
+            document.getElementById('report-timestamp').textContent = `Generated: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`;
 
             document.getElementById('summary-year1').textContent = f.year1;
             document.getElementById('summary-pool').textContent = f.pool;
