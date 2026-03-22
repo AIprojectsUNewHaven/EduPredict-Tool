@@ -5,6 +5,11 @@
 flask==3.0.0
 gunicorn==21.2.0
 
+# Authentication & Database
+flask-login==0.6.3
+flask-sqlalchemy==3.1.1
+werkzeug==3.0.1
+
 # Data Processing
 pandas==2.1.4
 numpy==1.26.3

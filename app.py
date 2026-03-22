@@ -6,7 +6,10 @@ No Streamlit. Pure Flask + HTML/CSS/JS.
 Hosted on AWS EC2 with Gunicorn.
 """
 
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
 import sys
@@ -30,6 +33,63 @@ except ImportError:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'edupredict-pro-secret-key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///edupredict.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize extensions
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access the dashboard.'
+
+# Database Models
+class User(UserMixin, db.Model):
+    """User model for authentication."""
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(120), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class ForecastHistory(db.Model):
+    """Store forecast history for audit trail."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    program = db.Column(db.String(50), nullable=False)
+    student_type = db.Column(db.String(20), nullable=False)
+    term = db.Column(db.String(10), nullable=False)
+    scenario = db.Column(db.String(20), nullable=False)
+    state = db.Column(db.String(5), nullable=False)
+    year1_enrollment = db.Column(db.Integer)
+    projected_pool = db.Column(db.Integer)
+    roi_ratio = db.Column(db.Float)
+    confidence = db.Column(db.Float)
+    recommendation = db.Column(db.String(20))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='forecasts')
+
+class ActivityLog(db.Model):
+    """General activity logging."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(50), nullable=False)
+    details = db.Column(db.String(255))
+    ip_address = db.Column(db.String(45))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='activities')
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # Initialize models
 forecaster = EnrollmentForecaster()
@@ -45,7 +105,64 @@ SCENARIOS = ["Baseline", "Optimistic", "Conservative"]
 STATES = ["CT", "NY", "MA"]
 
 
+# Authentication Routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page."""
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and user.check_password(password):
+            login_user(user)
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            # Log activity
+            log_activity(user.id, 'login', f'User logged in from {request.remote_addr}')
+            
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('index'))
+        else:
+            flash('Invalid username or password', 'error')
+    
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    """Logout user."""
+    log_activity(current_user.id, 'logout', 'User logged out')
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+
+# Helper function for logging
+def log_activity(user_id, action, details=None):
+    """Log user activity."""
+    try:
+        log = ActivityLog(
+            user_id=user_id,
+            action=action,
+            details=details,
+            ip_address=request.remote_addr
+        )
+        db.session.add(log)
+        db.session.commit()
+    except:
+        db.session.rollback()
+
+
+# Main Application Routes
 @app.route('/')
+@login_required
 def index():
     """Main dashboard page."""
     return render_template('index.html',
@@ -57,6 +174,7 @@ def index():
 
 
 @app.route('/api/forecast', methods=['POST'])
+@login_required
 def api_forecast():
     """API endpoint for enrollment forecast."""
     data = request.get_json()
@@ -101,6 +219,30 @@ def api_forecast():
     if roi.launch_recommendation == "delay":
         recommendation = "DO NOT LAUNCH"
         rec_class = "do-not-launch"
+    
+    # Log forecast to database
+    try:
+        history = ForecastHistory(
+            user_id=current_user.id,
+            program=program,
+            student_type=student_type,
+            term=term,
+            scenario=scenario,
+            state=state,
+            year1_enrollment=forecast.year1_enrollment,
+            projected_pool=forecast.projected_pool,
+            roi_ratio=roi.roi_ratio,
+            confidence=forecast.confidence_score,
+            recommendation=recommendation
+        )
+        db.session.add(history)
+        db.session.commit()
+        
+        # Log activity
+        log_activity(current_user.id, 'forecast', 
+                    f'{program} for {state} - {recommendation} (ROI: {roi.roi_ratio}x)')
+    except:
+        db.session.rollback()
     
     return jsonify({
         'success': True,
@@ -159,6 +301,7 @@ def api_forecast():
 
 
 @app.route('/api/scenarios', methods=['POST'])
+@login_required
 def api_scenarios():
     """Get all scenario comparisons."""
     data = request.get_json()
@@ -182,6 +325,7 @@ def api_scenarios():
 
 
 @app.route('/api/states', methods=['POST'])
+@login_required
 def api_states():
     """Get state comparison data."""
     data = request.get_json()
@@ -209,6 +353,7 @@ def api_states():
 
 
 @app.route('/api/validate')
+@login_required
 def api_validate():
     """Validate all 162 combinations."""
     results = []
@@ -251,6 +396,7 @@ def api_validate():
 
 
 @app.route('/api/ai-report/<program>')
+@login_required
 def api_ai_report(program):
     """Get AI exposure report for a program."""
     report = quick_ai_report(program)
@@ -264,6 +410,7 @@ def health():
 
 
 @app.route('/api/report', methods=['POST'])
+@login_required
 def api_report():
     """Generate and download PDF report."""
     if not FPDF_AVAILABLE:
@@ -465,6 +612,28 @@ def api_report():
     )
 
 
+def init_db():
+    """Initialize database and create default admin user."""
+    with app.app_context():
+        db.create_all()
+        
+        # Create default admin user if none exists
+        if not User.query.filter_by(username='admin').first():
+            admin = User(
+                username='admin',
+                is_admin=True,
+                last_login=datetime.utcnow()
+            )
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+            print("Default admin user created: admin / admin123")
+            print("IMPORTANT: Change default password after first login!")
+
+
 if __name__ == '__main__':
+    # Initialize database
+    init_db()
+    
     # Development server
     app.run(host='0.0.0.0', port=5000, debug=True)
