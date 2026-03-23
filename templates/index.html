@@ -172,70 +172,103 @@
             }
         }
 
-        /* Cards with 3D effects */
+        /* Cards with DRAMATIC 3D effects */
         .card {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
             border-radius: 20px;
             border: 2px solid #fbcfe8;
             padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
+            box-shadow: 
+                0 4px 15px rgba(236, 72, 153, 0.1),
+                0 0 0 1px rgba(236, 72, 153, 0.05);
             transform-style: preserve-3d;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
         }
 
         .card:hover {
-            transform: translateY(-5px) translateZ(20px) rotateX(2deg);
-            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+            transform: translateY(-10px) translateZ(40px) rotateX(5deg) rotateY(3deg) scale(1.02);
+            box-shadow: 
+                0 30px 60px rgba(236, 72, 153, 0.25),
+                0 0 0 2px rgba(236, 72, 153, 0.1),
+                inset 0 0 30px rgba(236, 72, 153, 0.05);
         }
 
-        /* 3D Welcome Animation */
-        @keyframes welcome3d {
+        /* DRAMATIC 3D Welcome Animation */
+        @keyframes welcome3dDramatic {
             0% {
                 opacity: 0;
-                transform: perspective(1000px) rotateX(30deg) translateZ(-100px);
+                transform: perspective(1000px) rotateX(60deg) translateZ(-200px) scale(0.5);
+            }
+            50% {
+                transform: perspective(1000px) rotateX(-10deg) translateZ(50px) scale(1.05);
             }
             100% {
                 opacity: 1;
-                transform: perspective(1000px) rotateX(0) translateZ(0);
+                transform: perspective(1000px) rotateX(0) translateZ(0) scale(1);
             }
         }
 
         .welcome-3d {
-            animation: welcome3d 0.8s ease-out;
+            animation: welcome3dDramatic 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 3D Chart containers */
+        /* DRAMATIC 3D Chart containers */
         .chart-container {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
             border-radius: 16px;
             border: 2px solid #fbcfe8;
             padding: 1rem;
             margin-bottom: 1rem;
             min-height: 400px;
             transform-style: preserve-3d;
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.1);
         }
 
         .chart-container:hover {
-            transform: translateZ(30px) rotateY(2deg);
-            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.15);
+            transform: translateZ(50px) rotateY(5deg) scale(1.01);
+            box-shadow: 
+                0 25px 50px rgba(236, 72, 153, 0.2),
+                0 0 0 2px rgba(236, 72, 153, 0.1);
         }
 
-        /* Results section 3D entrance */
-        @keyframes results3dEntrance {
+        /* DRAMATIC Results section 3D entrance */
+        @keyframes results3dEntranceDramatic {
             0% {
                 opacity: 0;
-                transform: perspective(1000px) rotateY(-30deg) translateX(-100px);
+                transform: perspective(1000px) rotateY(-45deg) translateX(-200px) scale(0.8);
+            }
+            60% {
+                transform: perspective(1000px) rotateY(5deg) translateX(20px) scale(1.02);
             }
             100% {
                 opacity: 1;
-                transform: perspective(1000px) rotateY(0) translateX(0);
+                transform: perspective(1000px) rotateY(0) translateX(0) scale(1);
             }
         }
 
         .results-section.active {
             display: block;
-            animation: results3dEntrance 0.6s ease-out;
+            animation: results3dEntranceDramatic 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .card-title {
@@ -321,36 +354,74 @@
         }
 
         .metric-card {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
             border: 2px solid #f9a8d4;
             border-radius: 16px;
             padding: 1.25rem;
             text-align: center;
             transform-style: preserve-3d;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .metric-card:hover::after {
+            animation: shimmer 1s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
         }
 
         .metric-card:hover {
-            transform: translateY(-8px) translateZ(30px) rotateX(5deg);
-            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);
+            transform: translateY(-12px) translateZ(50px) rotateX(8deg) rotateY(5deg) scale(1.05);
+            box-shadow: 
+                0 20px 40px rgba(236, 72, 153, 0.3),
+                0 0 30px rgba(236, 72, 153, 0.1),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
+            border-color: #ec4899;
         }
 
-        @keyframes metricPop3d {
+        @keyframes metricPop3dDramatic {
             0% {
-                transform: scale(0.8) translateZ(-50px);
+                transform: scale(0.5) translateZ(-100px) rotateX(-30deg);
                 opacity: 0;
             }
-            60% {
-                transform: scale(1.05) translateZ(10px);
+            50% {
+                transform: scale(1.1) translateZ(30px) rotateX(10deg);
+            }
+            70% {
+                transform: scale(0.95) translateZ(-10px) rotateX(-5deg);
             }
             100% {
-                transform: scale(1) translateZ(0);
+                transform: scale(1) translateZ(0) rotateX(0);
                 opacity: 1;
             }
         }
 
         .metric-card.animate {
-            animation: metricPop3d 0.5s ease-out;
+            animation: metricPop3dDramatic 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .metric-value {

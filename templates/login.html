@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Animated background 3D elements */
+        /* Animated background 3D elements - Dramatic version */
         .bg-3d-elements {
             position: fixed;
             top: 0;
@@ -32,59 +32,98 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
+            perspective: 1000px;
         }
 
         .floating-cube {
             position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(190, 24, 93, 0.1) 100%);
-            border: 2px solid rgba(236, 72, 153, 0.2);
-            border-radius: 12px;
-            animation: float3d 6s ease-in-out infinite;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(190, 24, 93, 0.25) 100%);
+            border: 3px solid rgba(236, 72, 153, 0.4);
+            border-radius: 16px;
+            box-shadow: 
+                0 20px 40px rgba(236, 72, 153, 0.3),
+                0 0 60px rgba(236, 72, 153, 0.1),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+            animation: float3dDramatic 8s ease-in-out infinite;
             transform-style: preserve-3d;
         }
 
         .floating-cube:nth-child(1) {
-            top: 10%;
-            left: 10%;
+            top: 8%;
+            left: 5%;
+            width: 100px;
+            height: 100px;
             animation-delay: 0s;
-            transform: rotateX(45deg) rotateY(45deg);
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            opacity: 0.8;
         }
 
         .floating-cube:nth-child(2) {
-            top: 20%;
-            right: 15%;
-            width: 40px;
-            height: 40px;
-            animation-delay: 1s;
-            transform: rotateX(-30deg) rotateY(60deg);
+            top: 15%;
+            right: 8%;
+            width: 70px;
+            height: 70px;
+            animation-delay: 2s;
+            background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+            opacity: 0.6;
         }
 
         .floating-cube:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            width: 80px;
-            height: 80px;
-            animation-delay: 2s;
-            transform: rotateX(60deg) rotateZ(45deg);
+            bottom: 25%;
+            left: 12%;
+            width: 120px;
+            height: 120px;
+            animation-delay: 4s;
+            background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 100%);
+            opacity: 0.5;
         }
 
         .floating-cube:nth-child(4) {
-            bottom: 15%;
-            right: 10%;
-            width: 50px;
-            height: 50px;
-            animation-delay: 3s;
-            transform: rotateY(-45deg) rotateZ(30deg);
+            bottom: 10%;
+            right: 15%;
+            width: 90px;
+            height: 90px;
+            animation-delay: 1s;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            opacity: 0.7;
         }
 
-        @keyframes float3d {
+        .floating-cube:nth-child(5) {
+            top: 50%;
+            left: 2%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 3s;
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+            opacity: 0.4;
+        }
+
+        .floating-cube:nth-child(6) {
+            top: 40%;
+            right: 3%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 5s;
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            opacity: 0.5;
+        }
+
+        @keyframes float3dDramatic {
             0%, 100% {
-                transform: translateY(0) rotateX(45deg) rotateY(45deg);
+                transform: translateY(0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
+                box-shadow: 0 20px 40px rgba(236, 72, 153, 0.3), 0 0 60px rgba(236, 72, 153, 0.1);
+            }
+            25% {
+                transform: translateY(-40px) rotateX(15deg) rotateY(45deg) rotateZ(10deg) scale(1.05);
+                box-shadow: 0 40px 80px rgba(236, 72, 153, 0.4), 0 0 100px rgba(236, 72, 153, 0.2);
             }
             50% {
-                transform: translateY(-20px) rotateX(45deg) rotateY(225deg);
+                transform: translateY(-20px) rotateX(-10deg) rotateY(90deg) rotateZ(-5deg) scale(1);
+                box-shadow: 0 30px 60px rgba(236, 72, 153, 0.35), 0 0 80px rgba(236, 72, 153, 0.15);
+            }
+            75% {
+                transform: translateY(-50px) rotateX(20deg) rotateY(135deg) rotateZ(15deg) scale(1.08);
+                box-shadow: 0 50px 100px rgba(236, 72, 153, 0.45), 0 0 120px rgba(236, 72, 153, 0.25);
             }
         }
 
@@ -97,29 +136,57 @@
         }
 
         .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(236, 72, 153, 0.2);
-            border: 2px solid #fbcfe8;
+            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 
+                0 25px 80px rgba(236, 72, 153, 0.25),
+                0 0 0 1px rgba(236, 72, 153, 0.1),
+                inset 0 0 60px rgba(236, 72, 153, 0.05);
+            border: 3px solid rgba(251, 207, 232, 0.8);
             transform-style: preserve-3d;
-            animation: cardEntrance3d 1s ease-out;
-            transition: transform 0.3s ease;
+            animation: cardEntranceDramatic 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 50%, #ec4899 100%);
+            border-radius: 32px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .login-card:hover::before {
+            opacity: 0.3;
         }
 
         .login-card:hover {
-            transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
-            box-shadow: 0 30px 80px rgba(236, 72, 153, 0.3);
+            transform: rotateY(8deg) rotateX(5deg) translateZ(40px) scale(1.02);
+            box-shadow: 
+                0 40px 100px rgba(236, 72, 153, 0.4),
+                0 0 0 2px rgba(236, 72, 153, 0.2),
+                inset 0 0 80px rgba(236, 72, 153, 0.08);
         }
 
-        @keyframes cardEntrance3d {
+        @keyframes cardEntranceDramatic {
             0% {
                 opacity: 0;
-                transform: translateZ(-200px) rotateX(30deg);
+                transform: perspective(1000px) translateZ(-300px) rotateX(45deg) rotateY(-30deg) scale(0.8);
+            }
+            60% {
+                transform: perspective(1000px) translateZ(50px) rotateX(-5deg) rotateY(5deg) scale(1.02);
             }
             100% {
                 opacity: 1;
-                transform: translateZ(0) rotateX(0);
+                transform: perspective(1000px) translateZ(0) rotateX(0) rotateY(0) scale(1);
             }
         }
 
@@ -127,42 +194,80 @@
             text-align: center;
             margin-bottom: 32px;
             transform-style: preserve-3d;
+            perspective: 500px;
         }
 
         .logo-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+            font-size: 64px;
+            margin-bottom: 20px;
             display: inline-block;
-            animation: logoFloat3d 3s ease-in-out infinite;
-            filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.3));
+            animation: logoFloatDramatic 4s ease-in-out infinite;
+            filter: 
+                drop-shadow(0 15px 30px rgba(236, 72, 153, 0.4))
+                drop-shadow(0 0 40px rgba(236, 72, 153, 0.2));
+            transform-style: preserve-3d;
         }
 
-        @keyframes logoFloat3d {
+        @keyframes logoFloatDramatic {
             0%, 100% {
-                transform: translateY(0) rotateY(0) translateZ(0);
+                transform: translateY(0) rotateY(0) rotateX(0) translateZ(0) scale(1);
+                filter: drop-shadow(0 15px 30px rgba(236, 72, 153, 0.4)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.2));
+            }
+            25% {
+                transform: translateY(-15px) rotateY(15deg) rotateX(5deg) translateZ(50px) scale(1.1);
+                filter: drop-shadow(0 25px 50px rgba(236, 72, 153, 0.5)) drop-shadow(0 0 60px rgba(236, 72, 153, 0.3));
             }
             50% {
-                transform: translateY(-10px) rotateY(10deg) translateZ(30px);
+                transform: translateY(-5px) rotateY(-10deg) rotateX(-5deg) translateZ(30px) scale(1.05);
+                filter: drop-shadow(0 20px 40px rgba(236, 72, 153, 0.45)) drop-shadow(0 0 50px rgba(236, 72, 153, 0.25));
+            }
+            75% {
+                transform: translateY(-20px) rotateY(20deg) rotateX(10deg) translateZ(60px) scale(1.15);
+                filter: drop-shadow(0 30px 60px rgba(236, 72, 153, 0.55)) drop-shadow(0 0 70px rgba(236, 72, 153, 0.35));
             }
         }
 
         .logo-text {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 50%, #ec4899 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
             transform-style: preserve-3d;
-            animation: textShimmer 3s ease-in-out infinite;
+            animation: textShimmerDramatic 3s ease-in-out infinite;
+            text-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
         }
 
-        @keyframes textShimmer {
+        @keyframes textShimmerDramatic {
             0%, 100% {
                 background-position: 0% 50%;
+                transform: translateZ(20px);
             }
             50% {
                 background-position: 100% 50%;
+                transform: translateZ(40px);
+            }
+        }
+
+        .logo-subtitle {
+            font-size: 15px;
+            color: #9d174d;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: subtitlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes subtitlePulse {
+            0%, 100% {
+                opacity: 0.7;
+                transform: translateZ(10px);
+            }
+            50% {
+                opacity: 1;
+                transform: translateZ(25px);
             }
         }
 
@@ -306,8 +411,10 @@
     </style>
 </head>
 <body>
-    <!-- 3D Background Elements -->
+    <!-- 3D Background Elements - Dramatic -->
     <div class="bg-3d-elements">
+        <div class="floating-cube"></div>
+        <div class="floating-cube"></div>
         <div class="floating-cube"></div>
         <div class="floating-cube"></div>
         <div class="floating-cube"></div>
