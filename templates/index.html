@@ -1238,11 +1238,7 @@
                 margin: { t: 50, b: 50, l: 60, r: 40 }
             };
 
-            Plotly.newPlot('enrollment-chart', [trace], layout, {
-                responsive: true,
-                displayModeBar: true,
-                modeBarButtonsToRemove: ['lasso2d', 'select2d']
-            });
+            Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
         }
 
         // ROI Chart - Clear bar chart comparing Revenue, Costs, Net
@@ -1303,11 +1299,7 @@
                 }]
             };
 
-            Plotly.newPlot('roi-chart', [trace], layout, {
-                responsive: true,
-                displayModeBar: true,
-                modeBarButtonsToRemove: ['lasso2d', 'select2d']
-            });
+            Plotly.newPlot('roi-chart', [trace], layout, {responsive: true});
         }
 
         // Scenarios comparison chart
@@ -1344,11 +1336,7 @@
                     plot_bgcolor: '#ffffff'
                 };
 
-                Plotly.newPlot('scenario-chart', [trace], layout, {
-                    responsive: true,
-                    displayModeBar: true,
-                    modeBarButtonsToRemove: ['lasso2d', 'select2d']
-                });
+                Plotly.newPlot('scenario-chart', [trace], layout, {responsive: true});
             } catch (e) {
                 console.error('Error loading scenarios:', e);
             }
@@ -1403,11 +1391,7 @@
                     legend: { orientation: 'h', y: -0.2 }
                 };
 
-                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {
-                    responsive: true,
-                    displayModeBar: true,
-                    modeBarButtonsToRemove: ['lasso2d', 'select2d']
-                });
+                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {responsive: true});
             } catch (e) {
                 console.error('Error loading states:', e);
             }
