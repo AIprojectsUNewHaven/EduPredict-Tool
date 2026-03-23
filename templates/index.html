@@ -252,9 +252,21 @@
                 0 0 0 2px rgba(236, 72, 153, 0.1);
         }
 
-        /* Hide Plotly toolbar icons */
+        /* Style Plotly toolbar */
         .chart-container .modebar {
-            display: none !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            padding: 4px !important;
+        }
+
+        .chart-container .modebar-btn {
+            opacity: 0.7 !important;
+            transition: opacity 0.2s !important;
+        }
+
+        .chart-container .modebar-btn:hover {
+            opacity: 1 !important;
         }
 
         /* DRAMATIC Results section 3D entrance */
@@ -1242,7 +1254,11 @@
                 margin: { t: 50, b: 50, l: 60, r: 40 }
             };
 
-            Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
+            Plotly.newPlot('enrollment-chart', [trace], layout, {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            });
         }
 
         // ROI Chart - Clear bar chart comparing Revenue, Costs, Net
@@ -1303,7 +1319,11 @@
                 }]
             };
 
-            Plotly.newPlot('roi-chart', [trace], layout, {responsive: true});
+            Plotly.newPlot('roi-chart', [trace], layout, {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            });
         }
 
         // Scenarios comparison chart
@@ -1340,7 +1360,11 @@
                     plot_bgcolor: '#ffffff'
                 };
 
-                Plotly.newPlot('scenario-chart', [trace], layout, {responsive: true});
+                Plotly.newPlot('scenario-chart', [trace], layout, {
+                    responsive: true,
+                    displayModeBar: true,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+                });
             } catch (e) {
                 console.error('Error loading scenarios:', e);
             }
@@ -1395,7 +1419,11 @@
                     legend: { orientation: 'h', y: -0.2 }
                 };
 
-                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {responsive: true});
+                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {
+                    responsive: true,
+                    displayModeBar: true,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+                });
             } catch (e) {
                 console.error('Error loading states:', e);
             }
