@@ -45,65 +45,6 @@
             }
         }
 
-        /* Help icon styles */
-        .help-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            background: #ec4899;
-            color: white;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: help;
-            margin-left: 6px;
-            vertical-align: middle;
-            position: relative;
-        }
-
-        .help-icon:hover {
-            background: #be185d;
-        }
-
-        .help-text {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 280px;
-            background: #831843;
-            color: white;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 400;
-            line-height: 1.5;
-            z-index: 9999;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            pointer-events: none;
-        }
-
-        .help-icon:hover .help-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .help-text::before {
-            content: "";
-            position: absolute;
-            left: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-width: 8px;
-            border-style: solid;
-            border-color: transparent #831843 transparent transparent;
-        }
-
         /* Secondary button */
         .btn-secondary {
             width: 100%;
@@ -585,10 +526,7 @@
                 <div class="card-title">📋 Input Parameters</div>
                 
                 <div class="form-group">
-                    <label class="form-label">
-                        Program Type
-                        <span class="help-icon">?<span class="help-text">Degree program type: MS in AI (2-year graduate), BS in AI (4-year undergraduate), or AI in Cybersecurity (2-year specialized master's)</span></span>
-                    </label>
+                    <label class="form-label">Program Type</label>
                     <select class="form-select" id="program">
                         {% for p in programs %}
                         <option value="{{ p }}">{{ p }}</option>
@@ -597,10 +535,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        Student Type
-                        <span class="help-icon">?<span class="help-text">International students pay higher tuition ($35K vs $25K) but may have visa challenges. Domestic students have lower tuition and different enrollment patterns.</span></span>
-                    </label>
+                    <label class="form-label">Student Type</label>
                     <select class="form-select" id="student_type">
                         {% for s in student_types %}
                         <option value="{{ s }}">{{ s }}</option>
@@ -609,10 +544,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        Academic Term
-                        <span class="help-icon">?<span class="help-text">Intake term selection: Fall has highest enrollment (100%), Spring is moderate (60-65%), Summer is very low (30%) and not recommended for new program launches.</span></span>
-                    </label>
+                    <label class="form-label">Academic Term</label>
                     <select class="form-select" id="term">
                         <optgroup label="2026">
                             <option value="SP26">SP26 (Spring 2026)</option>
@@ -633,10 +565,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        Scenario
-                        <span class="help-icon">?<span class="help-text">Economic conditions: Baseline (normal market), Optimistic (strong growth +25%), Conservative (recession/caution -25%)</span></span>
-                    </label>
+                    <label class="form-label">Scenario</label>
                     <select class="form-select" id="scenario">
                         {% for s in scenarios %}
                         <option value="{{ s }}">{{ s }}</option>
@@ -645,10 +574,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        Target State
-                        <span class="help-icon">?<span class="help-text">Program location: CT (CT $116K avg salary), NY (NY $132K), MA (MA $129K). Job markets vary by state.</span></span>
-                    </label>
+                    <label class="form-label">Target State</label>
                     <select class="form-select" id="state">
                         <option value="CT">CT - Connecticut</option>
                         <option value="NY">NY - New York</option>
@@ -734,10 +660,7 @@
                     </div>
                     <div class="metric-card">
                         <div class="metric-value" id="metric-confidence">-</div>
-                        <div class="metric-label">
-                            Confidence
-                            <span class="help-icon" style="width: 14px; height: 14px; font-size: 9px;">?<span class="help-text">Statistical confidence (30-95%): Based on IPEDS data quality, scenario volatility, and term predictability. 75%+ is high confidence.</span></span>
-                        </div>
+                        <div class="metric-label">Confidence</div>
                         <div class="metric-delta" id="metric-risk">-</div>
                     </div>
                     <div class="metric-card">
@@ -834,10 +757,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">
-                        🤖 AI Exposure Analysis
-                        <span class="help-icon">?<span class="help-text">Anthropic Economic Index 2026: AI's impact on jobs. Coverage Gap = theoretical AI capability minus actual workplace usage (61% gap creates opportunity).</span></span>
-                    </div>
+                    <div class="card-title">🤖 AI Exposure Analysis</div>
                     <div class="info-box">
                         <div class="info-row">
                             <span class="info-label">Observed Exposure:</span>
