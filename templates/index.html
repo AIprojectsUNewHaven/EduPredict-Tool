@@ -172,13 +172,70 @@
             }
         }
 
-        /* Cards */
+        /* Cards with 3D effects */
         .card {
             background: white;
             border-radius: 20px;
             border: 2px solid #fbcfe8;
             padding: 1.5rem;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) translateZ(20px) rotateX(2deg);
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+        }
+
+        /* 3D Welcome Animation */
+        @keyframes welcome3d {
+            0% {
+                opacity: 0;
+                transform: perspective(1000px) rotateX(30deg) translateZ(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: perspective(1000px) rotateX(0) translateZ(0);
+            }
+        }
+
+        .welcome-3d {
+            animation: welcome3d 0.8s ease-out;
+        }
+
+        /* 3D Chart containers */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #fbcfe8;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 400px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateZ(30px) rotateY(2deg);
+            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.15);
+        }
+
+        /* Results section 3D entrance */
+        @keyframes results3dEntrance {
+            0% {
+                opacity: 0;
+                transform: perspective(1000px) rotateY(-30deg) translateX(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: perspective(1000px) rotateY(0) translateX(0);
+            }
+        }
+
+        .results-section.active {
+            display: block;
+            animation: results3dEntrance 0.6s ease-out;
         }
 
         .card-title {
@@ -269,6 +326,31 @@
             border-radius: 16px;
             padding: 1.25rem;
             text-align: center;
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px) translateZ(30px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);
+        }
+
+        @keyframes metricPop3d {
+            0% {
+                transform: scale(0.8) translateZ(-50px);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.05) translateZ(10px);
+            }
+            100% {
+                transform: scale(1) translateZ(0);
+                opacity: 1;
+            }
+        }
+
+        .metric-card.animate {
+            animation: metricPop3d 0.5s ease-out;
         }
 
         .metric-value {
@@ -653,9 +735,16 @@
                 <p>Generating forecast...</p>
             </div>
 
-            <div id="welcome" class="card">
-                <div style="text-align: center; padding: 3rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+            <div id="welcome" class="card welcome-3d">
+                <div style="text-align: center; padding: 3rem; transform-style: preserve-3d;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem; transform: translateZ(50px); display: inline-block; animation: iconFloat3d 3s ease-in-out infinite;">📊</div>
+
+                    <style>
+                        @keyframes iconFloat3d {
+                            0%, 100% { transform: translateZ(50px) rotateY(0); }
+                            50% { transform: translateZ(80px) rotateY(10deg); }
+                        }
+                    </style>
                     <h2 style="color: #831843; margin-bottom: 1rem;">Welcome to EduPredict Pro</h2>
                     <p style="color: #9d174d; margin-bottom: 2rem;">Select your inputs on the left and click "Generate Forecast" to see enrollment projections, ROI analysis, and AI labor market insights.</p>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 500px; margin: 0 auto;">

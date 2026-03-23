@@ -19,12 +19,81 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        /* Animated background 3D elements */
+        .bg-3d-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-cube {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(190, 24, 93, 0.1) 100%);
+            border: 2px solid rgba(236, 72, 153, 0.2);
+            border-radius: 12px;
+            animation: float3d 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        .floating-cube:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            transform: rotateX(45deg) rotateY(45deg);
+        }
+
+        .floating-cube:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            width: 40px;
+            height: 40px;
+            animation-delay: 1s;
+            transform: rotateX(-30deg) rotateY(60deg);
+        }
+
+        .floating-cube:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 2s;
+            transform: rotateX(60deg) rotateZ(45deg);
+        }
+
+        .floating-cube:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            width: 50px;
+            height: 50px;
+            animation-delay: 3s;
+            transform: rotateY(-45deg) rotateZ(30deg);
+        }
+
+        @keyframes float3d {
+            0%, 100% {
+                transform: translateY(0) rotateX(45deg) rotateY(45deg);
+            }
+            50% {
+                transform: translateY(-20px) rotateX(45deg) rotateY(225deg);
+            }
         }
 
         .login-container {
             width: 100%;
             max-width: 420px;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .login-card {
@@ -33,16 +102,48 @@
             padding: 40px;
             box-shadow: 0 20px 60px rgba(236, 72, 153, 0.2);
             border: 2px solid #fbcfe8;
+            transform-style: preserve-3d;
+            animation: cardEntrance3d 1s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+            box-shadow: 0 30px 80px rgba(236, 72, 153, 0.3);
+        }
+
+        @keyframes cardEntrance3d {
+            0% {
+                opacity: 0;
+                transform: translateZ(-200px) rotateX(30deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateZ(0) rotateX(0);
+            }
         }
 
         .logo-section {
             text-align: center;
             margin-bottom: 32px;
+            transform-style: preserve-3d;
         }
 
         .logo-icon {
             font-size: 48px;
             margin-bottom: 16px;
+            display: inline-block;
+            animation: logoFloat3d 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(236, 72, 153, 0.3));
+        }
+
+        @keyframes logoFloat3d {
+            0%, 100% {
+                transform: translateY(0) rotateY(0) translateZ(0);
+            }
+            50% {
+                transform: translateY(-10px) rotateY(10deg) translateZ(30px);
+            }
         }
 
         .logo-text {
@@ -52,6 +153,17 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
+            transform-style: preserve-3d;
+            animation: textShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes textShimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         .logo-subtitle {
@@ -110,14 +222,36 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
             margin-top: 8px;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            transform: translateY(-3px) translateZ(10px) rotateX(5deg);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px) translateZ(5px);
         }
 
         .alert {
@@ -172,6 +306,14 @@
     </style>
 </head>
 <body>
+    <!-- 3D Background Elements -->
+    <div class="bg-3d-elements">
+        <div class="floating-cube"></div>
+        <div class="floating-cube"></div>
+        <div class="floating-cube"></div>
+        <div class="floating-cube"></div>
+    </div>
+
     <div class="login-container">
         <div class="login-card">
             <div class="logo-section">
