@@ -642,6 +642,20 @@
             display: block;
         }
 
+        /* Ensure Plotly toolbar is visible and clickable */
+        .js-plotly-plot .plotly .modebar {
+            z-index: 100 !important;
+        }
+
+        .js-plotly-plot .plotly .modebar-btn {
+            cursor: pointer !important;
+            opacity: 0.8 !important;
+        }
+
+        .js-plotly-plot .plotly .modebar-btn:hover {
+            opacity: 1 !important;
+        }
+
         /* Tables */
         .data-table {
             width: 100%;
