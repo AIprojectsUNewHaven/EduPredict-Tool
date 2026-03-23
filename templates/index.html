@@ -692,7 +692,10 @@
     <header class="header">
         <div class="header-content">
             <div class="logo">🎓 EduPredict Pro</div>
-            <div class="version">v2.1 | AI Degree Planning</div>
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <span class="version">v2.1 | AI Degree Planning</span>
+                <a href="{{ url_for('logout') }}" style="padding: 0.5rem 1rem; background: transparent; color: #9d174d; border: 2px solid #fbcfe8; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none;">🚪 Logout</a>
+            </div>
         </div>
     </header>
 
