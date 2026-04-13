@@ -13,8 +13,19 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
 import sys
+import re
+import csv
 from io import BytesIO
 from datetime import datetime
+
+# Email validation regex
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+
+def validate_email(email):
+    """Validate email format."""
+    if not email:
+        return False
+    return EMAIL_REGEX.match(email.strip()) is not None
 
 # Add models to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -44,19 +55,25 @@ login_manager.login_message = 'Please log in to access the dashboard.'
 
 # Database Models
 class User(UserMixin, db.Model):
-    """User model for authentication."""
+    """User model for authentication with email."""
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    username = db.Column(db.String(80), unique=True, nullable=True)  # Kept for backwards compatibility
     password_hash = db.Column(db.String(120), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
+    is_active = db.Column(db.Boolean, default=True)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def get_id(self):
+        """Override to return email as identifier for Flask-Login."""
+        return str(self.id)
 
 class ForecastHistory(db.Model):
     """Store forecast history for audit trail."""
@@ -104,32 +121,201 @@ TERMS = ["SP26", "SU26", "FA26", "SP27", "SU27", "FA27", "SP28", "SU28", "FA28"]
 SCENARIOS = ["Baseline", "Optimistic", "Conservative"]
 STATES = ["CT", "NY", "MA"]
 
+# Optional shared team data folder (used for map sections)
+TEAM_SHARED_DIR = "/Users/munagalatarakanagaganesh/Desktop/Edupredict-Pro-main-march30 2/Edupredict-Pro-main/data/raw"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
+
+# Curated official sources (APIs and downloads -- not scraped third-party sites)
+OFFICIAL_DATA_STACK = [
+    {
+        "id": "bls-oes",
+        "name": "BLS Occupational Employment & Wage Statistics",
+        "publisher": "U.S. Bureau of Labor Statistics",
+        "used_for": "State-level wages and tech occupation structure (CT, NY, MA).",
+        "portal_url": "https://www.bls.gov/oes/",
+        "api_url": "https://www.bls.gov/developers/",
+    },
+    {
+        "id": "bls-ep",
+        "name": "BLS Employment Projections",
+        "publisher": "U.S. Bureau of Labor Statistics",
+        "used_for": "Long-run demand and growth context for modeled scenarios.",
+        "portal_url": "https://www.bls.gov/emp/",
+        "api_url": None,
+    },
+    {
+        "id": "ipeds",
+        "name": "IPEDS Data Center",
+        "publisher": "NCES / U.S. Department of Education",
+        "used_for": "Institution universe, program signals, and (when loaded) completions by CIP.",
+        "portal_url": "https://nces.ed.gov/ipeds/",
+        "api_url": None,
+    },
+    {
+        "id": "anthropic-econ",
+        "name": "Anthropic Economic Index & research",
+        "publisher": "Anthropic",
+        "used_for": "Observed AI exposure, coverage gap, and hiring-risk framing in the model narrative.",
+        "portal_url": "https://www.anthropic.com/research",
+        "api_url": None,
+    },
+]
+
+# Product-grade upgrade path (shown in UI; aligns with professor / enterprise expectations)
+DATA_IMPROVEMENT_ROADMAP = [
+    {
+        "priority": "P0",
+        "title": "IPEDS Completions by CIP (11.xx / 14.xx)",
+        "detail": "Load official completions for AI/CS-related CIPs for CT, NY, MA to replace enrollment proxies.",
+        "effort": "Medium",
+    },
+    {
+        "priority": "P0",
+        "title": "Automated BLS refresh",
+        "detail": "Schedule pulls via the public BLS API for OES series you depend on, with versioned CSV snapshots.",
+        "effort": "Low",
+    },
+    {
+        "priority": "P1",
+        "title": "Peer institution benchmark pack",
+        "detail": "Curated comparator set (tuition, launch year, outcomes) with manual QA from catalogs, not scraped paywalls.",
+        "effort": "Medium",
+    },
+    {
+        "priority": "P1",
+        "title": "Employer map data governance",
+        "detail": "Document hire estimates, source per row, and refresh cadence; treat as directional not ground truth.",
+        "effort": "Low",
+    },
+    {
+        "priority": "P2",
+        "title": "Audit log & reproducible runs",
+        "detail": "Bind each forecast to data snapshot IDs (file hash + date) for accreditation-style review.",
+        "effort": "Medium",
+    },
+]
+
+
+def _artifact_meta(label: str, rel_path: str) -> dict:
+    path = os.path.join(DATA_RAW_DIR, rel_path)
+    out = {
+        "label": label,
+        "relative_path": rel_path,
+        "present": os.path.isfile(path),
+        "modified": None,
+        "size_kb": None,
+        "rows": None,
+    }
+    if not out["present"]:
+        return out
+    try:
+        st = os.stat(path)
+        out["modified"] = datetime.utcfromtimestamp(st.st_mtime).strftime("%Y-%m-%d %H:%M UTC")
+        out["size_kb"] = round(st.st_size / 1024, 1)
+    except OSError:
+        pass
+    if rel_path.endswith(".csv"):
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                out["rows"] = max(0, sum(1 for _ in f) - 1)
+        except OSError:
+            pass
+    return out
+
+
+def build_app_meta() -> dict:
+    """Structured metadata for professional data-lineage UI."""
+    research = {}
+    ref_path = os.path.join(DATA_RAW_DIR, "research_references.json")
+    if os.path.isfile(ref_path):
+        try:
+            with open(ref_path, encoding="utf-8") as f:
+                research = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            research = {}
+
+    highlights = []
+    for item in (research.get("enrollment_research") or [])[:5]:
+        highlights.append({
+            "title": item.get("title"),
+            "source": item.get("source"),
+            "url": item.get("url"),
+            "year": item.get("year"),
+        })
+
+    artifacts = [
+        _artifact_meta("BLS salary / OES extract", "bls_salary_data.csv"),
+        _artifact_meta("Job market rollup", "job_market_data.csv"),
+        _artifact_meta("IPEDS institutions", "ipeds_institutions.csv"),
+        _artifact_meta("Research reference index", "research_references.json"),
+    ]
+
+    team_ok = os.path.isdir(TEAM_SHARED_DIR)
+    return {
+        "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "product_tagline": "Tri-state decision intelligence for AI and cybersecurity program launches.",
+        "policy_note": (
+            "EduPredict Pro is designed around official statistical releases and documented downloads. "
+            "We do not rely on scraping paywalled or terms-restricted sites."
+        ),
+        "official_sources": OFFICIAL_DATA_STACK,
+        "artifacts": artifacts,
+        "roadmap": DATA_IMPROVEMENT_ROADMAP,
+        "research_catalog_updated": research.get("last_updated"),
+        "research_highlights": highlights,
+        "geo_bundle": {
+            "team_data_path_present": team_ok,
+            "employers_csv": os.path.isfile(os.path.join(TEAM_SHARED_DIR, "employers_2024.csv")),
+        },
+    }
+
+
+@app.route("/api/meta")
+@login_required
+def api_meta():
+    """App metadata: sources, file freshness, roadmap (for professional lineage UI)."""
+    return jsonify(build_app_meta())
+
 
 # Authentication Routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login page."""
+    """Login page with email authentication."""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
     if request.method == 'POST':
-        username = request.form.get('username')
+        email = request.form.get('email', '').strip().lower()
         password = request.form.get('password')
         
-        user = User.query.filter_by(username=username).first()
+        # Validate email format
+        if not email or '@' not in email:
+            flash('Please enter a valid email address', 'error')
+            return render_template('login.html')
+        
+        # Find user by email
+        user = User.query.filter_by(email=email).first()
         
         if user and user.check_password(password):
-            login_user(user)
+            if not user.is_active:
+                flash('Your account has been deactivated. Please contact an administrator.', 'error')
+                return render_template('login.html')
+            
+            login_user(user, remember=True)
             user.last_login = datetime.utcnow()
             db.session.commit()
             
             # Log activity
             log_activity(user.id, 'login', f'User logged in from {request.remote_addr}')
             
+            flash(f'Welcome back! You are logged in as {email}', 'info')
+            
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
         else:
-            flash('Invalid username or password', 'error')
+            flash('Invalid email or password', 'error')
     
     return render_template('login.html')
 
@@ -142,6 +328,98 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+
+@app.route('/admin/users', methods=['GET', 'POST'])
+@login_required
+def admin_users():
+    """Admin panel to manage users (admin only)."""
+    if not current_user.is_admin:
+        flash('Admin access required', 'error')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password')
+        is_admin = request.form.get('is_admin') == 'on'
+        
+        # Validate email
+        if not validate_email(email):
+            flash('Invalid email format', 'error')
+            return redirect(url_for('admin_users'))
+        
+        # Check if email already exists
+        if User.query.filter_by(email=email).first():
+            flash('Email already registered', 'error')
+            return redirect(url_for('admin_users'))
+        
+        # Create new user
+        try:
+            new_user = User(
+                email=email,
+                username=email.split('@')[0],  # Use local part as username
+                is_admin=is_admin,
+                is_active=True
+            )
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+            
+            log_activity(current_user.id, 'create_user', f'Created user {email}')
+            flash(f'User {email} created successfully', 'info')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating user: {str(e)}', 'error')
+    
+    # Get all users for display
+    users = User.query.order_by(User.created_at.desc()).all()
+    return render_template('admin_users.html', users=users)
+
+
+@app.route('/admin/users/<int:user_id>/toggle', methods=['POST'])
+@login_required
+def toggle_user(user_id):
+    """Toggle user active status."""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'error': 'Admin required'}), 403
+    
+    user = User.query.get_or_404(user_id)
+    
+    # Prevent deactivating yourself
+    if user.id == current_user.id:
+        return jsonify({'success': False, 'error': 'Cannot deactivate yourself'}), 400
+    
+    user.is_active = not user.is_active
+    db.session.commit()
+    
+    log_activity(current_user.id, 'toggle_user', f'{"Activated" if user.is_active else "Deactivated"} user {user.email}')
+    
+    return jsonify({
+        'success': True, 
+        'is_active': user.is_active,
+        'message': f'User {"activated" if user.is_active else "deactivated"}'
+    })
+
+
+@app.route('/admin/users/<int:user_id>/reset-password', methods=['POST'])
+@login_required
+def reset_password(user_id):
+    """Reset user password."""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'error': 'Admin required'}), 403
+    
+    user = User.query.get_or_404(user_id)
+    new_password = request.json.get('password')
+    
+    if not new_password or len(new_password) < 6:
+        return jsonify({'success': False, 'error': 'Password must be at least 6 characters'}), 400
+    
+    user.set_password(new_password)
+    db.session.commit()
+    
+    log_activity(current_user.id, 'reset_password', f'Reset password for {user.email}')
+    
+    return jsonify({'success': True, 'message': 'Password reset successfully'})
 
 
 # Helper function for logging
@@ -350,6 +628,172 @@ def api_states():
         })
     
     return jsonify({'states': states_data})
+
+
+def _read_csv_rows(path):
+    if not os.path.exists(path):
+        return []
+    with open(path, newline='', encoding='utf-8') as f:
+        return list(csv.DictReader(f))
+
+
+# Map UI program -> tag used in optional employer_program_map.csv (programs column)
+_GEO_PROGRAM_TAG = {
+    "BS in AI": "BS",
+    "MS in AI": "MS",
+    "AI in Cybersecurity": "CYBER",
+}
+
+# AI-sector employers that are especially relevant on the cyber program map (name hints)
+_CYBER_PROGRAM_NAME_HINTS = (
+    "CYBER", "CISO", "SECURITY", "LOCKHEED", "SIKORSKY", "RAYTHEON", "RTX", "LEIDOS",
+    "GDIT", "BOOZ", "MANDIANT", "PALO ALTO", "CROWDSTRIKE", "PALANTIR",
+)
+
+
+def _load_employer_program_overrides() -> dict:
+    """company_name -> set of tags BS, MS, CYBER from data/raw/employer_program_map.csv"""
+    path = os.path.join(DATA_RAW_DIR, "employer_program_map.csv")
+    out = {}
+    for row in _read_csv_rows(path):
+        name = (row.get("company_name") or "").strip()
+        raw = (row.get("programs") or "").upper().replace(" ", "")
+        if not name:
+            continue
+        tags = {t.strip() for t in raw.split(",") if t.strip() in ("BS", "MS", "CYBER")}
+        if tags:
+            out[name] = tags
+    return out
+
+
+def _employer_matches_program(e: dict, program: str, overrides: dict) -> bool:
+    """Filter employers by degree/program track (heuristic + optional CSV overrides)."""
+    if program not in PROGRAMS:
+        program = "MS in AI"
+    name = (e.get("company_name") or "").strip()
+    tag = _GEO_PROGRAM_TAG.get(program, "MS")
+    if name in overrides:
+        return tag in overrides[name]
+
+    sec = (e.get("sector") or "AI").strip()
+    hires = (e.get("hires_new_grads") or "").strip()
+    ctype = (e.get("company_type") or "").strip()
+    uname = name.upper()
+
+    if program == "MS in AI":
+        return True
+
+    if program == "BS in AI":
+        if sec == "AI":
+            return True
+        if sec == "Cybersecurity":
+            return hires == "Yes"
+        return False
+
+    if program == "AI in Cybersecurity":
+        if sec == "Cybersecurity":
+            return True
+        if sec == "AI":
+            if ctype == "Defense":
+                return True
+            return any(h in uname for h in _CYBER_PROGRAM_NAME_HINTS)
+        return False
+
+    return True
+
+
+def _institution_ready_for_program(program: str, prog_row: dict) -> bool:
+    if program == "BS in AI":
+        return prog_row.get("has_bs_ai") == "Yes"
+    if program == "MS in AI":
+        return prog_row.get("has_ms_ai") == "Yes"
+    if program == "AI in Cybersecurity":
+        return prog_row.get("has_ai_cybersecurity") == "Yes"
+    return (
+        prog_row.get("has_ms_ai") == "Yes"
+        or prog_row.get("has_bs_ai") == "Yes"
+        or prog_row.get("has_ai_cybersecurity") == "Yes"
+    )
+
+
+@app.route('/api/geo-insights')
+@login_required
+def api_geo_insights():
+    """Serve employer and institution-map data from shared team folder."""
+    program = request.args.get("program") or "MS in AI"
+    if program not in PROGRAMS:
+        program = "MS in AI"
+
+    employers_path = os.path.join(TEAM_SHARED_DIR, "employers_2024.csv")
+    programs_path = os.path.join(TEAM_SHARED_DIR, "institutions_programs_2024.csv")
+    ipeds_path = os.path.join(BASE_DIR, "data", "raw", "ipeds_institutions.csv")
+
+    employers_rows = _read_csv_rows(employers_path)
+    programs_rows = _read_csv_rows(programs_path)
+    ipeds_rows = _read_csv_rows(ipeds_path)
+    overrides = _load_employer_program_overrides()
+
+    # Keep only the states used in this project and rows with coordinates
+    employers_all = []
+    for r in employers_rows:
+        st = (r.get("state") or "").strip()
+        lat = r.get("lat")
+        lng = r.get("lng") or r.get("lon")
+        if st not in STATES or not lat or not lng:
+            continue
+        employers_all.append({
+            "company_name": r.get("company_name", ""),
+            "city": r.get("city", ""),
+            "state": st,
+            "sector": r.get("sector", "AI"),
+            "company_type": r.get("company_type", ""),
+            "hires_new_grads": r.get("hires_new_grads", ""),
+            "approx_annual_new_grad_hires": r.get("approx_annual_new_grad_hires", ""),
+            "lat": float(lat),
+            "lng": float(lng),
+        })
+
+    employers = [e for e in employers_all if _employer_matches_program(e, program, overrides)]
+
+    filter_notes = {
+        "MS in AI": "Showing full tri-state AI + cybersecurity employer set (typical MS pipeline).",
+        "BS in AI": "BS-focused view: all AI-sector employers plus cybersecurity firms that hire new graduates.",
+        "AI in Cybersecurity": "Cyber-focused view: cybersecurity employers plus defense / security-heavy AI employers.",
+    }
+
+    # Program availability counts by state (matches selected program track)
+    programs_by_state = {s: {"total": 0, "ready": 0} for s in STATES}
+    for row in ipeds_rows:
+        st = (row.get("state") or "").strip()
+        if st in programs_by_state:
+            programs_by_state[st]["total"] += 1
+
+    prog_by_name = {r.get("institution_name", "").strip(): r for r in programs_rows}
+    for inst in ipeds_rows:
+        st = (inst.get("state") or "").strip()
+        if st not in programs_by_state:
+            continue
+        prow = prog_by_name.get((inst.get("institution_name") or "").strip(), {})
+        if _institution_ready_for_program(program, prow):
+            programs_by_state[st]["ready"] += 1
+
+    return jsonify({
+        "employers": employers,
+        "employers_total": len(employers_all),
+        "employers_shown": len(employers),
+        "program": program,
+        "employer_filter_note": filter_notes.get(program, ""),
+        "programs_by_state": programs_by_state,
+        "institution_map_note": (
+            f"Institutions with a confirmed {program} (or matching track) in institutions_programs_2024.csv."
+        ),
+        "source_ok": {
+            "employers_2024": os.path.exists(employers_path),
+            "institutions_programs_2024": os.path.exists(programs_path),
+            "ipeds_institutions": os.path.exists(ipeds_path),
+            "employer_program_map": os.path.exists(os.path.join(DATA_RAW_DIR, "employer_program_map.csv")),
+        }
+    })
 
 
 @app.route('/api/validate')
@@ -618,8 +1062,10 @@ def init_db():
         db.create_all()
         
         # Create default admin user if none exists
-        if not User.query.filter_by(username='admin').first():
+        admin_email = 'admin@edupredict.local'
+        if not User.query.filter_by(email=admin_email).first():
             admin = User(
+                email=admin_email,
                 username='admin',
                 is_admin=True,
                 last_login=datetime.utcnow()
@@ -627,7 +1073,7 @@ def init_db():
             admin.set_password('admin123')
             db.session.add(admin)
             db.session.commit()
-            print("Default admin user created: admin / admin123")
+            print(f"Default admin user created: {admin_email} / admin123")
             print("IMPORTANT: Change default password after first login!")
 
 
@@ -636,4 +1082,5 @@ if __name__ == '__main__':
     init_db()
     
     # Development server
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port, debug=True)

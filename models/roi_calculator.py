@@ -132,52 +132,45 @@ class ROICalculator:
     
     def _load_salary_data(self) -> Dict:
         """
-        Load salary data from BLS CSV.
-        
-        Maps BLS occupation codes to program types:
-        - 15-1256 (Data Scientists) -> MS in AI
-        - 15-1250 (Computer Occupations) -> BS in AI, AI in Cybersecurity
+        Load salary data from real BLS OES CSV.
+        Maps occupation codes to program types:
+        - 15-2051 (Data Scientists)           -> MS in AI
+        - 15-1252 (Software Developers)       -> BS in AI
+        - 15-1212 (Info Security Analysts)    -> AI in Cybersecurity
+        Entry-level salaries = median * 0.80 (new grad discount vs experienced median)
         """
         if not self.salary_data_path or not os.path.exists(self.salary_data_path):
             return self.FALLBACK_SALARIES
-        
+
         try:
-            # Build salary lookup from CSV
-            salary_lookup = {}  # {state: {occupation: salary}}
-            
-            with open(self.salary_data_path, 'r') as f:
+            salary_lookup = {}  # {state: {occ_code: median_wage}}
+
+            with open(self.salary_data_path) as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    state = row['state']
-                    occupation = row['occupation_code']  # 15-1250 or 15-1256
-                    median_salary = int(row['median_salary'])
-                    
+                    state = row["state"]
+                    occ = row["occupation_code"]
+                    wage = int(row["median_annual_wage"])
                     if state not in salary_lookup:
                         salary_lookup[state] = {}
-                    salary_lookup[state][occupation] = median_salary
-            
-            # Map to program types
-            program_salaries = {
-                "MS in AI": {},
-                "BS in AI": {},
-                "AI in Cybersecurity": {}
-            }
-            
+                    salary_lookup[state][occ] = wage
+
+            program_salaries = {"MS in AI": {}, "BS in AI": {}, "AI in Cybersecurity": {}}
+
             for state in ["CT", "NY", "MA"]:
-                state_data = salary_lookup.get(state, {})
-                
-                # MS in AI uses Data Scientist salaries (15-1256)
-                ds_salary = state_data.get('15-1256', self.FALLBACK_SALARIES["MS in AI"][state])
-                # Adjust down slightly for new graduates vs experienced
-                program_salaries["MS in AI"][state] = int(ds_salary * 0.85)
-                
-                # BS in AI uses general Computer Occupations (15-1250)
-                cs_salary = state_data.get('15-1250', self.FALLBACK_SALARIES["BS in AI"][state])
-                program_salaries["BS in AI"][state] = int(cs_salary * 0.75)  # Entry level
-                
-                # AI in Cybersecurity premium over general CS
-                program_salaries["AI in Cybersecurity"][state] = int(cs_salary * 0.90)
-            
+                s = salary_lookup.get(state, {})
+                fallback = self.FALLBACK_SALARIES
+
+                ds  = s.get("15-2051", fallback["MS in AI"][state])
+                swe = s.get("15-1252", fallback["BS in AI"][state])
+                sec = s.get("15-1212", fallback["AI in Cybersecurity"][state])
+
+                # New graduate starting salary = ~80% of median (experienced) wage
+                program_salaries["MS in AI"][state]            = int(ds  * 0.80)
+                program_salaries["BS in AI"][state]            = int(swe * 0.72)
+                program_salaries["AI in Cybersecurity"][state] = int(sec * 0.80)
+
+            self._real_salary_loaded = True
             return program_salaries
             
         except Exception:

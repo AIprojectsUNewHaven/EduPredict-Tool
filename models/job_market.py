@@ -305,58 +305,91 @@ class JobMarketAnalyzer:
         }
     }
     
-    def __init__(self, data_path: str = None):
-        """
-        Initialize job market analyzer with AI exposure database.
-        
-        Args:
-            data_path: Path to job_market_data.csv (optional)
-        """
-        self.data_path = data_path or self._find_data_file()
+    def __init__(self, data_path: str = None, salary_path: str = None):
+        """Initialize job market analyzer, loading real BLS data when available."""
+        self.data_path = data_path or self._find_file("job_market_data.csv")
+        self.salary_path = salary_path or self._find_file("bls_salary_data.csv")
+        self._real_data_loaded = False
         self.state_data = self._load_data()
+        self.salary_data = self._load_salary_data()
         self.ai_db = AIOccupationDatabase()
-    
-    def _find_data_file(self) -> str:
-        """Find the job market data file."""
-        possible_paths = [
-            "data/raw/job_market_data.csv",
-            "../data/raw/job_market_data.csv",
-            "../../data/raw/job_market_data.csv",
-            "/Users/munagalatarakanagaganesh/Documents/Notes/01_Projects/EduPredict-MVP/data/raw/job_market_data.csv"
+
+    def _find_file(self, filename: str) -> str:
+        base = os.path.dirname(__file__)
+        candidates = [
+            os.path.join(base, "..", "data", "raw", filename),
+            os.path.join("data", "raw", filename),
+            os.path.join("..", "data", "raw", filename),
         ]
-        
-        for path in possible_paths:
-            if os.path.exists(path):
-                return path
-        
+        for p in candidates:
+            if os.path.exists(p):
+                return os.path.abspath(p)
         return None
-    
+
     def _load_data(self) -> Dict:
-        """Load data from CSV or use enhanced fallback."""
+        """Load state-level job market data from real BLS CSV."""
         if not self.data_path or not os.path.exists(self.data_path):
-            print("Job market: Using enhanced fallback with Anthropic 2026 data")
             return self.STATE_DATA
-        
+
         try:
             data = {}
-            with open(self.data_path, 'r') as f:
+            with open(self.data_path) as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    state = row['state']
+                    state = row["state"]
                     data[state] = {
-                        'job_growth_rate': float(row['ai_job_growth_5yr']),
-                        'open_positions_base': int(row['open_positions_sample']),
-                        'demand_level': row['demand_level'],
-                        'trend_direction': 'Growing',
-                        'top_employers': row.get('top_employers', ''),
-                        'avg_salary': int(row.get('avg_salary', 100000)),
-                        'cost_of_living_index': int(row.get('col_index', 100))
+                        "job_growth_rate": float(row["ai_job_growth_5yr_pct"]),
+                        "open_positions_base": int(row["open_positions_estimate"]),
+                        "demand_level": row["demand_level"],
+                        "trend_direction": "Growing",
+                        "top_employers": row.get("top_employers", ""),
+                        "avg_salary": int(row.get("median_ds_salary", 100000)),
+                        "cost_of_living_index": int(row.get("col_index", 100)),
+                        "total_tech_employed": int(row.get("total_tech_employed", 0)),
+                        "data_source": row.get("source", "BLS"),
                     }
-            print(f"Job market: Loaded data for {len(data)} states from CSV")
+            self._real_data_loaded = True
             return data
         except Exception as e:
-            print(f"Job market: Error loading CSV: {e}")
             return self.STATE_DATA
+
+    def _load_salary_data(self) -> Dict:
+        """Load occupation-level BLS salary and employment data."""
+        if not self.salary_path or not os.path.exists(self.salary_path):
+            return {}
+
+        try:
+            data = {}
+            with open(self.salary_path) as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    state = row["state"]
+                    occ = row["occupation_name"]
+                    if state not in data:
+                        data[state] = {}
+                    data[state][occ] = {
+                        "code": row["occupation_code"],
+                        "employed": int(row["total_employed"]),
+                        "median_wage": int(row["median_annual_wage"]),
+                        "mean_wage": int(row["mean_annual_wage"]),
+                        "growth_pct": float(row["national_growth_2022_2032_pct"]),
+                        "location_quotient": float(row["location_quotient"]),
+                        "source": row["source"],
+                    }
+            return data
+        except Exception:
+            return {}
+
+    def get_salary_for_program(self, state: str, program_type: str) -> Dict:
+        """Return real BLS salary data for the occupation matching a program."""
+        program_occ_map = {
+            "MS in AI": "Data Scientists",
+            "BS in AI": "Software Developers and Software Quality Assurance Analysts",
+            "AI in Cybersecurity": "Information Security Analysts",
+        }
+        occ = program_occ_map.get(program_type, "Data Scientists")
+        state_salaries = self.salary_data.get(state, {})
+        return state_salaries.get(occ, {})
     
     def get_signal(self, state: str, program_type: str = "MS in AI") -> JobMarketSignal:
         """

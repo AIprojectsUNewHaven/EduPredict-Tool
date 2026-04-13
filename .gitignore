@@ -41,3 +41,6 @@ htmlcov/
 # Temporary files
 *.tmp
 *.temp
+
+# Flask local SQLite (users / sessions)
+instance/

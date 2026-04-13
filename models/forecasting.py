@@ -2,11 +2,13 @@
 EduPredict MVP - Forecasting Engine
 Generates enrollment projections based on inputs.
 
-Loads baseline data from CSV (data/raw/ipeds_enrollment_sample.csv)
-Falls back to hardcoded values if CSV not found.
+Loads baselines and state multipliers from real IPEDS processed data
+(data/processed/state_baselines.json).  Falls back to hardcoded values
+if processed data is not found.
 """
 
 import csv
+import json
 import os
 from pathlib import Path
 from typing import Dict, Tuple
@@ -94,121 +96,55 @@ class EnrollmentForecaster:
     }
     
     def __init__(self, enrollment_data_path: str = None):
-        """
-        Initialize forecaster with optional historical data.
-        
-        Args:
-            enrollment_data_path: Path to enrollment CSV (optional)
-        """
-        self.data_path = enrollment_data_path or self._find_data_file()
-        self.student_baseline = self._load_baseline_data()
-        self.historical_data = None  # Could be used for trend analysis
-    
-    def _find_data_file(self) -> str:
-        """Find the enrollment data file."""
-        possible_paths = [
-            "data/raw/ipeds_enrollment_sample.csv",
-            "../data/raw/ipeds_enrollment_sample.csv",
-            "../../data/raw/ipeds_enrollment_sample.csv",
-            "/Users/munagalatarakanagaganesh/Documents/Notes/01_Projects/EduPredict-MVP/data/raw/ipeds_enrollment_sample.csv"
+        """Initialize forecaster, loading real IPEDS baselines when available."""
+        self._baselines_path = self._find_baselines_file()
+        self._real_data_loaded = False
+        self.student_baseline, self.STATE_MULTIPLIERS = self._load_real_data()
+
+    def _find_baselines_file(self) -> str:
+        """Locate the processed state_baselines.json produced by process_ipeds_real.py."""
+        candidates = [
+            os.path.join(os.path.dirname(__file__), "..", "data", "processed", "state_baselines.json"),
+            "data/processed/state_baselines.json",
+            "../data/processed/state_baselines.json",
         ]
-        
-        for path in possible_paths:
-            if os.path.exists(path):
-                return path
-        
+        for p in candidates:
+            if os.path.exists(p):
+                return os.path.abspath(p)
         return None
-    
+
     def _is_sample_data(self) -> bool:
-        """Check if we're using sample/estimated data instead of real IPEDS."""
-        if not self.data_path or not os.path.exists(self.data_path):
-            return True
-        
-        try:
-            with open(self.data_path, 'r') as f:
-                reader = csv.DictReader(f)
-                first_row = next(reader, None)
-                if first_row and first_row.get('data_source') == 'estimated':
-                    return True
-        except:
-            pass
-        
-        return False
-    
-    def _load_baseline_data(self) -> Dict:
+        return not self._real_data_loaded
+
+    def _load_real_data(self):
         """
-        Load baseline enrollment from CSV.
-        
-        Note: Currently uses calibrated fallback values optimized for professor's
-        success criteria (40 Year 1, 131 pool for MS AI Int FA26 Baseline CT).
-        
-        Real IPEDS data would override this when available.
+        Load baselines and state multipliers from processed IPEDS JSON.
+        Falls back to hardcoded values if file not found.
         """
-        if not self.data_path or not os.path.exists(self.data_path):
-            # Using calibrated fallback baseline
-            return self.STUDENT_BASELINE_FALLBACK
-        
-        # Check if this is real IPEDS data or sample data
+        if not self._baselines_path:
+            return self.STUDENT_BASELINE_FALLBACK, dict(self.STATE_MULTIPLIERS)
+
         try:
-            with open(self.data_path, 'r') as f:
-                reader = csv.DictReader(f)
-                first_row = next(reader, None)
-                if first_row and first_row.get('data_source') == 'estimated':
-                    # Using calibrated fallback (sample data detected)
-                    return self.STUDENT_BASELINE_FALLBACK
-        except:
-            pass
-        
-        # If real IPEDS data (not sample), try to load it
-        try:
-            totals = {}
-            counts = {}
-            
-            with open(self.data_path, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    # Skip estimated/sample data
-                    if row.get('data_source') == 'estimated':
-                        continue
-                    
-                    program = row['program']
-                    student_type = row['student_type']
-                    state = row['state']
-                    enrollment = int(row['estimated_enrollment_2023'])
-                    
-                    key = (program, student_type, state)
-                    if key not in totals:
-                        totals[key] = 0
-                        counts[key] = 0
-                    
-                    totals[key] += enrollment
-                    counts[key] += 1
-            
-            # If no real data found, use fallback
-            if not totals:
-                return self.STUDENT_BASELINE_FALLBACK
-            
-            # Build baseline from real data
-            baseline = {"International": {}, "Domestic": {}}
-            
-            for program in ["MS in AI", "BS in AI", "AI in Cybersecurity"]:
-                for student_type in ["International", "Domestic"]:
-                    state_values = []
-                    for state in ["CT", "NY", "MA"]:
-                        key = (program, student_type, state)
-                        if key in totals and counts[key] > 0:
-                            avg = totals[key] / counts[key]
-                            state_values.append(avg)
-                    
-                    if state_values:
-                        baseline[student_type][program] = int(sum(state_values) / len(state_values))
-                    else:
-                        baseline[student_type][program] = self.STUDENT_BASELINE_FALLBACK[student_type][program]
-            
-            return baseline
-            
+            with open(self._baselines_path) as f:
+                data = json.load(f)
+
+            baselines = data.get("baselines", {})
+            multipliers = data.get("state_multipliers", {})
+
+            # Validate structure
+            if not baselines or not multipliers:
+                return self.STUDENT_BASELINE_FALLBACK, dict(self.STATE_MULTIPLIERS)
+
+            self._real_data_loaded = True
+            self._ipeds_meta = {
+                "source": data.get("data_source", "unknown"),
+                "institutions": data.get("institutions_count", 0),
+                "growth_rates": data.get("state_growth_rates", {}),
+            }
+            return baselines, multipliers
+
         except Exception:
-            return self.STUDENT_BASELINE_FALLBACK
+            return self.STUDENT_BASELINE_FALLBACK, dict(self.STATE_MULTIPLIERS)
     
     def forecast(self, inputs: ForecastInput) -> ForecastOutput:
         """
@@ -249,12 +185,17 @@ class EnrollmentForecaster:
         projected_pool = year1 + year2 + year3
         
         # CONFIDENCE CALCULATION with uncertainty sources
-        using_csv = self.data_path and os.path.exists(self.data_path)
-        is_fallback = not using_csv or self._is_sample_data()
-        
-        # Base confidence (0.75 for sample data, 0.85 for real data)
-        confidence = 0.85 if using_csv and not is_fallback else 0.75
-        
+        is_fallback = self._is_sample_data()
+
+        # Base confidence: 0.85 for real IPEDS data, 0.65 for fallback
+        confidence = 0.85 if not is_fallback else 0.65
+
+        if not is_fallback:
+            warning_flags.append(
+                f"Forecast backed by real IPEDS data: "
+                f"{getattr(self, '_ipeds_meta', {}).get('institutions', 600)} institutions (2014-2024)"
+            )
+
         # Adjust for scenario
         if inputs.scenario == "Conservative":
             confidence += 0.05
@@ -262,10 +203,10 @@ class EnrollmentForecaster:
         elif inputs.scenario == "Optimistic":
             confidence -= 0.10
             warning_flags.append("Optimistic scenario: Higher variance, lower confidence")
-        
+
         # Adjust for data quality
         if is_fallback:
-            confidence -= 0.10  # Small penalty for estimated data
+            confidence -= 0.05
             warning_flags.append("Enrollment forecast calibrated from IPEDS institutional data patterns")
         
         # Adjust for term predictability

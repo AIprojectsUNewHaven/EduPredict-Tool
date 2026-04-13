@@ -4,526 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPredict Pro | AI Degree Program Planning</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pro.css') }}">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            min-height: 100vh;
-            color: #831843;
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                background: white;
-            }
-            .header, .left-panel, .footer, .btn-primary, .btn-secondary {
-                display: none !important;
-            }
-            .container {
-                grid-template-columns: 1fr !important;
-                max-width: 100%;
-            }
-            .center-panel, .right-panel {
-                display: block !important;
-            }
-            .results-section {
-                display: block !important;
-            }
-            .card, .chart-container, .metric-card, .summary-card {
-                break-inside: avoid;
-                border: 1px solid #ddd;
-                box-shadow: none;
-            }
-        }
-
-        /* Secondary button */
-        .btn-secondary {
-            width: 100%;
-            padding: 0.75rem;
-            background: white;
-            color: #ec4899;
-            border: 2px solid #ec4899;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0.75rem;
-        }
-
-        .btn-secondary:hover {
-            background: #fdf2f8;
-            transform: translateY(-1px);
-        }
-
-        .timestamp {
-            font-size: 0.75rem;
-            color: #9d174d;
-            text-align: center;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        /* Header */
-        .header {
-            background: white;
-            padding: 1rem 2rem;
-            border-bottom: 2px solid #fbcfe8;
-            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.1);
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.75rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .version {
-            font-size: 0.875rem;
-            color: #9d174d;
-            font-weight: 600;
-        }
-
-        /* Main Layout */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.5rem;
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 1200px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Simple clean cards - no 3D */
-        .card {
-            background: white;
-            border-radius: 20px;
-            border: 2px solid #fbcfe8;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* Simple Chart containers */
-        .chart-container {
-            background: white;
-            border-radius: 16px;
-            border: 2px solid #fbcfe8;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            min-height: 400px;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
-        }
-
-        .results-section {
-            display: none;
-        }
-
-        .results-section.active {
-            display: block;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #831843;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #ec4899;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #9d174d;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #fbcfe8;
-            border-radius: 12px;
-            font-size: 1rem;
-            color: #831843;
-            background: #fdf2f8;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .form-select:hover, .form-select:focus {
-            border-color: #ec4899;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
-        }
-
-        /* Button */
-        .btn-primary {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Metrics */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .metric-card {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 2px solid #f9a8d4;
-            border-radius: 16px;
-            padding: 1.25rem;
-            text-align: center;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1);
-        }
-
-        .metric-card:hover {
-            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #be185d;
-            margin-bottom: 0.25rem;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #9d174d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .metric-delta {
-            font-size: 0.875rem;
-            color: #666;
-            margin-top: 0.25rem;
-        }
-
-        /* Charts */
-        .chart-container {
-            background: white;
-            border-radius: 16px;
-            border: 2px solid #fbcfe8;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            min-height: 400px;
-        }
-
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #831843;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        /* Recommendations */
-        .rec-badge {
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .rec-strong-go {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-
-        .rec-go {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            color: white;
-        }
-
-        .rec-conditional {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-
-        .rec-reconsider {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-
-        .rec-do-not-launch {
-            background: linear-gradient(135deg, #7c2d12 0%, #991b1b 100%);
-            color: white;
-            border: 3px solid #fecaca;
-        }
-
-        /* Info Boxes */
-        .info-box {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 2px solid #f9a8d4;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .info-label {
-            color: #9d174d;
-            font-weight: 500;
-        }
-
-        .info-value {
-            color: #831843;
-            font-weight: 700;
-        }
-
-        /* Warnings */
-        .warning-box {
-            background: #fef2f2;
-            border: 2px solid #fecaca;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .warning-title {
-            color: #dc2626;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .warning-text {
-            color: #991b1b;
-            font-size: 0.875rem;
-        }
-
-        .warning-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: #7f1d1d;
-        }
-
-        /* Opportunities */
-        .opportunity-box {
-            background: #f0fdf4;
-            border: 2px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .opportunity-title {
-            color: #16a34a;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Summary Card */
-        .summary-card {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 2px solid #ec4899;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .summary-title {
-            text-align: center;
-            color: #831843;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .summary-metric {
-            background: white;
-            border-radius: 8px;
-            padding: 0.75rem;
-            text-align: center;
-        }
-
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ec4899;
-        }
-
-        .summary-label {
-            font-size: 0.75rem;
-            color: #666;
-        }
-
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #9d174d;
-        }
-
-        .spinner {
-            border: 4px solid #fce7f3;
-            border-top: 4px solid #ec4899;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Hidden initially */
-        .results-section {
-            display: none;
-        }
-
-        .results-section.active {
-            display: block;
-        }
-
-        /* Tables */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-
-        .data-table th {
-            background: #fdf2f8;
-            color: #831843;
-            font-weight: 700;
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 2px solid #f9a8d4;
-        }
-
-        .data-table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #fce7f3;
-            color: #9d174d;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: #9d174d;
-            font-size: 0.875rem;
-        }
-
-        /* About Section */
-        .about-text {
-            font-size: 0.875rem;
-            color: #9d174d;
-            line-height: 1.6;
-        }
-
-        .about-text strong {
-            color: #831843;
-        }
-    </style>
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <div class="logo">🎓 EduPredict Pro</div>
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                <span class="version">v2.1 | AI Degree Planning</span>
-                <a href="{{ url_for('logout') }}" style="padding: 0.5rem 1rem; background: transparent; color: #9d174d; border: 2px solid #fbcfe8; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none;">🚪 Logout</a>
+            <div class="logo" role="img" aria-label="EduPredict Pro">
+                <span class="logo-mark" aria-hidden="true">EP</span>
+                <div class="logo-word">
+                    <span class="logo-name">EduPredict Pro</span>
+                    <span class="logo-tag">Decision intelligence</span>
+                </div>
+            </div>
+            <nav class="top-nav" aria-label="Primary">
+                <a href="#" onclick="return false;">Solutions</a>
+                <a href="#" onclick="return false;">Docs</a>
+                <a href="#" onclick="return false;">Pricing</a>
+                <a href="#" onclick="return false;">Blog</a>
+            </nav>
+            <div class="header-actions">
+                <span class="version-pill">v2.2</span>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('admin_users') }}" class="nav-btn nav-btn--admin">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="nav-btn nav-btn--ghost">Sign out</a>
             </div>
         </div>
     </header>
 
+    <section class="hero-wrap">
+        <div class="hero-card">
+            <div class="hero-left">
+                <div class="hero-kicker">EduPredict Pro</div>
+                <h1 class="hero-title">AI Program Planning for Universities</h1>
+                <p class="hero-copy">Forecast enrollment, evaluate ROI, and compare regional demand with transparent assumptions and evidence-backed decision support.</p>
+                <div class="hero-cta-row">
+                    <button class="hero-btn hero-btn--primary" onclick="document.getElementById('generate-btn').scrollIntoView({behavior:'smooth', block:'center'})">Get started</button>
+                    <button class="hero-btn hero-btn--ghost" onclick="document.getElementById('intel-toggle').click()">Explore data lineage</button>
+                </div>
+            </div>
+            <div class="hero-illustration" aria-hidden="true">
+                <svg viewBox="0 0 560 280" class="hero-svg">
+                    <rect x="8" y="12" width="544" height="256" rx="10" fill="#fff" stroke="#111827" stroke-width="2"/>
+                    <rect x="24" y="32" width="210" height="110" rx="6" fill="#f8fafc" stroke="#111827" stroke-width="1.5"/>
+                    <rect x="246" y="32" width="290" height="72" rx="6" fill="#f8fafc" stroke="#111827" stroke-width="1.5"/>
+                    <rect x="246" y="114" width="140" height="134" rx="6" fill="#f8fafc" stroke="#111827" stroke-width="1.5"/>
+                    <rect x="396" y="114" width="140" height="134" rx="6" fill="#f8fafc" stroke="#111827" stroke-width="1.5"/>
+                    <path d="M40 104 C80 70, 130 132, 190 86" fill="none" stroke="#7c3aed" stroke-width="3"/>
+                    <path d="M262 74 L305 58 L337 70 L383 48 L426 62 L462 50 L512 64" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+                    <circle cx="462" cy="50" r="4" fill="#2563eb"/>
+                    <rect x="266" y="128" width="24" height="104" fill="#a78bfa"/>
+                    <rect x="298" y="146" width="24" height="86" fill="#c4b5fd"/>
+                    <rect x="330" y="138" width="24" height="94" fill="#8b5cf6"/>
+                    <rect x="412" y="138" width="108" height="14" rx="4" fill="#e2e8f0"/>
+                    <rect x="412" y="160" width="82" height="14" rx="4" fill="#e2e8f0"/>
+                    <rect x="412" y="182" width="96" height="14" rx="4" fill="#e2e8f0"/>
+                    <rect x="412" y="204" width="68" height="14" rx="4" fill="#e2e8f0"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="intel-wrap">
+        <div class="intel-panel">
+            <div class="intel-head">
+                <div class="intel-head-main">
+                    <h2>Data lineage, sources, and upgrade path</h2>
+                    <p id="intel-tagline">Loading intelligence stack...</p>
+                </div>
+                <button type="button" class="intel-toggle" id="intel-toggle" aria-expanded="true">Collapse</button>
+            </div>
+            <div class="intel-body" id="intel-body">
+                <div class="intel-section-title">Official statistical & research inputs</div>
+                <div class="intel-grid-sources" id="intel-sources"></div>
+                <div class="intel-two-col">
+                    <div>
+                        <div class="intel-section-title">Bundled data files (freshness)</div>
+                        <div id="intel-files"></div>
+                        <div id="intel-geo-note" class="intel-meta" style="margin-top:0.5rem;"></div>
+                    </div>
+                    <div>
+                        <div class="intel-section-title">Where to improve next (roadmap)</div>
+                        <ol class="intel-roadmap" id="intel-roadmap"></ol>
+                    </div>
+                </div>
+                <div class="research-strip">
+                    <div class="intel-section-title">Curated external research (catalog)</div>
+                    <div id="intel-research"></div>
+                </div>
+                <p class="intel-footnote" id="intel-policy"></p>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- LEFT PANEL: Inputs -->
         <div class="left-panel">
-            <div class="card">
-                <div class="card-title">📋 Input Parameters</div>
+            <div class="card filter-card">
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Scenario inputs</span></div>
                 
                 <div class="form-group">
                     <label class="form-label">Program Type</label>
@@ -583,20 +165,20 @@
                 </div>
 
                 <button class="btn-primary" id="generate-btn" onclick="generateForecast()">
-                    🚀 Generate Forecast
+                    Generate forecast
                 </button>
                 
                 <button class="btn-secondary" id="download-btn" onclick="downloadReport()" style="display: none;">
-                    📄 Download PDF Report
+                    Download PDF report
                 </button>
                 
                 <button class="btn-secondary" onclick="window.print()">
-                    🖨️ Print This Page
+                    Print this page
                 </button>
             </div>
 
             <div class="card">
-                <div class="card-title">ℹ️ About This Tool</div>
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 10v6M12 7h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>About</span></div>
                 <div class="about-text">
                     <p><strong>EduPredict Pro</strong> helps College Deans make data-driven decisions about launching AI degree programs.</p>
                     <br>
@@ -611,6 +193,18 @@
                     <p><strong>Data:</strong> BLS 2023, Anthropic Economic Index 2026, IPEDS 2023-2024</p>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 12h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>How to read this</span></div>
+                <div class="about-text">
+                    <ul class="guide-list">
+                        <li><strong>Step 1:</strong> Set program, term, and state, then click <em>Generate forecast</em>.</li>
+                        <li><strong>Step 2:</strong> Check the top KPIs for size (cohort, total) and viability (confidence, ROI).</li>
+                        <li><strong>Step 3:</strong> Read the recommendation card first, then review risks and opportunities.</li>
+                        <li><strong>Step 4:</strong> Use scenario/state charts to stress-test before final decisions.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- CENTER PANEL: Results -->
@@ -621,84 +215,141 @@
             </div>
 
             <div id="welcome" class="card">
-                <div style="text-align: center; padding: 3rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <h2 style="color: #831843; margin-bottom: 1rem;">Welcome to EduPredict Pro</h2>
-                    <p style="color: #9d174d; margin-bottom: 2rem;">Select your inputs on the left and click "Generate Forecast" to see enrollment projections, ROI analysis, and AI labor market insights.</p>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 500px; margin: 0 auto;">
-                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
-                            <div style="font-weight: 600; color: #831843;">162 Validated Combinations</div>
+                <div class="welcome-hero">
+                    <h2>Welcome to EduPredict Pro</h2>
+                    <p class="welcome-lead">Choose parameters on the left, then run a forecast to see enrollment, ROI, labor-market context, and geo insights.</p>
+                    <div class="feature-grid">
+                        <div class="feature-tile">
+                            <strong>162 validated combinations</strong>
+                            <span>Program, term, scenario, and state</span>
                         </div>
-                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
-                            <div style="font-weight: 600; color: #831843;">Anthropic 2026 Data</div>
+                        <div class="feature-tile">
+                            <strong>Current labor signals</strong>
+                            <span>BLS, Anthropic index, IPEDS context</span>
                         </div>
-                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📈</div>
-                            <div style="font-weight: 600; color: #831843;">3D Visualizations</div>
+                        <div class="feature-tile">
+                            <strong>Scenario comparison</strong>
+                            <span>Side-by-side stress tests</span>
                         </div>
-                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💰</div>
-                            <div style="font-weight: 600; color: #831843;">ROI Analysis</div>
+                        <div class="feature-tile">
+                            <strong>ROI and risk framing</strong>
+                            <span>Executive-ready outputs</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="results" class="results-section">
+                <div class="selection-strip" id="selection-strip">
+                    <span class="selection-chip" id="chip-program">Program: -</span>
+                    <span class="selection-chip" id="chip-market">Market: -</span>
+                    <span class="selection-chip" id="chip-launch">Launch: -</span>
+                    <span class="selection-chip" id="chip-scenario">Scenario: -</span>
+                </div>
+                <div class="section-divider">Model outputs</div>
                 <!-- Metrics -->
                 <div class="metrics-grid">
                     <div class="metric-card">
+                        <div class="metric-icon">COHORT</div>
                         <div class="metric-value" id="metric-year1">-</div>
-                        <div class="metric-label">Year 1 Students</div>
+                        <div class="metric-label" id="metric-year1-label">First launch term cohort</div>
                         <div class="metric-delta" id="metric-year1-range">-</div>
                     </div>
                     <div class="metric-card">
+                        <div class="metric-icon">TOTAL</div>
                         <div class="metric-value" id="metric-pool">-</div>
-                        <div class="metric-label">3-Year Pool</div>
+                        <div class="metric-label" id="metric-pool-label">3-year enrollment total</div>
                     </div>
                     <div class="metric-card">
+                        <div class="metric-icon">RISK</div>
                         <div class="metric-value" id="metric-confidence">-</div>
                         <div class="metric-label">Confidence</div>
                         <div class="metric-delta" id="metric-risk">-</div>
                     </div>
                     <div class="metric-card">
+                        <div class="metric-icon">ROI</div>
                         <div class="metric-value" id="metric-roi">-</div>
                         <div class="metric-label">ROI Ratio</div>
+                    </div>
+                </div>
+                <div class="quick-compare-row">
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Demand score</span>
+                        <span class="quick-compare-value" id="quick-demand">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Growth</span>
+                        <span class="quick-compare-value" id="quick-growth">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Payback</span>
+                        <span class="quick-compare-value" id="quick-payback">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Break-even</span>
+                        <span class="quick-compare-value" id="quick-breakeven">-</span>
+                    </div>
+                </div>
+                <div class="explain-panel">
+                    <div class="explain-title">Metric glossary</div>
+                    <div class="explain-grid">
+                        <div class="explain-item"><strong>Cohort:</strong> Estimated students in your first intake term.</div>
+                        <div class="explain-item"><strong>Total:</strong> Sum of the next 3 yearly intakes.</div>
+                        <div class="explain-item"><strong>Confidence:</strong> Model reliability signal. Higher is better.</div>
+                        <div class="explain-item"><strong>ROI ratio:</strong> Revenue divided by costs. Above 1.0 means positive return.</div>
+                        <div class="explain-item"><strong>Payback:</strong> Estimated time to recover launch costs.</div>
+                        <div class="explain-item"><strong>Break-even:</strong> Student count required to avoid loss.</div>
                     </div>
                 </div>
 
                 <!-- Enrollment Chart -->
                 <div class="chart-container">
-                    <div class="chart-title">📈 Enrollment Projection (3 Years)</div>
+                    <div class="chart-title">Enrollment projection</div>
+                    <p id="enrollment-chart-note" class="chart-subtitle"></p>
                     <div id="enrollment-chart" style="height: 350px;"></div>
                 </div>
 
                 <!-- Warnings -->
                 <div id="warnings-section" style="display: none;">
                     <div class="warning-box">
-                        <div class="warning-title">⚠️ Warning Flags</div>
+                        <div class="warning-title">Warning flags</div>
                         <div id="warnings-list"></div>
                     </div>
                 </div>
 
                 <!-- ROI Chart -->
                 <div class="chart-container">
-                    <div class="chart-title">💰 Financial Analysis</div>
+                    <div class="chart-title">Financial analysis</div>
+                    <p class="chart-subtitle">Revenue, cost, and net outcome for this launch configuration.</p>
                     <div id="roi-chart" style="height: 300px;"></div>
                 </div>
 
                 <!-- 3D Analysis -->
                 <div class="chart-container">
-                    <div class="chart-title">🔮 Scenario Comparison (All Scenarios)</div>
+                    <div class="chart-title">Scenario comparison</div>
+                    <p class="chart-subtitle">Compares conservative, baseline, and growth assumptions for first intake.</p>
                     <div id="scenario-chart" style="height: 400px;"></div>
                 </div>
 
                 <!-- State Comparison -->
                 <div class="chart-container">
-                    <div class="chart-title">🗺️ State Comparison (CT vs NY vs MA)</div>
+                    <div class="chart-title">State comparison (CT, NY, MA)</div>
+                    <p class="chart-subtitle">Shows relative enrollment strength by state for the same program inputs.</p>
                     <div id="state-chart" style="height: 400px;"></div>
+                </div>
+
+                <!-- Employer Geo Map -->
+                <div class="chart-container chart-container--maps">
+                    <div class="chart-title">Employer map</div>
+                    <p id="employer-map-caption" class="chart-subtitle"></p>
+                    <div id="employer-map-chart" style="height: 420px;"></div>
+                </div>
+
+                <!-- Institution Program Map -->
+                <div class="chart-container chart-container--maps">
+                    <div class="chart-title">Program coverage map</div>
+                    <p id="institution-map-caption" class="chart-subtitle"></p>
+                    <div id="institution-map-chart" style="height: 360px;"></div>
                 </div>
             </div>
         </div>
@@ -706,19 +357,21 @@
         <!-- RIGHT PANEL: Summary -->
         <div class="right-panel">
             <div id="summary-results" class="results-section">
-                <div class="card">
-                    <div class="card-title">🎯 Recommendation</div>
+                <div class="section-divider section-divider--right">Interpretation</div>
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Recommendation</span></div>
                     <div id="recommendation-badge" class="rec-badge rec-go">-</div>
-                    <div id="recommendation-rationale" style="font-size: 0.875rem; color: #666; text-align: center;">-</div>
+                    <div id="recommendation-rationale" class="prose-muted text-center">-</div>
                     <div id="report-timestamp" class="timestamp"></div>
+                    <p class="insight-note">Interpretation: prioritize strong demand + healthy ROI with manageable risk.</p>
                 </div>
 
-                <div class="summary-card">
-                    <div class="summary-title">📋 Executive Summary</div>
+                <div class="summary-card insight-card">
+                    <div class="summary-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Executive summary</span></div>
                     <div class="summary-grid">
                         <div class="summary-metric">
                             <div class="summary-value" id="summary-year1">-</div>
-                            <div class="summary-label">Year 1</div>
+                            <div class="summary-label" id="summary-year1-label">First cohort</div>
                         </div>
                         <div class="summary-metric">
                             <div class="summary-value" id="summary-pool">-</div>
@@ -729,13 +382,13 @@
                             <div class="summary-label">ROI</div>
                         </div>
                     </div>
-                    <div id="summary-details" style="font-size: 0.875rem; color: #9d174d;">
+                    <div id="summary-details" class="prose-muted">
                         <!-- Dynamic content -->
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title">💼 Workforce Outlook</div>
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 15V9m5 6V6m5 9v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Workforce outlook</span></div>
                     <div class="info-box">
                         <div class="info-row">
                             <span class="info-label">Demand Score:</span>
@@ -756,8 +409,8 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title">🤖 AI Exposure Analysis</div>
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 19c.8-3 3-5 6-5s5.2 2 6 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>AI exposure</span></div>
                     <div class="info-box">
                         <div class="info-row">
                             <span class="info-label">Observed Exposure:</span>
@@ -776,21 +429,21 @@
                             <span class="info-value" id="ai-bls">-</span>
                         </div>
                     </div>
-                    <div id="ai-finding" style="font-size: 0.8rem; color: #9d174d; margin-top: 0.5rem; font-style: italic;">
+                    <div id="ai-finding" class="prose-muted" style="margin-top: 0.5rem; font-style: italic;">
                         <!-- Key finding -->
                     </div>
                 </div>
 
                 <div id="opportunities-section" style="display: none;">
                     <div class="opportunity-box">
-                        <div class="opportunity-title">✓ Opportunities</div>
+                        <div class="opportunity-title">Opportunities</div>
                         <div id="opportunities-list"></div>
                     </div>
                 </div>
 
                 <div id="hiring-warning-section" style="display: none;">
                     <div class="warning-box">
-                        <div class="warning-title">⚠️ Hiring Alert</div>
+                        <div class="warning-title">Hiring signal</div>
                         <div id="hiring-warning-text"></div>
                     </div>
                 </div>
@@ -800,10 +453,180 @@
 
     <footer class="footer">
         <p><strong>EduPredict Pro</strong> | Built with Flask & Plotly.js | Data: BLS 2023, Anthropic 2026, IPEDS 2023-2024</p>
-        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Hosted on AWS EC2 | <a href="https://github.com/GaneshMunagala714/Edupredict-Pro" target="_blank" style="color: #ec4899;">View on GitHub</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Hosted on AWS EC2 | <a href="https://github.com/GaneshMunagala714/Edupredict-Pro" target="_blank" rel="noopener">View on GitHub</a></p>
     </footer>
 
     <script>
+        const CHART_FONT = "'Inter', sans-serif";
+        const CHART = {
+            text: '#0f172a',
+            muted: '#64748b',
+            grid: '#e2e8f0',
+            line: '#cbd5e1',
+            accent: '#7c3aed',
+            accentLight: 'rgba(124, 58, 237, 0.16)',
+            coral: '#fb7185',
+            peach: '#fdba74',
+            barMuted: '#94a3b8',
+            barPos: '#059669',
+            barNeg: '#dc2626'
+        };
+        /* Full-color geography (not grayscale). Markers tuned to read on OSM tiles. */
+        const GEO_BASEMAP = 'open-street-map';
+        const GEO_SECTOR = {
+            AI: '#7c3aed',
+            Cybersecurity: '#fb7185',
+            Both: '#a78bfa'
+        };
+        const GEO_ROSE_SCALE = [
+            [0, 'rgb(250, 245, 255)'],
+            [0.25, 'rgb(233, 213, 255)'],
+            [0.5, 'rgb(196, 181, 253)'],
+            [0.75, 'rgb(139, 92, 246)'],
+            [1, 'rgb(91, 33, 182)']
+        ];
+
+        // Term codes like FA26, SP27 -> readable academic labels (Fall 2026, Spring 2027, ...)
+        function parseLaunchTerm(term) {
+            const t = (term || '').trim().toUpperCase();
+            if (t.length < 4) return null;
+            const seasonCode = t.slice(0, 2);
+            const yy = parseInt(t.slice(2), 10);
+            if (isNaN(yy)) return null;
+            const year = yy >= 70 ? 1900 + yy : 2000 + yy;
+            const seasons = { FA: 'Fall', SP: 'Spring', SU: 'Summer' };
+            const seasonName = seasons[seasonCode] || seasonCode;
+            return { seasonCode, seasonName, year };
+        }
+
+        function enrollmentYearLabels(term) {
+            const p = parseLaunchTerm(term);
+            if (!p) {
+                return {
+                    axis: ['Year 1', 'Year 2', 'Year 3'],
+                    firstHuman: 'Year 1',
+                    rangeHuman: 'Years 1–3',
+                    note: 'Select a launch term (e.g. FA26) to show Fall/Spring/Summer and calendar years on the chart.'
+                };
+            }
+            const axis = [];
+            for (let i = 0; i < 3; i++) {
+                axis.push(`${p.seasonName} ${p.year + i}`);
+            }
+            return {
+                axis,
+                firstHuman: axis[0],
+                rangeHuman: `${axis[0]} – ${axis[2]}`,
+                note: `Each point is the next ${p.seasonName} intake after your launch: ${axis[0]}, then ${axis[1]}, then ${axis[2]}.`
+            };
+        }
+
+        function formatLaunchTermSummary(term) {
+            const p = parseLaunchTerm(term);
+            if (!p) return term || '—';
+            return `${p.seasonName} ${p.year} (${term})`;
+        }
+
+        // Professional data-lineage panel (from /api/meta)
+        async function loadIntelPanel() {
+            const tag = document.getElementById('intel-tagline');
+            const body = document.getElementById('intel-body');
+            const toggle = document.getElementById('intel-toggle');
+            try {
+                const r = await fetch('/api/meta');
+                const m = await r.json();
+                if (tag) tag.textContent = m.product_tagline || '';
+                if (document.getElementById('intel-policy'))
+                    document.getElementById('intel-policy').textContent = m.policy_note || '';
+
+                const srcEl = document.getElementById('intel-sources');
+                if (srcEl && Array.isArray(m.official_sources)) {
+                    srcEl.innerHTML = m.official_sources.map(s => `
+                        <div class="intel-tile">
+                            <div class="pub">${(s.publisher || '').replace(/</g, '')}</div>
+                            <h4>${(s.name || '').replace(/</g, '')}</h4>
+                            <p class="use">${(s.used_for || '').replace(/</g, '')}</p>
+                            <div>
+                                ${s.portal_url ? `<a href="${s.portal_url}" target="_blank" rel="noopener">Portal</a>` : ''}
+                                ${s.api_url ? `<a href="${s.api_url}" target="_blank" rel="noopener">API</a>` : ''}
+                            </div>
+                        </div>`).join('');
+                }
+
+                const filesEl = document.getElementById('intel-files');
+                if (filesEl && Array.isArray(m.artifacts)) {
+                    filesEl.innerHTML = m.artifacts.map(a => {
+                        const pill = a.present
+                            ? `<span class="pill pill-ok">OK</span>`
+                            : `<span class="pill pill-miss">Missing</span>`;
+                        const meta = a.present
+                            ? `${a.modified || ''}${a.rows != null ? ` · ${a.rows} rows` : ''}${a.size_kb != null ? ` · ${a.size_kb} KB` : ''}`
+                            : 'Add file under data/raw/';
+                        return `<div class="intel-file-row"><span>${(a.label || '').replace(/</g, '')}</span><span>${pill}</span></div>
+                            <div class="intel-meta" style="margin:-0.35rem 0 0.4rem 0;">${meta}</div>`;
+                    }).join('');
+                }
+
+                const geo = document.getElementById('intel-geo-note');
+                if (geo && m.geo_bundle) {
+                    const e = m.geo_bundle.employers_csv ? 'available' : 'missing';
+                    const p = m.geo_bundle.team_data_path_present ? 'Team geo folder found.' : 'Team geo folder path not found on this machine.';
+                    geo.textContent = `Employer map CSV (shared project): ${e}. ${p}`;
+                }
+
+                const rm = document.getElementById('intel-roadmap');
+                if (rm && Array.isArray(m.roadmap)) {
+                    rm.innerHTML = m.roadmap.map(x =>
+                        `<li><strong>${(x.priority || '').replace(/</g, '')}</strong> ${(x.title || '').replace(/</g, '')} (${(x.effort || '').replace(/</g, '')}) — ${(x.detail || '').replace(/</g, '')}</li>`
+                    ).join('');
+                }
+
+                const resEl = document.getElementById('intel-research');
+                if (resEl) {
+                    const lu = m.research_catalog_updated ? `Catalog last updated: ${m.research_catalog_updated}.` : '';
+                    const chips = (m.research_highlights || []).map(h =>
+                        `<span class="research-chip"><a href="${h.url || '#'}" target="_blank" rel="noopener">${(h.title || 'Source').replace(/</g, '')}</a> (${(h.source || '').replace(/</g, '')})</span>`
+                    ).join(' ');
+                    resEl.innerHTML = `<div class="intel-meta" style="margin-bottom:0.35rem;">${lu}</div>${chips || '<span class="intel-meta">No research index loaded.</span>'}`;
+                }
+            } catch (e) {
+                console.error('intel panel', e);
+                if (tag) tag.textContent = 'Could not load data lineage (sign in and refresh).';
+            }
+
+            if (toggle && body) {
+                const saved = sessionStorage.getItem('intel-collapsed');
+                const startCollapsed = saved === null ? true : saved === '1';
+                if (startCollapsed) {
+                    body.classList.add('collapsed');
+                    toggle.textContent = 'Expand';
+                    toggle.setAttribute('aria-expanded', 'false');
+                } else {
+                    toggle.textContent = 'Collapse';
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+                toggle.addEventListener('click', () => {
+                    const c = body.classList.toggle('collapsed');
+                    toggle.textContent = c ? 'Expand' : 'Collapse';
+                    toggle.setAttribute('aria-expanded', c ? 'false' : 'true');
+                    sessionStorage.setItem('intel-collapsed', c ? '1' : '0');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadIntelPanel();
+            const progSel = document.getElementById('program');
+            if (progSel) {
+                progSel.addEventListener('change', () => {
+                    const results = document.getElementById('results');
+                    if (results && results.classList.contains('active')) {
+                        renderGeoSections();
+                    }
+                });
+            }
+        });
+
         // Download PDF report
         async function downloadReport() {
             if (!window.lastForecastData) {
@@ -903,14 +726,27 @@
             const r = data.roi;
             const j = data.job_market;
             const rec = data.recommendation;
+            const yl = enrollmentYearLabels(data.inputs.term);
 
             // Metrics
             document.getElementById('metric-year1').textContent = f.year1;
+            document.getElementById('metric-year1-label').textContent = `Students (${yl.firstHuman})`;
             document.getElementById('metric-year1-range').textContent = `Range: ${f.year1_low}-${f.year1_high}`;
             document.getElementById('metric-pool').textContent = f.pool;
+            document.getElementById('metric-pool-label').textContent = `Total (${yl.rangeHuman})`;
             document.getElementById('metric-confidence').textContent = f.confidence_pct + '%';
             document.getElementById('metric-risk').textContent = f.risk_level.toUpperCase();
             document.getElementById('metric-roi').textContent = r.ratio.toFixed(2) + 'x';
+            document.getElementById('quick-demand').textContent = `${j.demand_score}/100`;
+            document.getElementById('quick-growth').textContent = `${j.growth_rate}%`;
+            document.getElementById('quick-payback').textContent = `${r.payback_years} yrs`;
+            document.getElementById('quick-breakeven').textContent = `${r.break_even} students`;
+
+            // Context chips (compact, dashboard-like quick filter memory)
+            document.getElementById('chip-program').textContent = `Program: ${data.inputs.program}`;
+            document.getElementById('chip-market').textContent = `Market: ${data.inputs.state} | ${data.inputs.student_type}`;
+            document.getElementById('chip-launch').textContent = `Launch: ${formatLaunchTermSummary(data.inputs.term)}`;
+            document.getElementById('chip-scenario').textContent = `Scenario: ${data.inputs.scenario}`;
 
             // Summary
             document.getElementById('recommendation-badge').textContent = rec.text;
@@ -922,13 +758,14 @@
             document.getElementById('report-timestamp').textContent = `Generated: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`;
 
             document.getElementById('summary-year1').textContent = f.year1;
+            document.getElementById('summary-year1-label').textContent = yl.axis[0];
             document.getElementById('summary-pool').textContent = f.pool;
             document.getElementById('summary-roi').textContent = r.ratio.toFixed(2) + 'x';
 
             document.getElementById('summary-details').innerHTML = `
                 <strong>${data.inputs.program}</strong><br>
                 ${data.inputs.student_type} Students<br>
-                Launch: ${data.inputs.term}<br>
+                Launch: ${formatLaunchTermSummary(data.inputs.term)}<br>
                 Location: ${data.inputs.state}<br>
                 Scenario: ${data.inputs.scenario}
             `;
@@ -961,8 +798,8 @@
             const oppSection = document.getElementById('opportunities-section');
             if (rec.opportunities && rec.opportunities.length > 0) {
                 oppSection.style.display = 'block';
-                document.getElementById('opportunities-list').innerHTML = rec.opportunities.map(o => 
-                    `<div style="font-size: 0.875rem; color: #16a34a; margin-bottom: 0.25rem;">✓ ${o}</div>`
+                document.getElementById('opportunities-list').innerHTML = rec.opportunities.map(o =>
+                    `<div class="opportunity-item">${o}</div>`
                 ).join('');
             } else {
                 oppSection.style.display = 'none';
@@ -988,50 +825,59 @@
             renderROIChart(r);
             renderScenariosChart(data.inputs);
             renderStatesChart(data.inputs);
+            renderGeoSections();
         }
 
         // Enrollment chart
         function renderEnrollmentChart(forecast, inputs) {
+            const yl = enrollmentYearLabels(inputs.term);
+            const noteEl = document.getElementById('enrollment-chart-note');
+            if (noteEl) noteEl.textContent = yl.note;
+
             const trace = {
-                x: ['Year 1', 'Year 2', 'Year 3'],
+                x: yl.axis,
                 y: [forecast.year1, forecast.year2, forecast.year3],
                 type: 'scatter',
                 mode: 'lines+markers',
                 line: {
-                    color: '#ec4899',
-                    width: 4,
+                    color: CHART.accent,
+                    width: 3,
                     shape: 'spline'
                 },
                 marker: {
-                    size: 16,
-                    color: '#ec4899',
-                    line: { color: 'white', width: 3 }
+                    size: 14,
+                    color: CHART.accent,
+                    line: { color: '#fff', width: 2 }
                 },
                 fill: 'tozeroy',
-                fillcolor: 'rgba(236, 72, 153, 0.15)',
+                fillcolor: CHART.accentLight,
                 text: [forecast.year1.toString(), forecast.year2.toString(), forecast.year3.toString()],
                 textposition: 'top center',
-                textfont: { size: 14, color: '#831843', weight: 'bold' }
+                textfont: { size: 13, color: CHART.text, family: CHART_FONT, weight: '600' }
             };
 
             const layout = {
+                font: { family: CHART_FONT, color: CHART.text },
                 title: {
-                    text: `${inputs.program} - ${inputs.scenario} Scenario`,
-                    font: { size: 16, color: '#831843' }
+                    text: `${inputs.program} - ${inputs.scenario} (${yl.rangeHuman})`,
+                    font: { size: 15, color: CHART.text, family: CHART_FONT }
                 },
                 xaxis: {
-                    title: 'Academic Year',
-                    gridcolor: '#fce7f3',
-                    linecolor: '#fbcfe8'
+                    title: { text: 'Cohort (calendar year)', font: { size: 12 } },
+                    gridcolor: CHART.grid,
+                    linecolor: CHART.line,
+                    zerolinecolor: CHART.line,
+                    tickangle: -25
                 },
                 yaxis: {
-                    title: 'Enrollment (Students)',
-                    gridcolor: '#fce7f3',
-                    linecolor: '#fbcfe8'
+                    title: { text: 'Enrollment (students)', font: { size: 12 } },
+                    gridcolor: CHART.grid,
+                    linecolor: CHART.line,
+                    zerolinecolor: CHART.line
                 },
-                plot_bgcolor: '#ffffff',
+                plot_bgcolor: '#f8fafc',
                 paper_bgcolor: '#ffffff',
-                margin: { t: 50, b: 50, l: 60, r: 40 }
+                margin: { t: 48, b: 72, l: 58, r: 28 }
             };
 
             Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
@@ -1040,17 +886,17 @@
         // ROI Chart - Clear bar chart comparing Revenue, Costs, Net
         function renderROIChart(roi) {
             const net = roi.revenue - roi.costs;
-            const netColor = net >= 0 ? '#10b981' : '#ef4444';
+            const netColor = net >= 0 ? CHART.barPos : CHART.barNeg;
             
             const trace = {
                 x: ['Total Revenue', 'Total Costs', 'Net Profit'],
                 y: [roi.revenue, roi.costs, net],
                 type: 'bar',
                 marker: {
-                    color: ['#ec4899', '#9ca3af', netColor],
+                    color: [CHART.accent, CHART.barMuted, netColor],
                     line: {
-                        color: ['#be185d', '#6b7280', net >= 0 ? '#059669' : '#dc2626'],
-                        width: 2
+                        color: [CHART.accent, '#64748b', net >= 0 ? CHART.barPos : CHART.barNeg],
+                        width: 1
                     }
                 },
                 text: [
@@ -1060,29 +906,33 @@
                 ],
                 textposition: 'outside',
                 textfont: {
-                    size: 13,
-                    color: '#831843',
-                    weight: 'bold'
+                    size: 12,
+                    color: CHART.text,
+                    family: CHART_FONT,
+                    weight: '600'
                 }
             };
 
             const layout = {
+                font: { family: CHART_FONT, color: CHART.text },
                 title: {
-                    text: `ROI Analysis: ${roi.ratio.toFixed(2)}x Return | Payback: ${roi.payback_years} years`,
-                    font: { size: 14, color: '#831843' }
+                    text: `ROI: ${roi.ratio.toFixed(2)}x return | Payback: ${roi.payback_years} years`,
+                    font: { size: 14, color: CHART.text, family: CHART_FONT }
                 },
                 yaxis: {
-                    title: 'Amount ($)',
+                    title: { text: 'Amount ($)', font: { size: 12 } },
                     tickformat: '$,.0f',
-                    gridcolor: '#fce7f3',
-                    linecolor: '#fbcfe8'
+                    gridcolor: CHART.grid,
+                    linecolor: CHART.line,
+                    zerolinecolor: CHART.line
                 },
                 xaxis: {
-                    linecolor: '#fbcfe8'
+                    linecolor: CHART.line,
+                    tickfont: { size: 11 }
                 },
-                plot_bgcolor: '#ffffff',
+                plot_bgcolor: '#f8fafc',
                 paper_bgcolor: '#ffffff',
-                margin: { t: 50, b: 50, l: 80, r: 40 },
+                margin: { t: 48, b: 52, l: 72, r: 28 },
                 showlegend: false,
                 annotations: [{
                     text: `Break-even: ${roi.break_even} students`,
@@ -1091,7 +941,7 @@
                     xref: 'paper',
                     yref: 'paper',
                     showarrow: false,
-                    font: { size: 11, color: '#666' }
+                    font: { size: 11, color: CHART.muted, family: CHART_FONT }
                 }]
             };
 
@@ -1109,27 +959,31 @@
                 const data = await response.json();
 
                 const scenarios = data.scenarios;
+                const yl = enrollmentYearLabels(inputs.term);
                 const trace = {
                     x: scenarios.map(s => s.scenario),
                     y: scenarios.map(s => s.year1),
                     type: 'bar',
                     marker: {
-                        color: ['#f59e0b', '#ec4899', '#10b981'],
-                        line: { color: '#831843', width: 2 }
+                        color: [CHART.peach, CHART.coral, CHART.accent],
+                        line: { color: CHART.text, width: 1 }
                     },
                     text: scenarios.map(s => s.year1.toString()),
-                    textposition: 'outside'
+                    textposition: 'outside',
+                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
                 };
 
                 const layout = {
+                    font: { family: CHART_FONT, color: CHART.text },
                     title: {
-                        text: 'Year 1 Enrollment by Scenario',
-                        font: { size: 14, color: '#831843' }
+                        text: `First cohort (${yl.firstHuman}) by scenario`,
+                        font: { size: 14, family: CHART_FONT }
                     },
-                    xaxis: { title: 'Scenario' },
-                    yaxis: { title: 'Students' },
+                    xaxis: { title: { text: 'Scenario' }, linecolor: CHART.line, gridcolor: CHART.grid },
+                    yaxis: { title: { text: `Students (${yl.firstHuman})` }, gridcolor: CHART.grid, linecolor: CHART.line },
                     paper_bgcolor: '#ffffff',
-                    plot_bgcolor: '#ffffff'
+                    plot_bgcolor: '#f8fafc',
+                    margin: { t: 48, b: 48, l: 56, r: 24 }
                 };
 
                 Plotly.newPlot('scenario-chart', [trace], layout, {responsive: true});
@@ -1149,47 +1003,168 @@
                 const data = await response.json();
 
                 const states = data.states;
-                
+                const yl = enrollmentYearLabels(inputs.term);
+
                 const trace1 = {
                     x: states.map(s => s.state),
                     y: states.map(s => s.year1),
-                    name: 'Year 1',
+                    name: yl.axis[0],
                     type: 'bar',
-                    marker: { color: '#ec4899' }
+                    marker: { color: '#746bf0' }
                 };
 
                 const trace2 = {
                     x: states.map(s => s.state),
                     y: states.map(s => s.year2),
-                    name: 'Year 2',
+                    name: yl.axis[1],
                     type: 'bar',
-                    marker: { color: '#f472b6' }
+                    marker: { color: CHART.accent }
                 };
 
                 const trace3 = {
                     x: states.map(s => s.state),
                     y: states.map(s => s.year3),
-                    name: 'Year 3',
+                    name: yl.axis[2],
                     type: 'bar',
-                    marker: { color: '#fbcfe8' }
+                    marker: { color: '#ffd5a8' }
                 };
 
                 const layout = {
+                    font: { family: CHART_FONT, color: CHART.text },
                     title: {
-                        text: '3-Year Enrollment by State',
-                        font: { size: 14, color: '#831843' }
+                        text: `Enrollment by state (${yl.rangeHuman})`,
+                        font: { size: 14, family: CHART_FONT }
                     },
                     barmode: 'group',
-                    xaxis: { title: 'State' },
-                    yaxis: { title: 'Enrollment' },
+                    xaxis: { title: { text: 'State' }, linecolor: CHART.line },
+                    yaxis: { title: { text: 'Students per cohort' }, gridcolor: CHART.grid, linecolor: CHART.line },
                     paper_bgcolor: '#ffffff',
-                    plot_bgcolor: '#ffffff',
-                    legend: { orientation: 'h', y: -0.2 }
+                    plot_bgcolor: '#f8fafc',
+                    legend: { orientation: 'h', y: -0.22, font: { family: CHART_FONT, size: 11 } },
+                    margin: { t: 48, b: 72, l: 56, r: 24 }
                 };
 
                 Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {responsive: true});
             } catch (e) {
                 console.error('Error loading states:', e);
+            }
+        }
+
+        // Geo sections sourced from shared team folder data (program-aware)
+        async function renderGeoSections() {
+            try {
+                const program = document.getElementById('program') ? document.getElementById('program').value : 'MS in AI';
+                const response = await fetch('/api/geo-insights?program=' + encodeURIComponent(program));
+                const data = await response.json();
+
+                const capEmp = document.getElementById('employer-map-caption');
+                if (capEmp) {
+                    const shown = data.employers_shown != null ? data.employers_shown : (data.employers || []).length;
+                    const tot = data.employers_total != null ? data.employers_total : shown;
+                    capEmp.innerHTML = `<strong>${(data.program || program).replace(/</g, '')}</strong> &middot; Showing <strong>${shown}</strong> of <strong>${tot}</strong> employers. ${(data.employer_filter_note || '').replace(/</g, '')}`;
+                }
+                const capInst = document.getElementById('institution-map-caption');
+                if (capInst) {
+                    capInst.textContent = (data.institution_map_note || '').replace(/</g, '');
+                }
+
+                // Employer map
+                const employers = data.employers || [];
+                if (employers.length === 0) {
+                    document.getElementById('employer-map-chart').innerHTML =
+                        '<div class="chart-empty">No employers match this program filter, or shared folder data is missing. Try MS in AI for the full set.</div>';
+                } else {
+                    const sectors = ['AI', 'Cybersecurity', 'Both'];
+                    const traces = sectors.map(sec => {
+                        const rows = employers.filter(e => (e.sector || 'AI') === sec);
+                        if (rows.length === 0) return null;
+                        const mc = GEO_SECTOR[sec] || GEO_SECTOR.AI;
+                        return {
+                            type: 'scattermapbox',
+                            name: sec === 'Cybersecurity' ? 'Cyber' : sec,
+                            mode: 'markers',
+                            lat: rows.map(r => r.lat),
+                            lon: rows.map(r => r.lng),
+                            marker: {
+                                size: 15,
+                                color: mc,
+                                opacity: 0.92,
+                                line: { color: '#ffffff', width: 2 }
+                            },
+                            text: rows.map(r =>
+                                `<b>${r.company_name}</b><br>${r.city}, ${r.state}<br>${r.company_type || ''}<br>New grads: ${r.hires_new_grads || 'Unknown'}`
+                            ),
+                            hovertemplate: '%{text}<extra></extra>'
+                        };
+                    }).filter(Boolean);
+                    Plotly.newPlot('employer-map-chart', traces, {
+                        font: { family: CHART_FONT, color: CHART.text, size: 11 },
+                        mapbox: { style: GEO_BASEMAP, center: { lat: 42.0, lon: -73.5 }, zoom: 5.65 },
+                        margin: { t: 8, b: 8, l: 8, r: 8 },
+                        paper_bgcolor: 'rgba(255,255,255,0)',
+                        legend: {
+                            orientation: 'h',
+                            y: 1.03,
+                            x: 0.5,
+                            xanchor: 'center',
+                            font: { family: CHART_FONT, size: 11, color: CHART.text },
+                            bgcolor: 'rgba(255,255,255,0.88)',
+                            bordercolor: 'rgba(219, 39, 119, 0.25)',
+                            borderwidth: 1
+                        }
+                    }, { responsive: true });
+                }
+
+                // Institution map (state bubble map)
+                const stateData = data.programs_by_state || {};
+                const centers = {
+                    CT: { lat: 41.6, lon: -72.7 },
+                    NY: { lat: 42.9, lon: -75.5 },
+                    MA: { lat: 42.3, lon: -71.8 }
+                };
+                const states = ['CT', 'NY', 'MA'];
+                const vals = states.map(s => stateData[s] || { total: 0, ready: 0 });
+                const maxReady = Math.max(...vals.map(v => v.ready), 1);
+                Plotly.newPlot('institution-map-chart', [{
+                    type: 'scattermapbox',
+                    mode: 'markers+text',
+                    lat: states.map(s => centers[s].lat),
+                    lon: states.map(s => centers[s].lon),
+                    text: states.map((s, i) => `${s}: ${vals[i].ready}/${vals[i].total}`),
+                    textposition: 'top center',
+                    textfont: {
+                        family: CHART_FONT,
+                        size: 13,
+                                color: '#5f57cc'
+                    },
+                    marker: {
+                        size: vals.map(v => 26 + Math.min(v.total * 1.2, 28)),
+                        color: vals.map(v => v.ready),
+                        colorscale: GEO_ROSE_SCALE,
+                        cmin: 0,
+                        cmax: maxReady,
+                        opacity: 0.88,
+                        line: { color: '#ffffff', width: 2 },
+                        colorbar: {
+                            title: { text: 'Ready count', font: { family: CHART_FONT, size: 11, color: CHART.text } },
+                            tickfont: { family: CHART_FONT, size: 10, color: CHART.muted },
+                            outlinecolor: 'rgba(219, 39, 119, 0.35)',
+                            outlinewidth: 1,
+                            len: 0.85
+                        }
+                    },
+                    hovertemplate: states.map((s, i) =>
+                        `<b>${s}</b><br>Ready programs: ${vals[i].ready}<br>Total institutions: ${vals[i].total}<extra></extra>`
+                    )
+                }], {
+                    font: { family: CHART_FONT, color: CHART.text },
+                    mapbox: { style: GEO_BASEMAP, center: { lat: 42.1, lon: -73.4 }, zoom: 5.45 },
+                    margin: { t: 8, b: 8, l: 8, r: 8 },
+                    paper_bgcolor: 'rgba(255,255,255,0)'
+                }, { responsive: true });
+
+            } catch (e) {
+                console.error('Error loading geo sections:', e);
             }
         }
     </script>

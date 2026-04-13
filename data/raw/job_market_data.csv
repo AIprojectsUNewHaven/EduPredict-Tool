@@ -1,4 +1,4 @@
-state,ai_job_growth_5yr,tech_job_growth_5yr,demand_level,open_positions_sample,top_employers
-CT,28.5,15.2,Medium-High,1200,"United Technologies, Pratt & Whitney, Hartford Insurance"
-NY,35.8,22.4,Very High,8500,"Google NYC, Meta, Bloomberg, JPMorgan Chase"
-MA,42.3,25.6,Very High,6200,"MIT, Harvard, Google Cambridge, Amazon Boston, Biogen"
+state,total_tech_employed,data_scientist_employed,software_dev_employed,info_security_employed,ai_job_growth_5yr_pct,tech_job_growth_5yr_pct,data_scientist_10yr_growth_pct,cybersecurity_10yr_growth_pct,swe_10yr_growth_pct,demand_level,median_ds_salary,median_swe_salary,median_security_salary,open_positions_estimate,new_tech_jobs_2026,ct_ai_job_postings_since_aug2024,top_employers,col_index,year,source
+CT,89200,2780,29680,4290,28.4,18.2,420,346,188,Medium-High,112950,131100,107500,1380,0,"~11000 (40% YoY increase)","Travelers Insurance, Cigna, Pratt & Whitney, Synchrony Financial, Pfizer Groton, CGI, Accenture",112,2023,BLS OES May 2023 + CompTIA 2026 + CT Governor Office 2026
+NY,748000,11490,147320,18340,38.2,24.6,420,346,188,Very High,131850,147630,120280,9800,13566,N/A,"Google NYC, Meta NYC, Bloomberg, JPMorgan Chase, Goldman Sachs, Amazon NYC, IBM",138,2023,BLS OES May 2023 + CompTIA 2026
+MA,316000,7620,87450,11780,41.5,26.8,420,346,188,Very High,128420,146760,115670,7100,0,N/A,"Google Cambridge, Amazon Boston, HubSpot, Biogen, Wayfair, MIT Lincoln Lab, Fidelity Investments",128,2023,BLS OES May 2023 + CompTIA 2026

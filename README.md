@@ -44,6 +44,10 @@ python app.py
 
 Open: `http://localhost:5000`
 
+**Login:**
+- Email: `admin@edupredict.local`
+- Password: `admin123`
+
 ---
 
 ## Deploy to AWS EC2 (Student Account)
@@ -148,7 +152,9 @@ Edupredict-Pro/
 │   ├── roi_calculator.py       # ROI and financial analysis
 │   └── job_market.py           # AI exposure analysis (Anthropic 2026)
 ├── templates/
-│   └── index.html              # Main dashboard UI (pink theme)
+│   ├── index.html              # Main dashboard UI (pink theme)
+│   ├── login.html              # Email-based login page
+│   └── admin_users.html        # User management panel
 ├── static/                     # CSS, JS, assets
 ├── data/raw/                   # CSV data files
 ├── requirements.txt            # Flask dependencies (no Streamlit)
@@ -163,12 +169,45 @@ Edupredict-Pro/
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/` | GET | Main dashboard |
+| `/` | GET | Main dashboard (login required) |
+| `/login` | GET/POST | Email-based authentication |
+| `/logout` | GET | Sign out |
+| `/admin/users` | GET/POST | User management (admin only) |
 | `/api/forecast` | POST | Generate enrollment forecast |
 | `/api/scenarios` | POST | Compare all scenarios |
 | `/api/states` | POST | Compare all states |
 | `/api/validate` | GET | Validate all 162 combinations |
 | `/health` | GET | Health check |
+
+---
+
+## Authentication
+
+EduPredict Pro uses **email-based authentication** with Flask-Login and SQLite.
+
+### Default Login
+- **Email:** `admin@edupredict.local`
+- **Password:** `admin123`
+
+### User Management (Admin Only)
+
+Admins can create and manage users via the **Admin Panel**:
+
+1. Log in as admin
+2. Click "👥 Admin" button in the header
+3. Create users with university email addresses
+4. Toggle user active/inactive status
+5. Reset passwords when needed
+
+### Database Migration
+
+If upgrading from a previous version with username-based auth:
+
+```bash
+python migrate_db.py
+```
+
+This will migrate existing users to email format.
 
 ---
 

@@ -1,7 +1,16 @@
-state,occupation_code,occupation_name,median_salary,mean_salary,year
-CT,15-1250,Computer and Mathematical Occupations,102340,108450,2023
-CT,15-1256,Data Scientists,115800,125670,2023
-NY,15-1250,Computer and Mathematical Occupations,118500,128340,2023
-NY,15-1256,Data Scientists,132400,142890,2023
-MA,15-1250,Computer and Mathematical Occupations,112800,121560,2023
-MA,15-1256,Data Scientists,128900,138450,2023
+state,occupation_code,occupation_name,total_employed,median_annual_wage,mean_annual_wage,year,source,national_growth_2022_2032_pct,location_quotient
+CT,15-1252,Software Developers and Software Quality Assurance Analysts,29680,131100,138420,2023,BLS OES May 2023,25.0,1.12
+CT,15-2051,Data Scientists,2780,112950,119870,2023,BLS OES May 2023,35.0,0.87
+CT,15-1212,Information Security Analysts,4290,107500,113680,2023,BLS OES May 2023,32.0,1.31
+CT,15-1221,Computer and Information Research Scientists,850,145210,155340,2023,BLS OES May 2023,23.0,1.08
+CT,15-1211,Computer Systems Analysts,8640,103210,108950,2023,BLS OES May 2023,10.0,0.94
+NY,15-1252,Software Developers and Software Quality Assurance Analysts,147320,147630,161280,2023,BLS OES May 2023,25.0,1.54
+NY,15-2051,Data Scientists,11490,131850,142760,2023,BLS OES May 2023,35.0,1.96
+NY,15-1212,Information Security Analysts,18340,120280,128190,2023,BLS OES May 2023,32.0,1.55
+NY,15-1221,Computer and Information Research Scientists,3680,158940,172310,2023,BLS OES May 2023,23.0,1.29
+NY,15-1211,Computer Systems Analysts,33580,112470,118640,2023,BLS OES May 2023,10.0,0.85
+MA,15-1252,Software Developers and Software Quality Assurance Analysts,87450,146760,158830,2023,BLS OES May 2023,25.0,2.84
+MA,15-2051,Data Scientists,7620,128420,138210,2023,BLS OES May 2023,35.0,2.06
+MA,15-1212,Information Security Analysts,11780,115670,122480,2023,BLS OES May 2023,32.0,1.74
+MA,15-1221,Computer and Information Research Scientists,2950,152390,164720,2023,BLS OES May 2023,23.0,1.96
+MA,15-1211,Computer Systems Analysts,22140,109830,116270,2023,BLS OES May 2023,10.0,1.47

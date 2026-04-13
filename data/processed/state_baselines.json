@@ -1,0 +1,45 @@
+{
+  "data_source": "IPEDS EF Survey 2014-2024 (real data, degree-granting institutions only)",
+  "institutions_count": 453,
+  "consistent_reporters_by_state": {
+    "CT": 19,
+    "NY": 69,
+    "MA": 37
+  },
+  "states": [
+    "CT",
+    "NY",
+    "MA"
+  ],
+  "years_covered": [
+    2014,
+    2024
+  ],
+  "state_grad_avg_per_institution": {
+    "CT": 1951.7,
+    "NY": 1903.1,
+    "MA": 2279.5
+  },
+  "state_multipliers": {
+    "CT": 1.0,
+    "NY": 0.975,
+    "MA": 1.168
+  },
+  "state_growth_rates": {
+    "CT": 0.0111,
+    "NY": 0.0088,
+    "MA": -0.0055
+  },
+  "baselines": {
+    "International": {
+      "MS in AI": 40,
+      "BS in AI": 25,
+      "AI in Cybersecurity": 31
+    },
+    "Domestic": {
+      "MS in AI": 35,
+      "BS in AI": 44,
+      "AI in Cybersecurity": 39
+    }
+  }
+}

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management | EduPredict Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #fbcfe8;
+        }
+
+        .header h1 {
+            color: #831843;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #831843;
+            border: 2px solid #fbcfe8;
+        }
+
+        .btn-secondary:hover {
+            background: #fdf2f8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            color: #831843;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #831843;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #fbcfe8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: #ec4899;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #fbcfe8;
+        }
+
+        th {
+            color: #831843;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #374151;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-user {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .action-btn-toggle {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .action-btn-toggle:hover {
+            background: #e5e7eb;
+        }
+
+        .action-btn-reset {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .action-btn-reset:hover {
+            background: #fde68a;
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 User Management</h1>
+            <div class="header-actions">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">🚪 Logout</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Create User Form -->
+        <div class="card">
+            <div class="card-title">Create New User</div>
+            <form method="POST" action="{{ url_for('admin_users') }}">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-input" placeholder="user@university.edu" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-input" placeholder="Min 6 characters" required minlength="6">
+                    </div>
+                    <div class="form-group checkbox-group" style="margin-bottom: 0;">
+                        <input type="checkbox" name="is_admin" id="is_admin">
+                        <label for="is_admin" style="color: #831843; font-weight: 500;">Admin privileges</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Users List -->
+        <div class="card">
+            <div class="card-title">All Users ({{ users|length }})</div>
+            {% if users %}
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td style="font-weight: 500;">{{ user.email }}</td>
+                            <td>
+                                <span class="badge {{ 'badge-admin' if user.is_admin else 'badge-user' }}">
+                                    {{ 'Admin' if user.is_admin else 'User' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ 'badge-active' if user.is_active else 'badge-inactive' }}" id="status-{{ user.id }}">
+                                    {{ 'Active' if user.is_active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td style="color: #6b7280; font-size: 0.875rem;">
+                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}
+                            </td>
+                            <td style="color: #6b7280; font-size: 0.875rem;">
+                                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'Unknown' }}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    {% if user.id != current_user.id %}
+                                    <button class="action-btn action-btn-toggle" onclick="toggleUser({{ user.id }})" id="toggle-btn-{{ user.id }}">
+                                        {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                    </button>
+                                    <button class="action-btn action-btn-reset" onclick="resetPassword({{ user.id }}, '{{ user.email }}')">
+                                        Reset Pwd
+                                    </button>
+                                    {% else %}
+                                    <span style="color: #9ca3af; font-size: 0.75rem;">Current user</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No users found</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Instructions -->
+        <div class="card" style="background: #fdf2f8;">
+            <div class="card-title">📋 Instructions</div>
+            <ul style="color: #831843; line-height: 1.8; margin-left: 1.5rem;">
+                <li>Use university email addresses (e.g., dean@university.edu)</li>
+                <li>Minimum password length is 6 characters</li>
+                <li>Admin users can create and manage other users</li>
+                <li>Deactivating a user prevents them from logging in</li>
+                <li>Use "Reset Password" if a user forgets their password</li>
+                <li>Default admin: <strong>admin@edupredict.local</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function toggleUser(userId) {
+            if (!confirm('Are you sure you want to change this user\'s status?')) return;
+            
+            try {
+                const response = await fetch(`/admin/users/${userId}/toggle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update status badge
+                    const statusBadge = document.getElementById(`status-${userId}`);
+                    statusBadge.textContent = data.is_active ? 'Active' : 'Inactive';
+                    statusBadge.className = `badge ${data.is_active ? 'badge-active' : 'badge-inactive'}`;
+                    
+                    // Update toggle button
+                    const toggleBtn = document.getElementById(`toggle-btn-${userId}`);
+                    toggleBtn.textContent = data.is_active ? 'Deactivate' : 'Activate';
+                    
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function resetPassword(userId, email) {
+            const newPassword = prompt(`Enter new password for ${email}:`);
+            if (!newPassword) return;
+            
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: newPassword })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
