@@ -117,11 +117,12 @@ class ROICalculator:
     
     def _find_salary_file(self) -> str:
         """Find the BLS salary data file."""
+        base = os.path.dirname(__file__)
         possible_paths = [
+            os.path.join(base, "..", "data", "raw", "bls_salary_data.csv"),
             "data/raw/bls_salary_data.csv",
             "../data/raw/bls_salary_data.csv",
             "../../data/raw/bls_salary_data.csv",
-            "/Users/munagalatarakanagaganesh/Documents/Notes/01_Projects/EduPredict-MVP/data/raw/bls_salary_data.csv"
         ]
         
         for path in possible_paths:

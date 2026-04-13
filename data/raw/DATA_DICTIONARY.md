@@ -35,25 +35,13 @@ Documentation of all data sources and fields.
 
 ---
 
-## ipeds_enrollment_sample.csv
+## ipeds_real.csv
 
-**Description:** Sample AI program enrollment estimates by institution
+**Description:** Real IPEDS-derived enrollment extract for the tri-state universe (processed by `data/process_ipeds_real.py`).
 
-**Source:** [Estimated based on IPEDS patterns (replace with actual completions data)](https://nces.ed.gov/ipeds/datacenter/Completions.aspx)
+**Source:** [IPEDS Data Center](https://nces.ed.gov/ipeds/)
 
-### Fields
-
-- `unitid`: IPEDS unique institution identifier
-- `institution_name`: Institution name
-- `state`: State abbreviation
-- `institution_type`: Public or Private
-- `program`: Program type (MS in AI, BS in AI, AI in Cybersecurity)
-- `student_type`: International or Domestic
-- `estimated_enrollment_2023`: Estimated enrollment count
-- `year`: Academic year
-- `data_source`: Source of data (estimated or actual)
-- `cip_code`: Classification of Instructional Programs code
-- `note`: Additional notes about the data
+See `data/process_ipeds_real.py` for column expectations and outputs under `data/processed/`.
 
 ---
 

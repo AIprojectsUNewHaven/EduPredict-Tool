@@ -42,7 +42,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open: `http://localhost:5000`
+Open: `http://localhost:8080` (or set `PORT`, default in `app.py` is 8080)
 
 **Login:**
 - Email: `admin@edupredict.local`
@@ -147,20 +147,25 @@ No port number needed (port 80).
 ```
 Edupredict-Pro/
 ├── app.py                      # Flask application (main entry point)
+├── migrate_db.py               # SQLite auth migration helper
 ├── models/
 │   ├── forecasting.py          # Enrollment forecasting engine
 │   ├── roi_calculator.py       # ROI and financial analysis
 │   └── job_market.py           # AI exposure analysis (Anthropic 2026)
 ├── templates/
-│   ├── index.html              # Main dashboard UI (pink theme)
+│   ├── index.html              # Main dashboard UI
 │   ├── login.html              # Email-based login page
 │   └── admin_users.html        # User management panel
-├── static/                     # CSS, JS, assets
-├── data/raw/                   # CSV data files
-├── requirements.txt            # Flask dependencies (no Streamlit)
-├── Dockerfile                  # Container config
-├── ec2-userdata.sh            # AWS auto-deploy script
-└── AWS-DEPLOY.md              # Detailed deployment guide
+├── static/css/                 # Stylesheets (e.g. pro.css)
+├── data/
+│   ├── raw/                    # Committed CSV + JSON inputs
+│   ├── processed/              # Generated baselines (from IPEDS script)
+│   └── process_ipeds_real.py # Rebuild processed IPEDS files
+├── tests/                      # pytest modules
+├── requirements.txt
+├── Dockerfile
+├── ec2-userdata.sh
+└── AWS-DEPLOY.md
 ```
 
 ---

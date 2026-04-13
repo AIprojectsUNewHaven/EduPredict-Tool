@@ -570,8 +570,8 @@
                 const geo = document.getElementById('intel-geo-note');
                 if (geo && m.geo_bundle) {
                     const e = m.geo_bundle.employers_csv ? 'available' : 'missing';
-                    const p = m.geo_bundle.team_data_path_present ? 'Team geo folder found.' : 'Team geo folder path not found on this machine.';
-                    geo.textContent = `Employer map CSV (shared project): ${e}. ${p}`;
+                    const p = m.geo_bundle.geo_data_dir_present ? 'Geo data directory is present.' : 'Geo data directory missing.';
+                    geo.textContent = `Employer map CSV (data/raw or EDUPREDICT_GEO_DATA_DIR): ${e}. ${p}`;
                 }
 
                 const rm = document.getElementById('intel-roadmap');

@@ -121,11 +121,10 @@ TERMS = ["SP26", "SU26", "FA26", "SP27", "SU27", "FA27", "SP28", "SU28", "FA28"]
 SCENARIOS = ["Baseline", "Optimistic", "Conservative"]
 STATES = ["CT", "NY", "MA"]
 
-# Optional shared team data folder (used for map sections)
-TEAM_SHARED_DIR = "/Users/munagalatarakanagaganesh/Desktop/Edupredict-Pro-main-march30 2/Edupredict-Pro-main/data/raw"
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
+# Geo map CSVs (employers_2024.csv, institutions_programs_2024.csv) live under data/raw when provided
+GEO_DATA_DIR = os.environ.get("EDUPREDICT_GEO_DATA_DIR") or DATA_RAW_DIR
 
 # Curated official sources (APIs and downloads -- not scraped third-party sites)
 OFFICIAL_DATA_STACK = [
@@ -252,7 +251,7 @@ def build_app_meta() -> dict:
         _artifact_meta("Research reference index", "research_references.json"),
     ]
 
-    team_ok = os.path.isdir(TEAM_SHARED_DIR)
+    geo_dir_ok = os.path.isdir(GEO_DATA_DIR)
     return {
         "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "product_tagline": "Tri-state decision intelligence for AI and cybersecurity program launches.",
@@ -266,8 +265,8 @@ def build_app_meta() -> dict:
         "research_catalog_updated": research.get("last_updated"),
         "research_highlights": highlights,
         "geo_bundle": {
-            "team_data_path_present": team_ok,
-            "employers_csv": os.path.isfile(os.path.join(TEAM_SHARED_DIR, "employers_2024.csv")),
+            "geo_data_dir_present": geo_dir_ok,
+            "employers_csv": os.path.isfile(os.path.join(GEO_DATA_DIR, "employers_2024.csv")),
         },
     }
 
@@ -724,8 +723,8 @@ def api_geo_insights():
     if program not in PROGRAMS:
         program = "MS in AI"
 
-    employers_path = os.path.join(TEAM_SHARED_DIR, "employers_2024.csv")
-    programs_path = os.path.join(TEAM_SHARED_DIR, "institutions_programs_2024.csv")
+    employers_path = os.path.join(GEO_DATA_DIR, "employers_2024.csv")
+    programs_path = os.path.join(GEO_DATA_DIR, "institutions_programs_2024.csv")
     ipeds_path = os.path.join(BASE_DIR, "data", "raw", "ipeds_institutions.csv")
 
     employers_rows = _read_csv_rows(employers_path)

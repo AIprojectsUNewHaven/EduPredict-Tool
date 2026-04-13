@@ -158,15 +158,11 @@ Required columns (IPEDS standard):
 Once you have the file, run:
 
 ```bash
-cd EduPredict-MVP
-python data/data_processor.py
+cd Edupredict-Pro
+python data/process_ipeds_real.py
 ```
 
-This will:
-1. Clean the IPEDS data
-2. Filter for your 3 programs (MS AI, BS AI, AI Cyber)
-3. Split international vs domestic estimates
-4. Save to `data/processed/`
+This reads `data/raw/ipeds_real.csv` and writes processed baselines under `data/processed/` (including `state_baselines.json` used by the forecaster).
 
 ---
 

@@ -5,11 +5,11 @@
     "ghcr.io/devcontainers/features/git:1": {}
   },
   "postCreateCommand": "pip install -r requirements.txt",
-  "postAttachCommand": "streamlit run ui/app.py --server.port 8501",
-  "forwardPorts": [8501],
+  "postAttachCommand": "python app.py",
+  "forwardPorts": [8080],
   "portsAttributes": {
-    "8501": {
-      "label": "EduPredict App",
+    "8080": {
+      "label": "EduPredict Flask",
       "onAutoForward": "notify"
     }
   },
