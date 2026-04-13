@@ -249,6 +249,10 @@ def build_app_meta() -> dict:
         _artifact_meta("Job market rollup", "job_market_data.csv"),
         _artifact_meta("IPEDS institutions", "ipeds_institutions.csv"),
         _artifact_meta("Research reference index", "research_references.json"),
+        _artifact_meta("Employer map (geo)", "employers_2024.csv"),
+        _artifact_meta("Institution program flags (geo)", "institutions_programs_2024.csv"),
+        _artifact_meta("Employer-to-program overrides", "employer_program_map.csv"),
+        _artifact_meta("IPEDS enrollment extract", "ipeds_real.csv"),
     ]
 
     geo_dir_ok = os.path.isdir(GEO_DATA_DIR)

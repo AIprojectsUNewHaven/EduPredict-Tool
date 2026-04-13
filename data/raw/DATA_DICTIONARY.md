@@ -62,3 +62,31 @@ See `data/process_ipeds_real.py` for column expectations and outputs under `data
 
 ---
 
+## employers_2024.csv
+
+**Description:** Tri-state employer pins for the geo map (AI and cybersecurity firms with lat/lng).
+
+**Used by:** `app.py` `/api/geo-insights` (via `data/raw` or `EDUPREDICT_GEO_DATA_DIR`).
+
+### Fields (key columns)
+
+- `company_name`, `state`, `city`, `lat`, `lng`
+- `sector`, `company_type`, `hires_new_grads`, `approx_annual_new_grad_hires`
+- Additional metadata columns as collected for the MVP demo
+
+---
+
+## institutions_programs_2024.csv
+
+**Description:** Institution-level flags for which program tracks exist (MS AI, BS AI, AI Cybersecurity), joined to IPEDS institutions for the program coverage map.
+
+**Used by:** `app.py` `/api/geo-insights` (matched to `ipeds_institutions.csv` by `institution_name`).
+
+### Fields (key columns)
+
+- `institution_name`, `state`, `institution_type`
+- `has_ms_ai`, `has_bs_ai`, `has_ai_cybersecurity` (Yes/No)
+- `ai_program_name`, `program_url`, tuition and credit fields where present
+
+---
+
