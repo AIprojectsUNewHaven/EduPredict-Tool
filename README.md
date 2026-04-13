@@ -194,7 +194,7 @@ EduPredict Pro uses **email-based authentication** with Flask-Login and SQLite.
 Admins can create and manage users via the **Admin Panel**:
 
 1. Log in as admin
-2. Click "👥 Admin" button in the header
+2. Click "Admin" button in the header
 3. Create users with university email addresses
 4. Toggle user active/inactive status
 5. Reset passwords when needed
@@ -243,11 +243,11 @@ This will migrate existing users to email format.
 
 | Metric | Expected | Actual |
 |--------|----------|--------|
-| Year 1 | 40 students | ✅ 40 |
-| 3-Year Pool | 131 students | ✅ 131 |
-| ROI | 3.43x | ✅ 3.43x |
-| AI Exposure | 65% (HIGH) | ✅ Data Scientists |
-| Demand Score | 80/100 | ✅ 80 |
+| Year 1 | 40 students | 40 |
+| 3-Year Pool | 131 students | 131 |
+| ROI | 3.43x | 3.43x |
+| AI Exposure | 65% (HIGH) | Data Scientists |
+| Demand Score | 80/100 | 80 |
 
 ---
 
