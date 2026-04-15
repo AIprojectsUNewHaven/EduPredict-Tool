@@ -43,7 +43,7 @@ except ImportError:
     print("Warning: FPDF not available. PDF export disabled.")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'edupredict-pro-secret-key'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-edupredict-secret-change-me')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///edupredict.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -1064,8 +1064,10 @@ def init_db():
     with app.app_context():
         db.create_all()
         
-        # Create default admin user if none exists
-        admin_email = 'admin@edupredict.local'
+        # Create default admin user if none exists.
+        # Credentials can be injected via env for safer deploys.
+        admin_email = os.environ.get('EDUPREDICT_ADMIN_EMAIL', 'admin@edupredict.local').strip().lower()
+        admin_password = os.environ.get('EDUPREDICT_ADMIN_PASSWORD', 'admin123')
         if not User.query.filter_by(email=admin_email).first():
             admin = User(
                 email=admin_email,
@@ -1073,10 +1075,12 @@ def init_db():
                 is_admin=True,
                 last_login=datetime.utcnow()
             )
-            admin.set_password('admin123')
+            admin.set_password(admin_password)
             db.session.add(admin)
             db.session.commit()
-            print(f"Default admin user created: {admin_email} / admin123")
+            print(f"Default admin user created: {admin_email}")
+            if admin_password == 'admin123':
+                print("WARNING: Using default admin password. Set EDUPREDICT_ADMIN_PASSWORD in production.")
             print("IMPORTANT: Change default password after first login!")
 
 
@@ -1086,4 +1090,5 @@ if __name__ == '__main__':
     
     # Development server
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    debug_enabled = os.environ.get("FLASK_DEBUG", "0").lower() in ("1", "true", "yes", "on")
+    app.run(host='0.0.0.0', port=port, debug=debug_enabled)
