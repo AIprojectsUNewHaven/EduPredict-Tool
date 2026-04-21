@@ -3,508 +3,499 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | EduPredict Pro</title>
+    <title>Sign In | EduPredict Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy:      #0b1120;
+            --navy-2:    #111827;
+            --navy-3:    #1a2744;
+            --blue:      #3b82f6;
+            --blue-dark: #1d4ed8;
+            --teal:      #06b6d4;
+            --slate:     #64748b;
+            --slate-lt:  #94a3b8;
+            --white:     #f8fafc;
+            --border:    rgba(255,255,255,0.07);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f9a8d4 60%, #fbcfe8 100%);
+            background: var(--navy);
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
-            position: relative;
         }
 
-        /* Deep 3D Background Scene */
-        .scene-3d {
+        /* ── Canvas background ── */
+        #bg-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            perspective: 2000px;
-            pointer-events: none;
+            inset: 0;
             z-index: 0;
+            opacity: 0.45;
         }
 
-        /* Floating 3D Shapes Layer */
-        .layer-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transform: translateZ(-500px);
-        }
-
-        .shape-3d {
-            position: absolute;
-            transform-style: preserve-3d;
-            animation: floatShape 12s ease-in-out infinite;
-        }
-
-        /* Large Floating Cubes */
-        .cube-large {
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(135deg, rgba(236, 72, 153, 0.3) 0%, rgba(190, 24, 93, 0.4) 100%);
-            border: 4px solid rgba(236, 72, 153, 0.5);
-            border-radius: 30px;
-            box-shadow: 
-                0 50px 100px rgba(236, 72, 153, 0.4),
-                0 0 150px rgba(236, 72, 153, 0.2),
-                inset 0 0 60px rgba(255, 255, 255, 0.2);
-        }
-
-        .cube-large:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; }
-        .cube-large:nth-child(2) { top: 60%; right: 5%; animation-delay: 3s; }
-        .cube-large:nth-child(3) { bottom: 10%; left: 15%; animation-delay: 6s; }
-
-        /* Medium Floating Shapes */
-        .cube-medium {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, rgba(251, 207, 232, 0.5) 0%, rgba(249, 168, 212, 0.6) 100%);
-            border: 3px solid rgba(236, 72, 153, 0.4);
-            border-radius: 20px;
-            box-shadow: 
-                0 30px 60px rgba(236, 72, 153, 0.3),
-                0 0 80px rgba(236, 72, 153, 0.15);
-        }
-
-        .cube-medium:nth-child(4) { top: 20%; right: 20%; animation-delay: 2s; }
-        .cube-medium:nth-child(5) { bottom: 30%; left: 8%; animation-delay: 5s; }
-        .cube-medium:nth-child(6) { top: 70%; right: 25%; animation-delay: 8s; }
-
-        /* Small Floating Particles */
-        .particle {
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(236, 72, 153, 0.3) 100%);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            box-shadow: 
-                0 20px 40px rgba(236, 72, 153, 0.3),
-                0 0 60px rgba(236, 72, 153, 0.2);
-        }
-
-        .particle:nth-child(7) { top: 40%; left: 3%; animation-delay: 1s; }
-        .particle:nth-child(8) { top: 15%; left: 30%; animation-delay: 4s; }
-        .particle:nth-child(9) { bottom: 20%; right: 10%; animation-delay: 7s; }
-        .particle:nth-child(10) { top: 50%; right: 3%; animation-delay: 10s; }
-
-        @keyframes floatShape {
-            0%, 100% {
-                transform: translateY(0) rotateX(0) rotateY(0) rotateZ(0) translateZ(0);
-            }
-            20% {
-                transform: translateY(-60px) rotateX(20deg) rotateY(45deg) rotateZ(10deg) translateZ(50px);
-            }
-            40% {
-                transform: translateY(-30px) rotateX(-15deg) rotateY(90deg) rotateZ(-5deg) translateZ(-30px);
-            }
-            60% {
-                transform: translateY(-80px) rotateX(25deg) rotateY(135deg) rotateZ(15deg) translateZ(80px);
-            }
-            80% {
-                transform: translateY(-40px) rotateX(-10deg) rotateY(180deg) rotateZ(-10deg) translateZ(20px);
-            }
-        }
-
-        /* Connection Lines */
-        .connection-lines {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, transparent 49%, rgba(236, 72, 153, 0.1) 49%, rgba(236, 72, 153, 0.1) 51%, transparent 51%),
-                linear-gradient(0deg, transparent 49%, rgba(236, 72, 153, 0.1) 49%, rgba(236, 72, 153, 0.1) 51%, transparent 51%);
-            background-size: 100px 100px;
-            opacity: 0.5;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(1000px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(1000px) rotateX(60deg) translateY(100px); }
-        }
-
-        /* Main Container - Desktop Wide */
-        .login-wrapper {
+        /* ── Left panel ── */
+        .panel-left {
             position: relative;
-            z-index: 10;
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            min-height: 700px;
-            margin: 40px;
-            transform-style: preserve-3d;
-            perspective: 1500px;
-        }
-
-        /* Left Side - Branding */
-        .branding-side {
+            z-index: 1;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 60px;
-            transform-style: preserve-3d;
+            padding: 80px 72px;
+            border-right: 1px solid var(--border);
         }
 
-        .brand-content {
-            transform: translateZ(100px);
-        }
-
-        .brand-icon {
-            font-size: 120px;
-            margin-bottom: 30px;
-            display: inline-block;
-            animation: brandFloat 5s ease-in-out infinite;
-            filter: 
-                drop-shadow(0 30px 60px rgba(236, 72, 153, 0.5))
-                drop-shadow(0 0 80px rgba(236, 72, 153, 0.3));
-        }
-
-        @keyframes brandFloat {
-            0%, 100% {
-                transform: translateZ(50px) rotateY(0) rotateX(0) scale(1);
-            }
-            25% {
-                transform: translateZ(80px) rotateY(15deg) rotateX(5deg) scale(1.1);
-            }
-            50% {
-                transform: translateZ(60px) rotateY(-10deg) rotateX(-5deg) scale(1.05);
-            }
-            75% {
-                transform: translateZ(90px) rotateY(20deg) rotateX(8deg) scale(1.12);
-            }
-        }
-
-        .brand-title {
-            font-size: 56px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #fce7f3 50%, #f9a8d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            text-shadow: 0 10px 40px rgba(236, 72, 153, 0.4);
-            transform: translateZ(80px);
-        }
-
-        .brand-subtitle {
-            font-size: 22px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transform: translateZ(60px);
-        }
-
-        .brand-features {
-            margin-top: 50px;
-            display: flex;
-            gap: 30px;
-            transform: translateZ(40px);
-        }
-
-        .feature-item {
+        .logo-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 14px;
+            gap: 14px;
+            margin-bottom: 64px;
         }
 
-        .feature-icon {
-            font-size: 24px;
-        }
-
-        /* Right Side - Login Form */
-        .login-side {
-            flex: 0 0 480px;
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform-style: preserve-3d;
         }
 
-        .login-card {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 50px;
-            box-shadow: 
-                0 50px 100px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.5),
-                inset 0 0 80px rgba(236, 72, 153, 0.1);
-            border: 3px solid rgba(251, 207, 232, 0.8);
-            transform-style: preserve-3d;
-            animation: cardEntrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .logo-icon svg { width: 26px; height: 26px; fill: white; }
 
-        @keyframes cardEntrance {
-            0% {
-                opacity: 0;
-                transform: perspective(1500px) translateZ(-500px) rotateY(-45deg) rotateX(20deg) scale(0.8);
-            }
-            40% {
-                opacity: 1;
-                transform: perspective(1500px) translateZ(100px) rotateY(5deg) rotateX(-5deg) scale(1.02);
-            }
-            70% {
-                transform: perspective(1500px) translateZ(-20px) rotateY(-3deg) rotateX(2deg) scale(0.98);
-            }
-            100% {
-                transform: perspective(1500px) translateZ(0) rotateY(0) rotateX(0) scale(1);
-            }
-        }
-
-        .login-card:hover {
-            transform: perspective(1500px) translateZ(60px) rotateY(-5deg) rotateX(3deg) scale(1.02);
-            box-shadow: 
-                0 60px 120px rgba(0, 0, 0, 0.25),
-                0 0 0 2px rgba(236, 72, 153, 0.3),
-                inset 0 0 100px rgba(236, 72, 153, 0.15);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-title {
-            font-size: 32px;
+        .logo-name {
+            font-size: 20px;
             font-weight: 700;
-            color: #831843;
-            margin-bottom: 10px;
+            color: var(--white);
+            letter-spacing: -0.3px;
         }
 
-        .login-subtitle {
-            font-size: 14px;
-            color: #9d174d;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #831843;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #fbcfe8;
-            border-radius: 14px;
-            font-size: 16px;
-            color: #831843;
-            background: #fdf2f8;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ec4899;
-            box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.5);
-        }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            font-size: 14px;
+        .logo-version {
+            font-size: 11px;
             font-weight: 500;
+            color: var(--teal);
+            background: rgba(6,182,212,0.1);
+            border: 1px solid rgba(6,182,212,0.25);
+            border-radius: 20px;
+            padding: 2px 8px;
+            margin-left: 4px;
+        }
+
+        .hero-heading {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+        }
+
+        .hero-heading span {
+            background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 16px;
+            color: var(--slate-lt);
+            line-height: 1.7;
+            max-width: 420px;
+            margin-bottom: 56px;
+        }
+
+        /* Stat grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            max-width: 480px;
+            margin-bottom: 56px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 16px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .stat-value span { color: var(--teal); }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--slate);
+            margin-top: 4px;
+            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Source badges */
+        .sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .source-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--slate-lt);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 12px;
+        }
+
+        .source-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--teal);
+            flex-shrink: 0;
+        }
+
+        /* ── Right panel ── */
+        .panel-right {
+            position: relative;
+            z-index: 1;
+            flex: 0 0 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 56px;
+            background: rgba(17,24,39,0.7);
+            backdrop-filter: blur(24px);
+        }
+
+        .form-box {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-sub {
+            font-size: 14px;
+            color: var(--slate);
+            margin-bottom: 36px;
+        }
+
+        /* Alerts */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 13px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            margin-bottom: 20px;
         }
 
         .alert-error {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
         }
 
         .alert-info {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1d4ed8;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93c5fd;
         }
 
-        .security-notice {
-            margin-top: 30px;
-            padding-top: 24px;
-            border-top: 1px solid #fbcfe8;
-            text-align: center;
-        }
+        /* Form fields */
+        .field { margin-bottom: 18px; }
 
-        .security-title {
+        .field label {
+            display: block;
             font-size: 12px;
             font-weight: 600;
-            color: #831843;
-            margin-bottom: 8px;
+            color: var(--slate-lt);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
         }
 
-        .security-text {
+        .field input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 15px;
+            color: var(--white);
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input::placeholder { color: var(--slate); }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+        }
+
+        .btn-submit:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(59,130,246,0.45);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        .divider {
+            margin: 28px 0;
+            border: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-note {
             font-size: 12px;
-            color: #9d174d;
+            color: var(--slate);
+            text-align: center;
             line-height: 1.6;
         }
 
-        /* Responsive */
-        @media (max-width: 1100px) {
-            .login-wrapper {
-                flex-direction: column;
-                max-width: 500px;
-            }
-            
-            .branding-side {
-                display: none;
-            }
-            
-            .login-side {
+        .footer-note strong { color: var(--slate-lt); }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .panel-left { display: none; }
+            .panel-right {
                 flex: 1;
+                padding: 40px 28px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Deep 3D Background Scene -->
-    <div class="scene-3d">
-        <div class="connection-lines"></div>
-        <div class="layer-back">
-            <div class="shape-3d cube-large"></div>
-            <div class="shape-3d cube-large"></div>
-            <div class="shape-3d cube-large"></div>
-            <div class="shape-3d cube-medium"></div>
-            <div class="shape-3d cube-medium"></div>
-            <div class="shape-3d cube-medium"></div>
-            <div class="shape-3d particle"></div>
-            <div class="shape-3d particle"></div>
-            <div class="shape-3d particle"></div>
-            <div class="shape-3d particle"></div>
-        </div>
-    </div>
 
-    <!-- Main Login Wrapper -->
-    <div class="login-wrapper">
-        <!-- Left Branding Side -->
-        <div class="branding-side">
-            <div class="brand-content">
-                <div class="brand-icon">🎓</div>
-                <div class="brand-title">EduPredict Pro</div>
-                <div class="brand-subtitle">AI Degree Program Planning</div>
-                
-                <div class="brand-features">
-                    <div class="feature-item">
-                        <span class="feature-icon">📊</span>
-                        <span>162 Validated Models</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">🤖</span>
-                        <span>Anthropic 2026 AI Data</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">💰</span>
-                        <span>ROI Analysis</span>
-                    </div>
-                </div>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Left: branding -->
+    <div class="panel-left">
+        <div class="logo-row">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div>
+                <span class="logo-name">EduPredict Pro</span>
+                <span class="logo-version">V2.2</span>
             </div>
         </div>
 
-        <!-- Right Login Side -->
-        <div class="login-side">
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="login-title">Welcome Back</div>
-                    <div class="login-subtitle">Sign in to access the dashboard</div>
-                </div>
+        <h1 class="hero-heading">
+            AI Degree Program<br>
+            <span>Decision Intelligence</span>
+        </h1>
 
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+        <p class="hero-sub">
+            Data-driven forecasting for university AI program planning.
+            Enrollment projections, ROI analysis, and workforce signals
+            backed by IPEDS, BLS, and Anthropic research data.
+        </p>
 
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-input" placeholder="Enter your email" required autofocus autocomplete="email">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-input" placeholder="Enter password" required autocomplete="current-password">
-                    </div>
-
-                    <button type="submit" class="btn-login">Sign In</button>
-                </form>
-
-                <div class="security-notice">
-                    <div class="security-title">🔒 Secure Access</div>
-                    <div class="security-text">
-                        All activities are logged for audit purposes.<br>
-                        Contact your administrator for access credentials.
-                    </div>
-                </div>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">453</div>
+                <div class="stat-label">Institutions in dataset</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">10<span>yr</span></div>
+                <div class="stat-label">IPEDS enrollment history</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">162</div>
+                <div class="stat-label">Forecast combinations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">AI degree programs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">35<span>%</span></div>
+                <div class="stat-label">Data scientist job growth</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">CT NY MA</div>
+                <div class="stat-label">States covered</div>
             </div>
         </div>
+
+        <div class="sources">
+            <div class="source-badge"><span class="source-dot"></span>NCES IPEDS</div>
+            <div class="source-badge"><span class="source-dot"></span>BLS OES 2023</div>
+            <div class="source-badge"><span class="source-dot"></span>Anthropic Economic Index</div>
+            <div class="source-badge"><span class="source-dot"></span>CompTIA 2026</div>
+            <div class="source-badge"><span class="source-dot"></span>Stanford HAI</div>
+        </div>
     </div>
+
+    <!-- Right: form -->
+    <div class="panel-right">
+        <div class="form-box">
+            <div class="form-title">Sign in</div>
+            <div class="form-sub">Use your institutional account to continue</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="field">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email"
+                           placeholder="you@university.edu"
+                           required autofocus autocomplete="email">
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Enter your password"
+                           required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-submit">Sign in to Dashboard</button>
+            </form>
+
+            <hr class="divider">
+
+            <p class="footer-note">
+                <strong>Secure institutional access.</strong><br>
+                All sessions are logged for audit compliance.<br>
+                Contact your administrator for credentials.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Subtle node-network background
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, nodes;
+
+        const NODE_COUNT = 55;
+        const MAX_DIST = 160;
+        const COLORS = { node: '#3b82f6', line: '#1d4ed8' };
+
+        function resize() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+
+        function init() {
+            nodes = Array.from({ length: NODE_COUNT }, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                r: Math.random() * 2 + 1.5,
+            }));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Lines
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const d  = Math.sqrt(dx * dx + dy * dy);
+                    if (d < MAX_DIST) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = COLORS.line;
+                        ctx.globalAlpha = (1 - d / MAX_DIST) * 0.4;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Dots
+            ctx.globalAlpha = 0.7;
+            nodes.forEach(n => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                ctx.fillStyle = COLORS.node;
+                ctx.fill();
+            });
+
+            ctx.globalAlpha = 1;
+        }
+
+        function update() {
+            nodes.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 0 || n.x > W) n.vx *= -1;
+                if (n.y < 0 || n.y > H) n.vy *= -1;
+            });
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('resize', () => { resize(); init(); });
+        resize();
+        init();
+        loop();
+    </script>
 </body>
 </html>
