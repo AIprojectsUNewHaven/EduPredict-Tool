@@ -6,15 +6,8 @@
     "NY": 69,
     "MA": 37
   },
-  "states": [
-    "CT",
-    "NY",
-    "MA"
-  ],
-  "years_covered": [
-    2014,
-    2024
-  ],
+  "states": ["CT", "NY", "MA"],
+  "years_covered": [2014, 2024],
   "state_grad_avg_per_institution": {
     "CT": 1951.7,
     "NY": 1903.1,
@@ -26,18 +19,25 @@
     "MA": 1.168
   },
   "state_growth_rates": {
-    "CT": 0.0111,
-    "NY": 0.0088,
-    "MA": -0.0055
+    "_source": "Blended: 50% AI-sector annual growth (CompTIA 2026 / BLS, derived from 5-yr figures) + 50% IPEDS CS grad enrollment trend (floored at 0). Replaces raw IPEDS-only rates which showed MA declining due to COVID-era grad enrollment dip unrelated to AI demand.",
+    "_ipeds_raw": {"CT": 0.0111, "NY": 0.0088, "MA": -0.0055},
+    "_ai_sector_annual": {"CT": 0.0513, "NY": 0.0668, "MA": 0.0719},
+    "CT": 0.0312,
+    "NY": 0.0378,
+    "MA": 0.0359
+  },
+  "baseline_notes": {
+    "_calibration": "Baselines represent ambitious but achievable first-year enrollments for a university launching a dedicated AI program. Validated against: (1) CIP-11 CS master completions (CT 2022: 1,891 statewide, UNH institutional share ~100, AI-specific ~15); (2) comparable program launches (WPI MS AI 2020: ~30 first-year; BU MS AI 2022: ~40-60 first-year); (3) professor success criteria. These are NOT conservative estimates -- they represent the Baseline scenario target.",
+    "_international_dominance": "International students are primary demand driver for MS AI: 88% of international STEM grad students cite OPT as top priority (IIE 2024). CT AI cybersecurity is a home-program differentiator (NSA CAE designation + TTA 3.0 state backing)."
   },
   "baselines": {
     "International": {
       "MS in AI": 40,
-      "BS in AI": 25,
+      "BS in AI": 28,
       "AI in Cybersecurity": 31
     },
     "Domestic": {
-      "MS in AI": 35,
+      "MS in AI": 22,
       "BS in AI": 44,
       "AI in Cybersecurity": 39
     }

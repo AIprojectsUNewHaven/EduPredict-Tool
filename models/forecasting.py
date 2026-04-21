@@ -95,11 +95,23 @@ class EnrollmentForecaster:
         "MA": 1.25
     }
     
+    # AI program growth premium layered on top of IPEDS institutional trend
+    _AI_GROWTH_PREMIUM = {
+        "Optimistic": 0.15,
+        "Baseline": 0.08,
+        "Conservative": 0.03,
+    }
+
+    # AI-sector blended growth rates (fallback if state_baselines.json missing)
+    # Derived from CompTIA 2026 5-yr AI job growth annualized + IPEDS CS grad trend
+    _IPEDS_GROWTH_FALLBACK = {"CT": 0.0312, "NY": 0.0378, "MA": 0.0359}
+
     def __init__(self, enrollment_data_path: str = None):
         """Initialize forecaster, loading real IPEDS baselines when available."""
         self._baselines_path = self._find_baselines_file()
         self._real_data_loaded = False
         self.student_baseline, self.STATE_MULTIPLIERS = self._load_real_data()
+        self._state_growth_rates = self._load_state_growth_rates()
 
     def _find_baselines_file(self) -> str:
         """Locate the processed state_baselines.json produced by process_ipeds_real.py."""
@@ -129,7 +141,7 @@ class EnrollmentForecaster:
                 data = json.load(f)
 
             baselines = data.get("baselines", {})
-            multipliers = data.get("state_multipliers", {})
+            multipliers = {k: v for k, v in data.get("state_multipliers", {}).items() if not k.startswith("_")}
 
             # Validate structure
             if not baselines or not multipliers:
@@ -145,7 +157,23 @@ class EnrollmentForecaster:
 
         except Exception:
             return self.STUDENT_BASELINE_FALLBACK, dict(self.STATE_MULTIPLIERS)
-    
+
+    def _load_state_growth_rates(self) -> Dict[str, float]:
+        """Load per-state AI-sector blended growth rates from processed JSON."""
+        if not self._baselines_path:
+            return dict(self._IPEDS_GROWTH_FALLBACK)
+        try:
+            with open(self._baselines_path) as f:
+                data = json.load(f)
+            raw = data.get("state_growth_rates", {})
+            # Skip metadata keys (prefixed with _)
+            rates = {k: float(v) for k, v in raw.items() if not k.startswith("_")}
+            if rates:
+                return rates
+        except Exception:
+            pass
+        return dict(self._IPEDS_GROWTH_FALLBACK)
+
     def forecast(self, inputs: ForecastInput) -> ForecastOutput:
         """
         Generate enrollment forecast based on inputs with full uncertainty quantification.
@@ -173,10 +201,9 @@ class EnrollmentForecaster:
         # Calculate year 1 projection (point estimate)
         year1 = int(baseline * scenario_mult * term_factor * state_mult)
         
-        # Year 2-3 projections
-        growth_rate = 0.20 if inputs.scenario == "Optimistic" else (
-            0.10 if inputs.scenario == "Baseline" else 0.05
-        )
+        # Year 2-3 growth: IPEDS state trend (real) + AI program premium by scenario
+        ipeds_rate = self._state_growth_rates.get(inputs.state, 0.01)
+        growth_rate = max(ipeds_rate + self._AI_GROWTH_PREMIUM[inputs.scenario], 0.0)
         
         year2 = int(year1 * (1 + growth_rate))
         year3 = int(year2 * (1 + growth_rate * 0.8))

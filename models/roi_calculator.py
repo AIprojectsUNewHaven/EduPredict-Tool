@@ -88,6 +88,14 @@ class ROICalculator:
         }
     }
     
+    # Cost-of-living index by state (national average = 100)
+    # Source: BLS/Census cost-of-living composite; used to adjust entry-level salary expectations
+    COL_INDEX = {
+        "CT": 112,
+        "NY": 138,
+        "MA": 128,
+    }
+
     # 5-year salary growth rate
     SALARY_GROWTH_RATE = 0.08  # 8% annual growth
     
@@ -195,9 +203,9 @@ class ROICalculator:
         program = inputs.program_type
         state = inputs.state
         
-        # Get starting salary (from CSV or fallback)
+        # Get starting salary (state-specific BLS data already reflects local market wages)
         starting_salary = self.starting_salaries[program][state]
-        
+
         # Calculate 5-year salary (compound growth)
         salary_5year = int(starting_salary * (1 + self.SALARY_GROWTH_RATE) ** 5)
         
@@ -212,10 +220,12 @@ class ROICalculator:
         
         total_tuition_revenue = year1_revenue + year2_revenue + year3_revenue
         
-        # Calculate costs
+        # Calculate costs — operational cost scaled by state COL (faculty/staff cost more in high-COL states)
+        col = self.COL_INDEX.get(state, 100)
         startup_cost = self.STARTUP_COSTS[program]
         total_students = inputs.year1_enrollment + inputs.year2_enrollment + inputs.year3_enrollment
-        operational_cost = total_students * self.OPERATIONAL_COST_PER_STUDENT[program]
+        base_op_cost = self.OPERATIONAL_COST_PER_STUDENT[program]
+        operational_cost = total_students * int(base_op_cost * col / 100)
         
         program_cost_estimate = startup_cost + operational_cost
         

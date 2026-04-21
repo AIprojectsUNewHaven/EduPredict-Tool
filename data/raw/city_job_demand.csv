@@ -1,0 +1,11 @@
+state,metro,metro_code,total_tech_employed,data_scientist_employed,software_dev_employed,info_security_employed,ml_engineer_employed,ai_job_postings_2024,ai_skills_pct_of_jobs,top_hiring_sectors,year,source
+CT,Hartford-East Hartford-Middletown,25540,34200,920,11400,1680,230,2850,1.8,"Insurance,Healthcare,Aerospace,Financial Services",2023,BLS OES May 2023 MSA
+CT,Bridgeport-Stamford-Norwalk,14860,38100,1240,12800,1920,310,4100,2.4,"Finance,Hedge Funds,Pharma,Consulting",2023,BLS OES May 2023 MSA
+CT,New Haven,35300,14200,580,5100,680,80,1850,1.6,"Healthcare,Biotech,Defense,University Research",2023,BLS OES May 2023 MSA
+NY,New York-Newark-Jersey City,35620,312000,8200,98400,13600,2100,52000,4.2,"Finance,Media,Tech,Healthcare,Consulting",2023,BLS OES May 2023 MSA + LinkedIn 2026
+NY,Albany-Schenectady-Troy,10580,18400,580,6200,1100,130,2100,1.4,"Government,Healthcare,Education,Semiconductor",2023,BLS OES May 2023 MSA
+NY,Buffalo-Cheektowaga,15380,14800,420,5100,840,90,1600,1.2,"Healthcare,Finance,Manufacturing,Government",2023,BLS OES May 2023 MSA
+NY,Rochester,40380,16200,490,5600,920,105,1800,1.3,"Optics,Healthcare,Finance,Education",2023,BLS OES May 2023 MSA
+MA,Boston-Cambridge-Newton,14460,198000,5800,64000,8200,1900,38000,4.8,"Biotech,Finance,Consulting,Defense,EdTech",2023,BLS OES May 2023 MSA + LinkedIn 2026
+MA,Worcester,49340,24100,720,8400,1100,160,3200,2.1,"Healthcare,Defense,Finance,Education",2023,BLS OES May 2023 MSA
+MA,Springfield,44140,9800,260,3200,480,55,980,1.1,"Healthcare,Insurance,Finance,Government",2023,BLS OES May 2023 MSA

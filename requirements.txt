@@ -17,5 +17,8 @@ numpy>=1.26.0
 # PDF Generation (server-side)
 fpdf2>=2.8.0
 
+# Rate limiting
+flask-limiter>=3.5.0
+
 # Production WSGI (for AWS EC2)
 gevent>=23.9.1

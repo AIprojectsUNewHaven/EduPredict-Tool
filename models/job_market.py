@@ -309,9 +309,13 @@ class JobMarketAnalyzer:
         """Initialize job market analyzer, loading real BLS data when available."""
         self.data_path = data_path or self._find_file("job_market_data.csv")
         self.salary_path = salary_path or self._find_file("bls_salary_data.csv")
+        self.city_path = self._find_file("city_job_demand.csv")
+        self.projections_path = self._find_file("bls_occupation_projections.csv")
         self._real_data_loaded = False
         self.state_data = self._load_data()
         self.salary_data = self._load_salary_data()
+        self.city_data = self._load_city_data()
+        self.bls_projections = self._load_bls_projections()
         self.ai_db = AIOccupationDatabase()
 
     def _find_file(self, filename: str) -> str:
@@ -379,6 +383,78 @@ class JobMarketAnalyzer:
             return data
         except Exception:
             return {}
+
+    def _load_city_data(self) -> Dict:
+        """
+        Load metro-level AI job demand from city_job_demand.csv.
+        Keyed by state -> list of metro dicts.
+        Source: BLS OES May 2023 MSA data.
+        """
+        if not self.city_path or not os.path.exists(self.city_path):
+            return {}
+        try:
+            data = {}
+            with open(self.city_path) as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    state = row["state"]
+                    if state not in data:
+                        data[state] = []
+                    data[state].append({
+                        "metro": row["metro"],
+                        "total_tech": int(row.get("total_tech_employed", 0)),
+                        "data_scientists": int(row.get("data_scientist_employed", 0)),
+                        "software_devs": int(row.get("software_dev_employed", 0)),
+                        "info_security": int(row.get("info_security_employed", 0)),
+                        "ml_engineers": int(row.get("ml_engineer_employed", 0)),
+                        "ai_postings_2024": int(row.get("ai_job_postings_2024", 0)),
+                        "ai_skills_pct": float(row.get("ai_skills_pct_of_jobs", 0)),
+                        "top_sectors": row.get("top_hiring_sectors", ""),
+                    })
+            return data
+        except Exception:
+            return {}
+
+    def _load_bls_projections(self) -> Dict:
+        """
+        Load BLS 10-year occupation projections from bls_occupation_projections.csv.
+        Keyed by SOC code.
+        Source: BLS Employment Projections 2022-2032.
+        """
+        if not self.projections_path or not os.path.exists(self.projections_path):
+            return {}
+        try:
+            data = {}
+            with open(self.projections_path) as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    data[row["soc_code"]] = {
+                        "occupation": row["occupation"],
+                        "employment_2022": int(row["employment_2022"]),
+                        "employment_2032": int(row["employment_2032"]),
+                        "growth_pct_10yr": float(row["growth_pct_10yr"]),
+                        "annual_openings": int(row["annual_openings"]),
+                        "median_wage_2022": int(row["median_wage_2022"]),
+                    }
+            return data
+        except Exception:
+            return {}
+
+    def get_metro_summary(self, state: str) -> Dict:
+        """Return aggregated metro-level AI demand stats for a state."""
+        metros = self.city_data.get(state, [])
+        if not metros:
+            return {"metro_count": 0, "total_ai_postings": 0, "peak_ai_pct": 0.0}
+        return {
+            "metro_count": len(metros),
+            "total_ai_postings": sum(m["ai_postings_2024"] for m in metros),
+            "peak_ai_pct": max(m["ai_skills_pct"] for m in metros),
+            "metros": [m["metro"] for m in metros],
+        }
+
+    def get_bls_projection(self, soc_code: str) -> Dict:
+        """Return BLS 10-year projection for a given SOC code."""
+        return self.bls_projections.get(soc_code, {})
 
     def get_salary_for_program(self, state: str, program_type: str) -> Dict:
         """Return real BLS salary data for the occupation matching a program."""
@@ -464,21 +540,35 @@ class JobMarketAnalyzer:
             "Low": 25
         }
         base = base_scores.get(signal.demand_level, 50)
-        
-        # Growth bonus
+
+        # Growth bonus from state-level 5yr AI job growth rate
         growth_bonus = min(signal.job_growth_rate / 2, 15)
-        
-        # AI exposure penalty (high exposure = slightly lower score due to disruption risk)
+
+        # AI exposure penalty (high exposure = disruption risk)
         exposure_penalty = 0
         if exposure.risk_level == RiskLevel.CRITICAL:
             exposure_penalty = -10
         elif exposure.risk_level == RiskLevel.HIGH:
             exposure_penalty = -5
-        
-        # Coverage gap bonus (gap = opportunity for new graduates)
+
+        # Coverage gap bonus (theory vs. reality gap = graduate opportunity window)
         gap_bonus = signal.ai_coverage_gap * 10  # Up to 6 points
-        
-        score = base + growth_bonus + exposure_penalty + gap_bonus
+
+        # Metro diversity bonus: more hiring metros = more employer options for graduates
+        metro = self.get_metro_summary(state)
+        metro_bonus = min(metro["metro_count"], 4)  # up to +4 points (1 per metro, cap 4)
+
+        # BLS 10-yr gross growth bonus: actual occupation growth from projections CSV
+        program_soc = {
+            "MS in AI": "15-2051",
+            "BS in AI": "15-1252",
+            "AI in Cybersecurity": "15-1212",
+        }
+        soc = program_soc.get(program_type, "15-2051")
+        proj = self.get_bls_projection(soc)
+        bls_growth_bonus = min(proj.get("growth_pct_10yr", 0) / 10, 4)  # up to +4 pts (35%/10 = 3.5)
+
+        score = base + growth_bonus + exposure_penalty + gap_bonus + metro_bonus + bls_growth_bonus
         return int(max(0, min(100, score)))
     
     def get_hiring_warning(self, program_type: str) -> str:
@@ -580,6 +670,11 @@ class JobMarketAnalyzer:
             rec = "DELAY"
             rationale = "Weak demand or high disruption risk -- gather more data"
         
+        # BLS 10yr gross growth for this program's primary occupation
+        program_soc = {"MS in AI": "15-2051", "BS in AI": "15-1252", "AI in Cybersecurity": "15-1212"}
+        proj = self.get_bls_projection(program_soc.get(program_type, "15-2051"))
+        metro = self.get_metro_summary(state)
+
         return {
             "demand_score": score,
             "risk_level": exposure.risk_level.value,
@@ -587,7 +682,11 @@ class JobMarketAnalyzer:
             "rationale": rationale,
             "warnings": warnings,
             "opportunities": opportunities,
-            "key_finding": exposure.key_finding
+            "key_finding": exposure.key_finding,
+            "bls_10yr_growth_pct": proj.get("growth_pct_10yr", 0),
+            "bls_annual_openings": proj.get("annual_openings", 0),
+            "metro_count": metro["metro_count"],
+            "total_metro_ai_postings": metro["total_ai_postings"],
         }
     
     def get_all_states(self) -> Dict[str, Dict]:

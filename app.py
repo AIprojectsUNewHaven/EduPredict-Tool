@@ -9,6 +9,8 @@ Hosted on AWS EC2 with Gunicorn.
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
@@ -43,7 +45,14 @@ except ImportError:
     print("Warning: FPDF not available. PDF export disabled.")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-edupredict-secret-change-me')
+
+_secret_key = os.environ.get('SECRET_KEY')
+if not _secret_key:
+    import secrets as _secrets
+    _secret_key = _secrets.token_hex(32)
+    print("WARNING: SECRET_KEY not set. Sessions will not persist across restarts. Set SECRET_KEY env var for production.")
+app.config['SECRET_KEY'] = _secret_key
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///edupredict.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -52,6 +61,12 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access the dashboard.'
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "60 per hour"],
+    storage_uri="memory://",
+)
 
 # Database Models
 class User(UserMixin, db.Model):
@@ -437,7 +452,7 @@ def log_activity(user_id, action, details=None):
         )
         db.session.add(log)
         db.session.commit()
-    except:
+    except Exception:
         db.session.rollback()
 
 
@@ -456,6 +471,7 @@ def index():
 
 @app.route('/api/forecast', methods=['POST'])
 @login_required
+@limiter.limit("30 per minute")
 def api_forecast():
     """API endpoint for enrollment forecast."""
     data = request.get_json()
@@ -522,9 +538,9 @@ def api_forecast():
         # Log activity
         log_activity(current_user.id, 'forecast', 
                     f'{program} for {state} - {recommendation} (ROI: {roi.roi_ratio}x)')
-    except:
+    except Exception:
         db.session.rollback()
-    
+
     return jsonify({
         'success': True,
         'forecast': {
@@ -569,7 +585,11 @@ def api_forecast():
             'demand_score': rec['demand_score'],
             'rationale': rec['rationale'],
             'warnings': rec['warnings'],
-            'opportunities': rec['opportunities']
+            'opportunities': rec['opportunities'],
+            'bls_10yr_growth_pct': rec.get('bls_10yr_growth_pct', 0),
+            'bls_annual_openings': rec.get('bls_annual_openings', 0),
+            'metro_count': rec.get('metro_count', 0),
+            'total_metro_ai_postings': rec.get('total_metro_ai_postings', 0),
         },
         'inputs': {
             'program': program,
@@ -1067,7 +1087,15 @@ def init_db():
         # Create default admin user if none exists.
         # Credentials can be injected via env for safer deploys.
         admin_email = os.environ.get('EDUPREDICT_ADMIN_EMAIL', 'admin@edupredict.local').strip().lower()
-        admin_password = os.environ.get('EDUPREDICT_ADMIN_PASSWORD', 'admin123')
+        admin_password = os.environ.get('EDUPREDICT_ADMIN_PASSWORD')
+        is_production = os.environ.get('FLASK_ENV') == 'production' or os.environ.get('PORT')
+        if not admin_password:
+            if is_production:
+                raise RuntimeError('EDUPREDICT_ADMIN_PASSWORD env var must be set in production.')
+            import secrets as _secrets
+            admin_password = _secrets.token_urlsafe(16)
+            print(f"WARNING: EDUPREDICT_ADMIN_PASSWORD not set. Generated password: {admin_password}")
+            print("Set EDUPREDICT_ADMIN_PASSWORD env var before deploying to production.")
         if not User.query.filter_by(email=admin_email).first():
             admin = User(
                 email=admin_email,
@@ -1079,9 +1107,6 @@ def init_db():
             db.session.add(admin)
             db.session.commit()
             print(f"Default admin user created: {admin_email}")
-            if admin_password == 'admin123':
-                print("WARNING: Using default admin password. Set EDUPREDICT_ADMIN_PASSWORD in production.")
-            print("IMPORTANT: Change default password after first login!")
 
 
 if __name__ == '__main__':

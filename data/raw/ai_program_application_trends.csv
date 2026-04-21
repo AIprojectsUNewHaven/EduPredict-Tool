@@ -1,0 +1,36 @@
+year,metric,value,unit,source
+2015,cs_ms_graduates_us,22800,graduates,CRA Taulbee Survey 2024
+2016,cs_ms_graduates_us,24100,graduates,CRA Taulbee Survey 2024
+2017,cs_ms_graduates_us,25600,graduates,CRA Taulbee Survey 2024
+2018,cs_ms_graduates_us,27200,graduates,CRA Taulbee Survey 2024
+2019,cs_ms_graduates_us,28900,graduates,CRA Taulbee Survey 2024
+2020,cs_ms_graduates_us,31400,graduates,CRA Taulbee Survey 2024
+2021,cs_ms_graduates_us,35800,graduates,CRA Taulbee Survey 2024
+2022,cs_ms_graduates_us,44200,graduates,CRA Taulbee Survey 2024 (record)
+2023,cs_ms_graduates_us,46100,graduates,CRA Taulbee Survey 2024
+2011,ai_phd_to_industry_pct,40.9,percent,Stanford HAI AI Index 2024
+2015,ai_phd_to_industry_pct,55.0,percent,Stanford HAI AI Index 2024
+2018,ai_phd_to_industry_pct,63.0,percent,Stanford HAI AI Index 2024
+2020,ai_phd_to_industry_pct,66.2,percent,Stanford HAI AI Index 2024
+2022,ai_phd_to_industry_pct,70.7,percent,Stanford HAI AI Index 2024
+2018,intl_grad_students_us_stem,388000,students,IIE Open Doors 2024
+2019,intl_grad_students_us_stem,407000,students,IIE Open Doors 2024
+2020,intl_grad_students_us_stem,368000,students,IIE Open Doors 2024
+2021,intl_grad_students_us_stem,391000,students,IIE Open Doors 2024
+2022,intl_grad_students_us_stem,438000,students,IIE Open Doors 2024
+2023,intl_grad_students_us_stem,502000,students,IIE Open Doors 2024 (record)
+2020,opt_participants_us,198000,students,IIE Open Doors 2024
+2021,opt_participants_us,213000,students,IIE Open Doors 2024
+2022,opt_participants_us,236000,students,IIE Open Doors 2024
+2023,opt_participants_us,267000,students,IIE Open Doors 2024
+2024,opt_participants_us,294000,students,IIE Open Doors 2024 (+21% YoY)
+2023,us_ai_skill_job_postings,210000,postings,CompTIA 2026
+2024,us_ai_skill_job_postings,275000,postings,CompTIA 2026
+2016,ai_program_app_pct,0.1,percent,GradCafe 2024
+2018,ai_program_app_pct,0.15,percent,GradCafe 2024
+2020,ai_program_app_pct,0.2,percent,GradCafe 2024
+2022,ai_program_app_pct,0.28,percent,GradCafe 2024
+2024,ai_program_app_pct,0.32,percent,GradCafe 2024
+2024,ct_ai_skill_job_postings,11000,postings,CT Governor TTA 3.0 2026
+2024,ct_ai_skill_1_in_n_jobs,52,1-in-N,CT Governor TTA 3.0 2026
+2025,ct_ai_skill_1_in_n_jobs,23,1-in-N (bachelor's-req roles),CT Governor TTA 3.0 2026
