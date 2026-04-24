@@ -6,269 +6,477 @@
     <title>User Management | EduPredict Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-root:    #060c18;
+            --bg-deep:    #0b1120;
+            --bg-card:    #0f1b2d;
+            --bg-card-2:  #111827;
+            --bg-input:   #0d1929;
+            --bg-elevated:#162032;
+            --border:     rgba(255,255,255,0.07);
+            --border-med: rgba(255,255,255,0.10);
+            --border-strong: rgba(255,255,255,0.16);
+            --text:       #f1f5f9;
+            --text-2:     #cbd5e1;
+            --text-sec:   #94a3b8;
+            --text-muted: #64748b;
+            --blue:       #3b82f6;
+            --blue-dk:    #1d4ed8;
+            --blue-lt:    #60a5fa;
+            --teal:       #06b6d4;
+            --green:      #10b981;
+            --red:        #ef4444;
+            --amber:      #f59e0b;
+            --purple:     #8b5cf6;
+            --shadow:     0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.25);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
+            background: var(--bg-root);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59,130,246,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%,  rgba(6,182,212,0.04)  0%, transparent 50%);
+            background-attachment: fixed;
             min-height: 100vh;
-            padding: 2rem;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            font-size: 0.9375rem;
+            line-height: 1.55;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
+        /* ── Header ── */
+        .page-header {
+            background: rgba(6,12,24,0.90);
+            border-bottom: 1px solid var(--border-med);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 0 2rem;
+            height: 58px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #fbcfe8;
+            justify-content: space-between;
         }
 
-        .header h1 {
-            color: #831843;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .header-actions {
+        .page-header-left {
             display: flex;
+            align-items: center;
             gap: 1rem;
         }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
             border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-            font-size: 0.875rem;
+            background: linear-gradient(135deg, var(--blue), var(--teal));
+            color: #fff;
+            font-size: 0.58rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            box-shadow: 0 0 16px rgba(59,130,246,0.4);
+            flex-shrink: 0;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #831843;
-            border: 2px solid #fbcfe8;
-        }
-
-        .btn-secondary:hover {
-            background: #fdf2f8;
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            color: #831843;
-            font-size: 1.25rem;
+        .page-header-title {
+            font-size: 0.92rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            color: var(--text);
+            letter-spacing: -0.02em;
         }
 
-        .form-group {
-            margin-bottom: 1.25rem;
+        .page-header-sep {
+            width: 1px;
+            height: 18px;
+            background: var(--border-med);
         }
 
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #831843;
-            margin-bottom: 0.5rem;
+        .page-header-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #fbcfe8;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ec4899;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
-        }
-
-        .checkbox-group {
+        .header-actions {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 1.25rem;
-            height: 1.25rem;
-            accent-color: #ec4899;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.9rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            text-decoration: none;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-family: inherit;
+            white-space: nowrap;
         }
+
+        .btn-ghost {
+            color: var(--text-sec);
+            border-color: var(--border-med);
+            background: rgba(255,255,255,0.04);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 3px 14px rgba(59,130,246,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.50); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── Page body ── */
+        .page-body {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        .page-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.75rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.03em;
+        }
+
+        .page-title span {
+            background: linear-gradient(90deg, var(--blue), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-count-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--teal);
+            background: rgba(6,182,212,0.12);
+            border: 1px solid rgba(6,182,212,0.24);
+            border-radius: 999px;
+            padding: 0.3rem 0.75rem;
+        }
+
+        /* ── Alerts ── */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.9rem 1.1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+        }
+        .alert-success { background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.24); color: #34d399; }
+        .alert-error   { background: rgba(239,68,68,0.10);  border: 1px solid rgba(239,68,68,0.24);  color: #fca5a5; }
+        .alert-info    { background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.24); color: #93c5fd; }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-med);
+            border-radius: 18px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: border-color 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-header-icon--blue   { background: rgba(59,130,246,0.14); color: var(--blue-lt); border: 1px solid rgba(59,130,246,0.22); }
+        .card-header-icon--teal   { background: rgba(6,182,212,0.14);  color: #67e8f9;        border: 1px solid rgba(6,182,212,0.22); }
+        .card-header-icon--amber  { background: rgba(245,158,11,0.14); color: #fcd34d;        border: 1px solid rgba(245,158,11,0.22); }
+
+        .card-header-icon svg { width: 15px; height: 15px; }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Create user form ── */
+        .create-form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr auto auto;
+            gap: 1rem;
+            align-items: end;
+        }
+        @media (max-width: 860px) {
+            .create-form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+        .form-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.62rem 0.9rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-med);
+            border-radius: 9px;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.20);
+            background: var(--bg-elevated);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.62rem 0;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--blue);
+            cursor: pointer;
+        }
+        .checkbox-row label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-2);
+            cursor: pointer;
+        }
+
+        /* ── Table ── */
+        .table-wrap { overflow-x: auto; }
 
         table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th, td {
-            text-align: left;
-            padding: 1rem;
-            border-bottom: 1px solid #fbcfe8;
+        thead tr {
+            border-bottom: 1px solid var(--border-strong);
         }
 
         th {
-            color: #831843;
-            font-weight: 600;
-            font-size: 0.875rem;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.65rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            white-space: nowrap;
         }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
 
         td {
-            color: #374151;
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-2);
+            vertical-align: middle;
         }
 
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+        .user-email {
             font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .badge-admin {
-            background: #fef3c7;
-            color: #92400e;
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--teal));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
         }
 
-        .badge-user {
-            background: #e0e7ff;
-            color: #3730a3;
+        /* ── Badges ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.22rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
         }
+        .badge-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .badge-admin    { background: rgba(245,158,11,0.14); color: #fcd34d;  border: 1px solid rgba(245,158,11,0.25); }
+        .badge-user     { background: rgba(59,130,246,0.12); color: #93c5fd;  border: 1px solid rgba(59,130,246,0.22); }
+        .badge-active   { background: rgba(16,185,129,0.12); color: #34d399;  border: 1px solid rgba(16,185,129,0.22); }
+        .badge-inactive { background: rgba(239,68,68,0.10);  color: #fca5a5;  border: 1px solid rgba(239,68,68,0.20); }
 
-        .badge-active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-inactive {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        /* ── Action buttons ── */
+        .action-row { display: flex; gap: 0.4rem; align-items: center; }
 
         .action-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 7px;
+            font-size: 0.72rem;
+            font-weight: 700;
             cursor: pointer;
-            border: none;
-            transition: all 0.2s;
+            border: 1px solid transparent;
+            transition: all 0.18s;
+            font-family: inherit;
+            letter-spacing: 0.02em;
         }
-
         .action-btn-toggle {
-            background: #f3f4f6;
-            color: #374151;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-sec);
+            border-color: var(--border-med);
         }
-
-        .action-btn-toggle:hover {
-            background: #e5e7eb;
-        }
+        .action-btn-toggle:hover { background: rgba(255,255,255,0.09); color: var(--text); border-color: var(--border-strong); }
 
         .action-btn-reset {
-            background: #fef3c7;
-            color: #92400e;
+            background: rgba(245,158,11,0.10);
+            color: #fcd34d;
+            border-color: rgba(245,158,11,0.22);
+        }
+        .action-btn-reset:hover { background: rgba(245,158,11,0.18); }
+
+        .current-user-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-style: italic;
         }
 
-        .action-btn-reset:hover {
-            background: #fde68a;
-        }
-
-        .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background: #d1fae5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-
-        .alert-info {
-            background: #dbeafe;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-        }
-
+        /* ── Empty state ── */
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #9ca3af;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
         }
+        .empty-state svg { width: 40px; height: 40px; margin: 0 auto 1rem; opacity: 0.35; }
+        .empty-state p   { font-size: 0.9rem; }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
+        /* ── Info box ── */
+        .info-card {
+            background: rgba(59,130,246,0.05);
+            border: 1px solid rgba(59,130,246,0.15);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+        }
+        .info-card ul {
+            margin-left: 1.25rem;
+            color: var(--text-sec);
+            font-size: 0.84rem;
+            line-height: 1.9;
+        }
+        .info-card li::marker { color: var(--blue-lt); }
+        .info-card strong { color: var(--text); }
 
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            table {
-                font-size: 0.875rem;
-            }
-
-            th, td {
-                padding: 0.75rem 0.5rem;
-            }
+        @media (max-width: 640px) {
+            .page-body { padding: 1.25rem 1rem 3rem; }
+            .page-header { padding: 0 1rem; }
+            .page-header-sep, .page-header-sub { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>👥 User Management</h1>
-            <div class="header-actions">
-                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Dashboard</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-secondary">🚪 Logout</a>
-            </div>
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="page-header-left">
+            <div class="logo-mark">EP</div>
+            <span class="page-header-title">EduPredict Pro</span>
+            <div class="page-header-sep"></div>
+            <span class="page-header-sub">Admin — User Management</span>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-ghost">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Dashboard
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn btn-ghost">Sign out</a>
+        </div>
+    </header>
+
+    <div class="page-body">
+
+        <!-- Page title -->
+        <div class="page-title-row">
+            <h1 class="page-title">User <span>Management</span></h1>
+            <span class="user-count-pill">{{ users|length }} user{{ 's' if users|length != 1 else '' }}</span>
         </div>
 
+        <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -277,37 +485,57 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Create User Form -->
+        <!-- Create user -->
         <div class="card">
-            <div class="card-title">Create New User</div>
+            <div class="card-header">
+                <div class="card-header-icon card-header-icon--blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </div>
+                <span class="card-title">Create New User</span>
+            </div>
             <form method="POST" action="{{ url_for('admin_users') }}">
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: end;">
-                    <div class="form-group" style="margin-bottom: 0;">
+                <div class="create-form-grid">
+                    <div class="form-group">
                         <label class="form-label">Email Address</label>
                         <input type="email" name="email" class="form-input" placeholder="user@university.edu" required>
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group">
                         <label class="form-label">Password</label>
                         <input type="password" name="password" class="form-input" placeholder="Min 6 characters" required minlength="6">
                     </div>
-                    <div class="form-group checkbox-group" style="margin-bottom: 0;">
-                        <input type="checkbox" name="is_admin" id="is_admin">
-                        <label for="is_admin" style="color: #831843; font-weight: 500;">Admin privileges</label>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <div class="checkbox-row">
+                            <input type="checkbox" name="is_admin" id="is_admin">
+                            <label for="is_admin">Admin privileges</label>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Create User
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
 
-        <!-- Users List -->
+        <!-- Users table -->
         <div class="card">
-            <div class="card-title">All Users ({{ users|length }})</div>
+            <div class="card-header">
+                <div class="card-header-icon card-header-icon--teal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <span class="card-title">All Users</span>
+            </div>
+
             {% if users %}
-            <div style="overflow-x: auto;">
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Email</th>
+                            <th>User</th>
                             <th>Role</th>
                             <th>Status</th>
                             <th>Last Login</th>
@@ -318,34 +546,44 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td style="font-weight: 500;">{{ user.email }}</td>
+                            <td>
+                                <div class="user-email">
+                                    <div class="user-avatar">{{ user.email[0].upper() }}</div>
+                                    {{ user.email }}
+                                </div>
+                            </td>
                             <td>
                                 <span class="badge {{ 'badge-admin' if user.is_admin else 'badge-user' }}">
+                                    <span class="badge-dot" style="background: {{ '#fcd34d' if user.is_admin else '#93c5fd' }};"></span>
                                     {{ 'Admin' if user.is_admin else 'User' }}
                                 </span>
                             </td>
                             <td>
                                 <span class="badge {{ 'badge-active' if user.is_active else 'badge-inactive' }}" id="status-{{ user.id }}">
+                                    <span class="badge-dot" style="background: {{ '#34d399' if user.is_active else '#fca5a5' }};"></span>
                                     {{ 'Active' if user.is_active else 'Inactive' }}
                                 </span>
                             </td>
-                            <td style="color: #6b7280; font-size: 0.875rem;">
-                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}
+                            <td style="color: var(--text-muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums;">
+                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '—' }}
                             </td>
-                            <td style="color: #6b7280; font-size: 0.875rem;">
-                                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'Unknown' }}
+                            <td style="color: var(--text-muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums;">
+                                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '—' }}
                             </td>
                             <td>
-                                <div style="display: flex; gap: 0.5rem;">
+                                <div class="action-row">
                                     {% if user.id != current_user.id %}
-                                    <button class="action-btn action-btn-toggle" onclick="toggleUser({{ user.id }})" id="toggle-btn-{{ user.id }}">
+                                    <button class="action-btn action-btn-toggle"
+                                            onclick="toggleUser({{ user.id }})"
+                                            id="toggle-btn-{{ user.id }}">
                                         {{ 'Deactivate' if user.is_active else 'Activate' }}
                                     </button>
-                                    <button class="action-btn action-btn-reset" onclick="resetPassword({{ user.id }}, '{{ user.email }}')">
-                                        Reset Pwd
+                                    <button class="action-btn action-btn-reset"
+                                            onclick="resetPassword({{ user.id }}, '{{ user.email }}')">
+                                        Reset pwd
                                     </button>
                                     {% else %}
-                                    <span style="color: #9ca3af; font-size: 0.75rem;">Current user</span>
+                                    <span class="current-user-label">Current session</span>
                                     {% endif %}
                                 </div>
                             </td>
@@ -356,82 +594,71 @@
             </div>
             {% else %}
             <div class="empty-state">
-                <p>No users found</p>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <p>No users yet — create one above.</p>
             </div>
             {% endif %}
         </div>
 
         <!-- Instructions -->
-        <div class="card" style="background: #fdf2f8;">
-            <div class="card-title">📋 Instructions</div>
-            <ul style="color: #831843; line-height: 1.8; margin-left: 1.5rem;">
-                <li>Use university email addresses (e.g., dean@university.edu)</li>
-                <li>Minimum password length is 6 characters</li>
-                <li>Admin users can create and manage other users</li>
-                <li>Deactivating a user prevents them from logging in</li>
-                <li>Use "Reset Password" if a user forgets their password</li>
-                <li>Default admin: <strong>admin@edupredict.local</strong></li>
+        <div class="info-card">
+            <div class="card-header" style="border-bottom: 1px solid rgba(59,130,246,0.14); margin-bottom: 0.85rem; padding-bottom: 0.75rem;">
+                <div class="card-header-icon card-header-icon--amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <span class="card-title">Access Policy</span>
+            </div>
+            <ul>
+                <li>Use institutional email addresses — e.g. <strong>dean@university.edu</strong></li>
+                <li>Minimum password length is <strong>6 characters</strong></li>
+                <li>Admin users can create and manage other accounts</li>
+                <li>Deactivating a user immediately revokes dashboard access</li>
+                <li>Default admin account: <strong>admin@edupredict.local</strong></li>
+                <li>All login sessions are logged for audit compliance</li>
             </ul>
         </div>
+
     </div>
 
     <script>
         async function toggleUser(userId) {
-            if (!confirm('Are you sure you want to change this user\'s status?')) return;
-            
+            if (!confirm('Change this user\'s active status?')) return;
             try {
-                const response = await fetch(`/admin/users/${userId}/toggle`, {
+                const r = await fetch(`/admin/users/${userId}/toggle`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Update status badge
-                    const statusBadge = document.getElementById(`status-${userId}`);
-                    statusBadge.textContent = data.is_active ? 'Active' : 'Inactive';
-                    statusBadge.className = `badge ${data.is_active ? 'badge-active' : 'badge-inactive'}`;
-                    
-                    // Update toggle button
-                    const toggleBtn = document.getElementById(`toggle-btn-${userId}`);
-                    toggleBtn.textContent = data.is_active ? 'Deactivate' : 'Activate';
-                    
-                    alert(data.message);
+                const d = await r.json();
+                if (d.success) {
+                    const badge = document.getElementById(`status-${userId}`);
+                    badge.textContent = '';
+                    const dot = document.createElement('span');
+                    dot.className = 'badge-dot';
+                    dot.style.background = d.is_active ? '#34d399' : '#fca5a5';
+                    badge.appendChild(dot);
+                    badge.appendChild(document.createTextNode(d.is_active ? ' Active' : ' Inactive'));
+                    badge.className = `badge ${d.is_active ? 'badge-active' : 'badge-inactive'}`;
+                    document.getElementById(`toggle-btn-${userId}`).textContent = d.is_active ? 'Deactivate' : 'Activate';
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('Error: ' + d.error);
                 }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+            } catch (e) { alert('Request failed: ' + e.message); }
         }
 
         async function resetPassword(userId, email) {
-            const newPassword = prompt(`Enter new password for ${email}:`);
-            if (!newPassword) return;
-            
-            if (newPassword.length < 6) {
-                alert('Password must be at least 6 characters');
-                return;
-            }
-            
+            const pwd = prompt(`New password for ${email}:`);
+            if (!pwd) return;
+            if (pwd.length < 6) { alert('Password must be at least 6 characters.'); return; }
             try {
-                const response = await fetch(`/admin/users/${userId}/reset-password`, {
+                const r = await fetch(`/admin/users/${userId}/reset-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: newPassword })
+                    body: JSON.stringify({ password: pwd })
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert(data.message);
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+                const d = await r.json();
+                if (d.success) alert(d.message);
+                else alert('Error: ' + d.error);
+            } catch (e) { alert('Request failed: ' + e.message); }
         }
     </script>
 </body>

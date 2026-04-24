@@ -1,0 +1,58 @@
+{
+  "data_scientists_15_2051": [],
+  "swe_15_1252": [],
+  "info_security_15_1212": [],
+  "bls_10yr_projections": {
+    "source": "BLS Employment Projections 2022-2032 (Table 1.4)",
+    "url": "https://www.bls.gov/emp/tables/emp-by-detailed-occupation.htm",
+    "projections": [
+      {
+        "occupation": "Data Scientists",
+        "soc_code": "15-2051",
+        "employment_2022": 168900,
+        "employment_2032": 226600,
+        "change_pct": 35.0,
+        "annual_openings": 17700,
+        "median_wage_2022": 103500
+      },
+      {
+        "occupation": "Software Developers",
+        "soc_code": "15-1252",
+        "employment_2022": 1795900,
+        "employment_2032": 2248000,
+        "change_pct": 25.0,
+        "annual_openings": 153900,
+        "median_wage_2022": 127260
+      },
+      {
+        "occupation": "Info Security Analysts",
+        "soc_code": "15-1212",
+        "employment_2022": 168900,
+        "employment_2032": 222800,
+        "change_pct": 32.0,
+        "annual_openings": 16800,
+        "median_wage_2022": 112000
+      },
+      {
+        "occupation": "CS Research Scientists",
+        "soc_code": "15-1221",
+        "employment_2022": 33200,
+        "employment_2032": 40900,
+        "change_pct": 23.0,
+        "annual_openings": 3200,
+        "median_wage_2022": 136620
+      },
+      {
+        "occupation": "Machine Learning Engineers",
+        "soc_code": "15-2091",
+        "employment_2022": 21600,
+        "employment_2032": 30200,
+        "change_pct": 40.0,
+        "annual_openings": 2900,
+        "median_wage_2022": 130000
+      }
+    ]
+  },
+  "api_live_data": true,
+  "fetched_at": "2026-04-19T12:45:10.706453"
+}

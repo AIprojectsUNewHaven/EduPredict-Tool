@@ -1,0 +1,33 @@
+{
+  "run_at": "2026-04-19T12:45:10.712293",
+  "results": {
+    "cip_completions": "48 rows",
+    "arxiv_papers": "16 papers",
+    "openalex": "fetched",
+    "bls_projections": "fetched",
+    "city_job_demand": "10 metros",
+    "application_trends": "35 data points"
+  },
+  "new_files": {
+    "raw": [
+      "ai_program_application_trends.csv",
+      "bls_occupation_projections.csv",
+      "bls_salary_data.csv",
+      "cip_completions.csv",
+      "city_job_demand.csv",
+      "employer_program_map.csv",
+      "employers_2024.csv",
+      "institutions_programs_2024.csv",
+      "ipeds_institutions.csv",
+      "ipeds_real.csv",
+      "job_market_data.csv"
+    ],
+    "processed": [
+      "arxiv_ai_education_by_year.csv",
+      "cip_cs_completions_summary.csv",
+      "grad_enrollment_trends.csv",
+      "openalex_ai_trends_by_year.csv",
+      "state_summary.csv"
+    ]
+  }
+}

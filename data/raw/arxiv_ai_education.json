@@ -1,0 +1,162 @@
+[
+  {
+    "arxiv_id": "2512.11934v1",
+    "title": "Unveiling User Perceptions in the Generative AI Era: A Sentiment-Driven Evaluation of AI Educational Apps' Role in Digital Transformation of e-Teaching",
+    "abstract": "The rapid integration of generative artificial intelligence into education has driven digital transformation in e-teaching, yet user perceptions of AI educational apps remain underexplored. This study performs a sentiment-driven evaluation of user reviews from top AI ed-apps on the Google Play Store to assess efficacy, challenges, and pedagogical implications. Our pipeline involved scraping app da",
+    "year": "2025",
+    "published": "2025-12-12",
+    "authors": "Adeleh Mazaherian; Erfan Nourbakhsh",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2512.11934v1"
+  },
+  {
+    "arxiv_id": "2512.05167v1",
+    "title": "Bridging Traditional Machine Learning and Large Language Models: A Two-Part Course Design for Modern AI Education",
+    "abstract": "This paper presents an innovative pedagogical approach for teaching artificial intelligence and data science that systematically bridges traditional machine learning techniques with modern Large Language Models (LLMs). We describe a course structured in two sequential and complementary parts: foundational machine learning concepts and contemporary LLM applications. This design enables students to ",
+    "year": "2025",
+    "published": "2025-12-04",
+    "authors": "Fang Li",
+    "categories": "cs.AI",
+    "url": "http://arxiv.org/abs/2512.05167v1"
+  },
+  {
+    "arxiv_id": "2511.11757v1",
+    "title": "Bridging the Skills Gap: A Course Model for Modern Generative AI Education",
+    "abstract": "Research on how the popularization of generative Artificial Intelligence (AI) tools impacts learning environments has led to hesitancy among educators to teach these tools in classrooms, creating two observed disconnects. Generative AI competency is increasingly valued in industry but not in higher education, and students are experimenting with generative AI without formal guidance. The authors ar",
+    "year": "2025",
+    "published": "2025-11-13",
+    "authors": "Anya Bardach; Hamilton Murrah",
+    "categories": "cs.CY; cs.AI; cs.SE",
+    "url": "http://arxiv.org/abs/2511.11757v1"
+  },
+  {
+    "arxiv_id": "2509.23363v1",
+    "title": "AI Education in Higher Education: A Taxonomy for Curriculum Reform and the Mission of Knowledge",
+    "abstract": "Artificial intelligence (AI) is reshaping higher education, yet current debates often feel tangled, mixing concerns about pedagogy, operations, curriculum, and the future of work without a shared framework. This paper offers a first attempt at a taxonomy to organize the diverse narratives of AI education and to inform discipline-based curricular discussions. We place these narratives within the en",
+    "year": "2025",
+    "published": "2025-09-27",
+    "authors": "Tian Zheng",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2509.23363v1"
+  },
+  {
+    "arxiv_id": "2509.21713v1",
+    "title": "Developing Strategies to Increase Capacity in AI Education",
+    "abstract": "Many institutions are currently grappling with teaching artificial intelligence (AI) in the face of growing demand and relevance in our world. The Computing Research Association (CRA) has conducted 32 moderated virtual roundtable discussions of 202 experts committed to improving AI education. These discussions slot into four focus areas: AI Knowledge Areas and Pedagogy, Infrastructure Challenges i",
+    "year": "2025",
+    "published": "2025-09-26",
+    "authors": "Noah Q. Cowit; Sri Yash Tadimalla; Stephanie T. Jones; Mary Lou Maher",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2509.21713v1"
+  },
+  {
+    "arxiv_id": "2508.05360v1",
+    "title": "Building Effective Safety Guardrails in AI Education Tools",
+    "abstract": "There has been rapid development in generative AI tools across the education sector, which in turn is leading to increased adoption by teachers. However, this raises concerns regarding the safety and age-appropriateness of the AI-generated content that is being created for use in classrooms. This paper explores Oak National Academy's approach to addressing these concerns within the development of ",
+    "year": "2025",
+    "published": "2025-08-07",
+    "authors": "Hannah-Beth Clark; Laura Benton; Emma Searle; Margaux Dowland",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2508.05360v1"
+  },
+  {
+    "arxiv_id": "2508.00970v2",
+    "title": "AI-Educational Development Loop (AI-EDL): A Conceptual Framework to Bridge AI Capabilities with Classical Educational Theories",
+    "abstract": "This study introduces the AI-Educational Development Loop (AI-EDL), a theory-driven framework that integrates classical learning theories with human-in-the-loop artificial intelligence (AI) to support reflective, iterative learning. Implemented in EduAlly, an AI-assisted platform for writing-intensive and feedback-sensitive tasks, the framework emphasizes transparency, self-regulated learning, and",
+    "year": "2025",
+    "published": "2025-08-01",
+    "authors": "Ning Yu; Jie Zhang; Sandeep Mitra; Rebecca Smith",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2508.00970v2"
+  },
+  {
+    "arxiv_id": "2505.02856v1",
+    "title": "AI Education in a Mirror: Challenges Faced by Academic and Industry Experts",
+    "abstract": "As Artificial Intelligence (AI) technologies continue to evolve, the gap between academic AI education and real-world industry challenges remains an important area of investigation. This study provides preliminary insights into challenges AI professionals encounter in both academia and industry, based on semi-structured interviews with 14 AI experts - eight from industry and six from academia. We ",
+    "year": "2025",
+    "published": "2025-05-02",
+    "authors": "Mahir Akgun; Hadi Hosseini",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2505.02856v1"
+  },
+  {
+    "arxiv_id": "2402.01647v1",
+    "title": "Build Your Own Robot Friend: An Open-Source Learning Module for Accessible and Engaging AI Education",
+    "abstract": "As artificial intelligence (AI) is playing an increasingly important role in our society and global economy, AI education and literacy have become necessary components in college and K-12 education to prepare students for an AI-powered society. However, current AI curricula have not yet been made accessible and engaging enough for students and schools from all socio-economic backgrounds with diffe",
+    "year": "2024",
+    "published": "2024-01-06",
+    "authors": "Zhonghao Shi; Allison O'Connell; Zongjian Li; Siqi Liu",
+    "categories": "cs.CY; cs.AI; cs.HC; cs.LG; cs.RO",
+    "url": "http://arxiv.org/abs/2402.01647v1"
+  },
+  {
+    "arxiv_id": "2311.14702v1",
+    "title": "Transdisciplinary AI Education: The Confluence of Curricular and Community Needs in the Instruction of Artificial Intelligence",
+    "abstract": "The integration of artificial intelligence (AI) into education has the potential to transform the way we learn and teach. In this paper, we examine the current state of AI in education and explore the potential benefits and challenges of incorporating this technology into the classroom. The approaches currently available for AI education often present students with experiences only focusing on dis",
+    "year": "2023",
+    "published": "2023-11-10",
+    "authors": "Roozbeh Aliabadi; Aditi Singh; Eryka Wilson",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2311.14702v1"
+  },
+  {
+    "arxiv_id": "2206.03217v2",
+    "title": "A Perspective on K-12 AI Education",
+    "abstract": "Artificial intelligence (AI), which enables machines to learn to perform a task by training on diverse datasets, is one of the most revolutionary developments in scientific history. Although AI and especially deep learning is relatively new, it has already had transformative impact on medicine, biology, transportation, entertainment, and beyond. As AI changes our daily lives at an increasingly fas",
+    "year": "2022",
+    "published": "2022-05-04",
+    "authors": "Nathan Wang; Paul Tonko; Nikil Ragav; Michael Chungyoun",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2206.03217v2"
+  },
+  {
+    "arxiv_id": "2110.09290v2",
+    "title": "The AI Triplet: Computational, Conceptual, and Mathematical Knowledge in AI Education",
+    "abstract": "Efforts to enhance education and broaden participation in AI will benefit from a systematic understanding of the competencies underlying AI expertise. In this paper, we observe that AI expertise requires integrating computational, conceptual, and mathematical knowledge and representations. We call this the ``AI triplet,'' similar in spirit to the ``chemistry triplet'' that has heavily influenced t",
+    "year": "2021",
+    "published": "2021-10-14",
+    "authors": "Maithilee Kunda",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2110.09290v2"
+  },
+  {
+    "arxiv_id": "1702.00137v1",
+    "title": "Blue Sky Ideas in Artificial Intelligence Education from the EAAI 2017 New and Future AI Educator Program",
+    "abstract": "The 7th Symposium on Educational Advances in Artificial Intelligence (EAAI'17, co-chaired by Sven Koenig and Eric Eaton) launched the EAAI New and Future AI Educator Program to support the training of early-career university faculty, secondary school faculty, and future educators (PhD candidates or postdocs who intend a career in academia). As part of the program, awardees were asked to address on",
+    "year": "2017",
+    "published": "2017-02-01",
+    "authors": "Eric Eaton; Sven Koenig; Claudia Schulz; Francesco Maurelli",
+    "categories": "cs.AI; cs.CY",
+    "url": "http://arxiv.org/abs/1702.00137v1"
+  },
+  {
+    "arxiv_id": "2506.18955v1",
+    "title": "Citizenship Challenges in Artificial Intelligence Education",
+    "abstract": "This chapter addresses the citizenship challenges related to AI in education, particularly concerning students, teachers, and other educational stakeholders in the context of AI integration. We first explore how to foster AI awareness and education, along with various strategies to promote a socio-critical approach to AI training, aiming to identify relevant and ethical uses to prioritise. In the ",
+    "year": "2025",
+    "published": "2025-06-23",
+    "authors": "Margarida Romero",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2506.18955v1"
+  },
+  {
+    "arxiv_id": "2202.01281v1",
+    "title": "An Experience Report of Executive-Level Artificial Intelligence Education in the United Arab Emirates",
+    "abstract": "Teaching artificial intelligence (AI) is challenging. It is a fast moving field and therefore difficult to keep people updated with the state-of-the-art. Educational offerings for students are ever increasing, beyond university degree programs where AI education traditionally lay. In this paper, we present an experience report of teaching an AI course to business executives in the United Arab Emir",
+    "year": "2022",
+    "published": "2022-02-02",
+    "authors": "David Johnson; Mohammad Alsharid; Rasheed El-Bouri; Nigel Mehdi",
+    "categories": "cs.CY; cs.AI",
+    "url": "http://arxiv.org/abs/2202.01281v1"
+  },
+  {
+    "arxiv_id": "2208.06906v1",
+    "title": "Limits of an AI program for solving college math problems",
+    "abstract": "Drori et al. (2022) report that \"A neural network solves, explains, and generates university math problems by program synthesis and few-shot learning at human level ... [It] automatically answers 81\\% of university-level mathematics problems.\" The system they describe is indeed impressive; however, the above description is very much overstated. The work of solving the problems is done, not by a ne",
+    "year": "2022",
+    "published": "2022-08-14",
+    "authors": "Ernest Davis",
+    "categories": "cs.AI",
+    "url": "http://arxiv.org/abs/2208.06906v1"
+  }
+]
