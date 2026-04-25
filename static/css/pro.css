@@ -680,16 +680,16 @@ h1, h2, h3, h4, .hero-title, .section-title, .form-title,
 }
 .hero-stat-item { text-align: center; padding: 0.75rem 2.75rem; flex-shrink: 0; }
 .hero-stat-sep  { width: 1px; height: 48px; background: var(--border-med); flex-shrink: 0; }
+.hero-stat-num-row { display: block; line-height: 1; }
 .hero-stat-num  {
-    display:   block;
+    display:   inline;
     font-size: 2.1rem;
     font-weight: 800;
     color:     var(--navy);
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
-    line-height: 1;
 }
-.hero-stat-suffix { font-size: 1.7rem; font-weight: 800; color: var(--orange); vertical-align: baseline; }
+.hero-stat-suffix { display: inline; font-size: 1.7rem; font-weight: 800; color: var(--orange); }
 .hero-stat-label  {
     display:   block;
     font-size: 0.68rem;
@@ -1611,6 +1611,78 @@ h1, h2, h3, h4, .hero-title, .section-title, .form-title,
 .footer-links a { font-size: 0.8rem; font-weight: 600; color: rgba(224,240,255,0.60); text-decoration: none; }
 .footer-links a:hover { color: #f0f6ff; }
 .footer-meta  { font-size: 0.72rem; color: rgba(224,240,255,0.40); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LABOR MARKET INTELLIGENCE CARD
+   ═══════════════════════════════════════════════════════════════════════ */
+.lm-card { padding: 1.5rem; }
+
+.lm-inner {
+    display:   grid;
+    grid-template-columns: 1fr 1fr;
+    gap:       2rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+@media (max-width: 860px) { .lm-inner { grid-template-columns: 1fr; } }
+
+.lm-radar-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+.lm-legend {
+    display: flex;
+    gap:     1.25rem;
+    justify-content: center;
+}
+.lm-legend-item {
+    display:    flex;
+    align-items: center;
+    gap:        6px;
+    font-size:  0.75rem;
+    color:      var(--text-secondary);
+    font-weight: 500;
+}
+.lm-legend-swatch {
+    width:        28px;
+    height:       10px;
+    border-radius: 3px;
+    flex-shrink:  0;
+}
+.lm-legend-state    { background: var(--navy); }
+.lm-legend-national { background: #d0d0d0; border: 1px dashed #a0a0a0; }
+
+/* Progress bars */
+.lm-bars-wrap { display: flex; flex-direction: column; gap: 1.35rem; }
+
+.lm-bar-item {}
+.lm-bar-header {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     baseline;
+    margin-bottom:   0.45rem;
+}
+.lm-bar-header span:first-child {
+    font-size:   0.875rem;
+    font-weight: 700;
+    color:       var(--text);
+    font-family: var(--font-display);
+}
+.lm-bar-val {
+    font-size:   0.9rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+}
+.lm-bar-track {
+    height:       7px;
+    background:   var(--bg-deep);
+    border-radius: 999px;
+    overflow:     hidden;
+}
+.lm-bar-fill {
+    height:       100%;
+    border-radius: 999px;
+    transition:   width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    SCROLL REVEAL

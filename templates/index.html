@@ -171,7 +171,7 @@
             </div>
             <div class="hero-stat-sep"></div>
             <div class="hero-stat-item">
-                <span class="hero-stat-num" data-count="35">35</span><span class="hero-stat-suffix">%</span>
+                <div class="hero-stat-num-row"><span class="hero-stat-num" data-count="35">35</span><span class="hero-stat-suffix">%</span></div>
                 <span class="hero-stat-label">AI job growth</span>
             </div>
         </div>
@@ -544,6 +544,22 @@
                     <div class="chart-title">State comparison (CT, NY, MA)</div>
                     <p class="chart-subtitle">Shows relative enrollment strength by state for the same program inputs.</p>
                     <div id="state-chart" style="height: 400px;"></div>
+                </div>
+
+                <!-- Labor Market Intelligence Card -->
+                <div class="chart-container lm-card">
+                    <div class="chart-title">Labor Market Intelligence</div>
+                    <p class="chart-subtitle" id="lm-subtitle">State-level demand indicators</p>
+                    <div class="lm-inner">
+                        <div class="lm-radar-wrap">
+                            <div id="lm-radar-svg"></div>
+                            <div class="lm-legend">
+                                <div class="lm-legend-item"><span class="lm-legend-swatch lm-legend-state"></span><span id="lm-legend-state-label">Connecticut</span></div>
+                                <div class="lm-legend-item"><span class="lm-legend-swatch lm-legend-national"></span><span>National Avg</span></div>
+                            </div>
+                        </div>
+                        <div class="lm-bars-wrap" id="lm-bars"></div>
+                    </div>
                 </div>
 
                 <!-- Employer Geo Map -->
@@ -1036,6 +1052,10 @@
             const rec = data.recommendation;
             const yl = enrollmentYearLabels(data.inputs.term);
 
+            // Labor Market radar + bars
+            const stateCode = (data.inputs.state || 'CT').toUpperCase().slice(0,2);
+            renderLaborMarket(stateCode);
+
             // Metrics
             document.getElementById('metric-year1').textContent = f.year1;
             document.getElementById('metric-year1-label').textContent = `Students (${yl.firstHuman})`;
@@ -1474,6 +1494,73 @@
             } catch (e) {
                 console.error('Error loading geo sections:', e);
             }
+        }
+
+        // ── Labor Market Radar + Bars ────────────────────────────────────
+        const LM_DATA = {
+            CT: { name: 'Connecticut', radar: [0.75, 0.82, 0.80, 0.65, 0.70], posting: 33, salary: '$138K', salaryPct: 69, aiRisk: 25, competition: 67 },
+            NY: { name: 'New York',    radar: [0.90, 0.95, 0.92, 0.30, 0.75], posting: 28, salary: '$165K', salaryPct: 82, aiRisk: 22, competition: 85 },
+            MA: { name: 'Massachusetts', radar: [0.85, 0.90, 0.85, 0.55, 0.80], posting: 31, salary: '$152K', salaryPct: 76, aiRisk: 28, competition: 72 }
+        };
+        const LM_NATIONAL = [0.55, 0.60, 0.55, 0.50, 0.55];
+        const LM_LABELS   = ['Job Growth', 'Salary Level', 'Market Demand', 'Low Competition', 'AI Safety'];
+
+        function renderLaborMarket(state) {
+            const d    = LM_DATA[state] || LM_DATA.CT;
+            const cx   = 130, cy = 125, R = 85, N = 5;
+            const angs = Array.from({length: N}, (_, i) => -Math.PI/2 + (2*Math.PI/N)*i);
+
+            function pts(vals) {
+                return vals.map((v, i) => `${(cx + v*R*Math.cos(angs[i])).toFixed(1)},${(cy + v*R*Math.sin(angs[i])).toFixed(1)}`).join(' ');
+            }
+
+            // Grid pentagons
+            let grid = '';
+            [0.2,0.4,0.6,0.8,1.0].forEach(lvl => {
+                const gp = Array.from({length:N}, (_,i) => `${(cx+lvl*R*Math.cos(angs[i])).toFixed(1)},${(cy+lvl*R*Math.sin(angs[i])).toFixed(1)}`).join(' ');
+                grid += `<polygon points="${gp}" fill="${lvl===1?'rgba(234,88,12,0.03)':'none'}" stroke="#e4e4e4" stroke-width="${lvl===1?1.5:0.8}"/>`;
+            });
+
+            // Axis spokes
+            const spokes = angs.map(a =>
+                `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(a)).toFixed(1)}" y2="${(cy+R*Math.sin(a)).toFixed(1)}" stroke="#e4e4e4" stroke-width="0.8"/>`
+            ).join('');
+
+            // Labels
+            const lbls = LM_LABELS.map((lbl,i) => {
+                const lr = R + 20, lx = cx+lr*Math.cos(angs[i]), ly = cy+lr*Math.sin(angs[i]);
+                return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6b6b6b" font-size="9.5" font-family="DM Sans,sans-serif" font-weight="600">${lbl}</text>`;
+            }).join('');
+
+            const svgH = 260;
+            const svg = `<svg viewBox="0 0 260 ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:0 auto;">
+                ${grid}${spokes}
+                <polygon points="${pts(LM_NATIONAL)}" fill="rgba(180,180,180,0.12)" stroke="#c0c0c0" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round"/>
+                <polygon points="${pts(d.radar)}" fill="rgba(10,10,10,0.12)" stroke="#0a0a0a" stroke-width="2.2" stroke-linejoin="round"/>
+                ${lbls}
+            </svg>`;
+
+            document.getElementById('lm-radar-svg').innerHTML = svg;
+            document.getElementById('lm-legend-state-label').textContent = d.name;
+            document.getElementById('lm-subtitle').textContent = `State-level demand indicators — ${d.name}`;
+
+            document.getElementById('lm-bars').innerHTML = `
+                <div class="lm-bar-item">
+                    <div class="lm-bar-header"><span>Job Posting Growth</span><span class="lm-bar-val" style="color:#059669">+${d.posting}%</span></div>
+                    <div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.posting*2.5}%;background:#059669"></div></div>
+                </div>
+                <div class="lm-bar-item">
+                    <div class="lm-bar-header"><span>Median Salary Trend</span><span class="lm-bar-val" style="color:#0a0a0a">${d.salary}</span></div>
+                    <div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.salaryPct}%;background:#0a0a0a"></div></div>
+                </div>
+                <div class="lm-bar-item">
+                    <div class="lm-bar-header"><span>AI Exposure Risk</span><span class="lm-bar-val" style="color:#ea580c">${d.aiRisk}%</span></div>
+                    <div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.aiRisk*3}%;background:#ea580c"></div></div>
+                </div>
+                <div class="lm-bar-item">
+                    <div class="lm-bar-header"><span>Regional Competition</span><span class="lm-bar-val" style="color:#dc2626">${d.competition}%</span></div>
+                    <div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.competition}%;background:#dc2626"></div></div>
+                </div>`;
         }
 
         // ── 3D Hero Canvas ──────────────────────────────────────────────
