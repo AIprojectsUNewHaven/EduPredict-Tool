@@ -246,6 +246,220 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   3D BROWSER MOCKUP — Hero right panel
+   ═══════════════════════════════════════════════════════════════════════ */
+.hero-3d-scene {
+    position:  relative;
+    perspective: 1200px;
+    padding:   2rem 1rem 3rem;
+}
+
+.hero-3d-browser {
+    background:   #ffffff;
+    border-radius: 12px;
+    overflow:     hidden;
+    box-shadow:
+        0 40px 80px rgba(0,0,0,0.45),
+        0 8px 24px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+    transform:
+        perspective(1200px)
+        rotateY(-18deg)
+        rotateX(6deg)
+        rotateZ(1deg);
+    transform-style: preserve-3d;
+    animation: browser-float 7s ease-in-out infinite;
+    will-change: transform;
+}
+@keyframes browser-float {
+    0%, 100% { transform: perspective(1200px) rotateY(-18deg) rotateX(6deg)   rotateZ(1deg) translateY(0px); }
+    50%       { transform: perspective(1200px) rotateY(-14deg) rotateX(4deg)   rotateZ(0.5deg) translateY(-12px); }
+}
+
+.browser-chrome {
+    background:   #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    padding:      10px 14px;
+    display:      flex;
+    align-items:  center;
+    gap:          10px;
+}
+.browser-dots {
+    display: flex;
+    gap:     5px;
+    flex-shrink: 0;
+}
+.browser-dots span {
+    width:        10px;
+    height:       10px;
+    border-radius: 50%;
+    display:      block;
+}
+.browser-url-bar {
+    flex:         1;
+    background:   #ffffff;
+    border:       1px solid #e2e8f0;
+    border-radius: 6px;
+    padding:      4px 10px;
+    font-size:    0.65rem;
+    color:        #64748b;
+    font-family:  monospace;
+    letter-spacing: 0.02em;
+}
+
+.browser-body { padding: 14px; background: #f8fafc; }
+
+/* mini nav inside browser */
+.mb-nav {
+    display:       flex;
+    align-items:   center;
+    gap:           10px;
+    background:    #0f2557;
+    border-radius: 8px;
+    padding:       8px 12px;
+    margin-bottom: 12px;
+}
+.mb-nav-logo {
+    width:       22px;
+    height:      22px;
+    border-radius: 5px;
+    background:  linear-gradient(135deg, #3b7dd8, #0891b2);
+    color:       #fff;
+    font-size:   0.5rem;
+    font-weight: 800;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.mb-nav-links {
+    display: flex;
+    gap:     6px;
+}
+.mb-nav-links span {
+    height:       6px;
+    border-radius: 3px;
+    background:   rgba(255,255,255,0.25);
+}
+.mb-nav-links span:nth-child(1) { width: 28px; }
+.mb-nav-links span:nth-child(2) { width: 20px; }
+.mb-nav-links span:nth-child(3) { width: 24px; }
+
+/* mini metric row */
+.mb-metrics {
+    display:       grid;
+    grid-template-columns: repeat(3,1fr);
+    gap:           8px;
+    margin-bottom: 12px;
+}
+.mb-metric {
+    background:   #ffffff;
+    border-radius: 8px;
+    padding:      8px 10px;
+    border-left:  3px solid transparent;
+    box-shadow:   0 1px 4px rgba(0,0,0,0.06);
+}
+.mb-metric--blue  { border-left-color: #0052cc; }
+.mb-metric--teal  { border-left-color: #0891b2; }
+.mb-metric--green { border-left-color: #059669; }
+.mb-metric-val { font-size: 0.72rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
+.mb-metric-lbl { font-size: 0.52rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-top: 2px; }
+
+/* mini chart area */
+.mb-chart-area {
+    background:   #ffffff;
+    border-radius: 8px;
+    padding:      10px 10px 4px;
+    margin-bottom: 10px;
+    box-shadow:   0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* verdict strip */
+.mb-verdict {
+    background:   #059669;
+    color:        #fff;
+    text-align:   center;
+    border-radius: 7px;
+    padding:      7px 10px;
+    font-size:    0.62rem;
+    font-weight:  800;
+    letter-spacing: 0.04em;
+}
+
+/* ── Floating pop-out chips ─────────────────────────────────────────── */
+.float-chip {
+    position:     absolute;
+    display:      flex;
+    align-items:  center;
+    gap:          8px;
+    background:   rgba(15,37,87,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border:       1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    padding:      9px 14px;
+    box-shadow:   0 8px 32px rgba(0,0,0,0.35);
+    white-space:  nowrap;
+}
+.float-chip-icon {
+    width:       28px;
+    height:      28px;
+    border-radius: 7px;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.float-chip-val {
+    font-size:    0.78rem;
+    font-weight:  800;
+    color:        #f0f6ff;
+    line-height:  1;
+    font-variant-numeric: tabular-nums;
+}
+.float-chip-lbl {
+    font-size:    0.58rem;
+    color:        rgba(224,240,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight:  600;
+    margin-top:   2px;
+}
+
+.float-chip--1 {
+    top:    18%;
+    right:  -10%;
+    animation: chip-float-1 6s ease-in-out infinite;
+}
+.float-chip--2 {
+    bottom: 28%;
+    left:   -8%;
+    animation: chip-float-2 7s ease-in-out infinite;
+}
+.float-chip--3 {
+    bottom: 8%;
+    right:  -6%;
+    animation: chip-float-3 8s ease-in-out infinite;
+}
+
+@keyframes chip-float-1 {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+}
+@keyframes chip-float-2 {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(8px); }
+}
+@keyframes chip-float-3 {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-6px); }
+}
+
+@media (max-width: 960px) {
+    .hero-3d-scene { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    HERO — Navy gradient with canvas animation
    ═══════════════════════════════════════════════════════════════════════ */
 .hero-section {

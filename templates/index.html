@@ -52,52 +52,105 @@
                 </div>
             </div>
             <div class="hero-right">
-                <div class="hero-glass-card">
-                    <div class="hero-glass-header">
-                        <div class="hero-glass-dots"><span></span><span></span><span></span></div>
-                        <span class="hero-glass-title">Forecast Preview · MS in AI · CT · FA26</span>
-                    </div>
-                    <div class="hero-glass-chart">
-                        <svg viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="hbg1" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.9"/>
-                                    <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.7"/>
-                                </linearGradient>
-                                <linearGradient id="hbg2" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.9"/>
-                                    <stop offset="100%" stop-color="#0891b2" stop-opacity="0.7"/>
-                                </linearGradient>
-                            </defs>
-                            <line x1="0" y1="100" x2="280" y2="100" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                            <line x1="0" y1="65" x2="280" y2="65" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                            <line x1="0" y1="30" x2="280" y2="30" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                            <rect x="25" y="58" width="55" height="42" rx="5" fill="url(#hbg1)"/>
-                            <rect x="113" y="35" width="55" height="65" rx="5" fill="url(#hbg2)"/>
-                            <rect x="200" y="15" width="55" height="85" rx="5" fill="url(#hbg1)"/>
-                            <text x="52" y="52" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="Inter,sans-serif" font-weight="700">40</text>
-                            <text x="140" y="29" text-anchor="middle" fill="#67e8f9" font-size="12" font-family="Inter,sans-serif" font-weight="700">46</text>
-                            <text x="227" y="9" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="Inter,sans-serif" font-weight="700">50</text>
-                            <text x="52" y="118" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter,sans-serif">FA 2026</text>
-                            <text x="140" y="118" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter,sans-serif">FA 2027</text>
-                            <text x="227" y="118" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter,sans-serif">FA 2028</text>
-                        </svg>
-                    </div>
-                    <div class="hero-glass-metrics">
-                        <div class="hero-glass-metric">
-                            <span class="hgm-val">85%</span>
-                            <span class="hgm-lbl">Confidence</span>
+                <div class="hero-3d-scene">
+                    <!-- 3D browser mockup -->
+                    <div class="hero-3d-browser">
+                        <div class="browser-chrome">
+                            <div class="browser-dots">
+                                <span style="background:#ef4444"></span>
+                                <span style="background:#f59e0b"></span>
+                                <span style="background:#10b981"></span>
+                            </div>
+                            <div class="browser-url-bar">edupredict.edu/dashboard</div>
                         </div>
-                        <div class="hero-glass-metric">
-                            <span class="hgm-val" style="color:#34d399">3.41x</span>
-                            <span class="hgm-lbl">ROI</span>
-                        </div>
-                        <div class="hero-glass-metric">
-                            <span class="hgm-val" style="color:#60a5fa">Very High</span>
-                            <span class="hgm-lbl">Demand</span>
+                        <div class="browser-body">
+                            <!-- mini nav -->
+                            <div class="mb-nav">
+                                <div class="mb-nav-logo">EP</div>
+                                <div class="mb-nav-links">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+                            <!-- mini metric row -->
+                            <div class="mb-metrics">
+                                <div class="mb-metric mb-metric--blue">
+                                    <div class="mb-metric-val">40–50</div>
+                                    <div class="mb-metric-lbl">Enrollment</div>
+                                </div>
+                                <div class="mb-metric mb-metric--teal">
+                                    <div class="mb-metric-val">3.41x</div>
+                                    <div class="mb-metric-lbl">ROI</div>
+                                </div>
+                                <div class="mb-metric mb-metric--green">
+                                    <div class="mb-metric-val">85%</div>
+                                    <div class="mb-metric-lbl">Confidence</div>
+                                </div>
+                            </div>
+                            <!-- mini chart -->
+                            <div class="mb-chart-area">
+                                <svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                                    <defs>
+                                        <linearGradient id="mb1" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#0052cc" stop-opacity="0.9"/>
+                                            <stop offset="100%" stop-color="#0052cc" stop-opacity="0.5"/>
+                                        </linearGradient>
+                                        <linearGradient id="mb2" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#0891b2" stop-opacity="0.9"/>
+                                            <stop offset="100%" stop-color="#0891b2" stop-opacity="0.5"/>
+                                        </linearGradient>
+                                        <linearGradient id="mb3" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#ea580c" stop-opacity="0.9"/>
+                                            <stop offset="100%" stop-color="#ea580c" stop-opacity="0.5"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <line x1="0" y1="75" x2="300" y2="75" stroke="#e2e8f0" stroke-width="1"/>
+                                    <line x1="0" y1="50" x2="300" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+                                    <line x1="0" y1="25" x2="300" y2="25" stroke="#e2e8f0" stroke-width="1"/>
+                                    <rect x="20"  y="45" width="40" height="30" rx="4" fill="url(#mb1)"/>
+                                    <rect x="75"  y="30" width="40" height="45" rx="4" fill="url(#mb2)"/>
+                                    <rect x="130" y="15" width="40" height="60" rx="4" fill="url(#mb1)"/>
+                                    <rect x="185" y="22" width="40" height="53" rx="4" fill="url(#mb2)"/>
+                                    <rect x="240" y="10" width="40" height="65" rx="4" fill="url(#mb3)"/>
+                                    <text x="40"  y="40" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">40</text>
+                                    <text x="95"  y="25" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">43</text>
+                                    <text x="150" y="10" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">46</text>
+                                    <text x="205" y="17" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">48</text>
+                                    <text x="260" y="5"  text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">50</text>
+                                </svg>
+                            </div>
+                            <!-- verdict bar -->
+                            <div class="mb-verdict">STRONG GO — Launch Recommended</div>
                         </div>
                     </div>
-                    <div class="hero-glass-rec">STRONG GO — Launch Recommended</div>
+
+                    <!-- Floating pop-out cards -->
+                    <div class="float-chip float-chip--1">
+                        <div class="float-chip-icon" style="background:rgba(5,150,105,0.15);color:#059669;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        </div>
+                        <div>
+                            <div class="float-chip-val">+35%</div>
+                            <div class="float-chip-lbl">AI job growth</div>
+                        </div>
+                    </div>
+                    <div class="float-chip float-chip--2">
+                        <div class="float-chip-icon" style="background:rgba(0,82,204,0.12);color:#0052cc;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                        <div>
+                            <div class="float-chip-val">453</div>
+                            <div class="float-chip-lbl">Institutions</div>
+                        </div>
+                    </div>
+                    <div class="float-chip float-chip--3">
+                        <div class="float-chip-icon" style="background:rgba(234,88,12,0.12);color:#ea580c;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                        </div>
+                        <div>
+                            <div class="float-chip-val">CT · NY · MA</div>
+                            <div class="float-chip-lbl">States covered</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
