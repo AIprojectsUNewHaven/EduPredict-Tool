@@ -6,9 +6,10 @@
     <title>EduPredict Pro | AI Degree Program Planning</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pro.css') }}">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js"></script>
 </head>
 <body>
     <header class="header">
@@ -28,6 +29,10 @@
             </nav>
             <div class="header-actions">
                 <span class="version-pill">v2.2</span>
+                <a href="#app" class="nav-btn nav-btn--cta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;margin-right:5px"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+                    Run Forecast
+                </a>
                 {% if current_user.is_admin %}
                 <a href="{{ url_for('admin_users') }}" class="nav-btn nav-btn--admin">Admin</a>
                 {% endif %}
@@ -53,73 +58,42 @@
             </div>
             <div class="hero-right">
                 <div class="hero-3d-scene">
-                    <!-- 3D browser mockup -->
-                    <div class="hero-3d-browser">
-                        <div class="browser-chrome">
-                            <div class="browser-dots">
-                                <span style="background:#ef4444"></span>
-                                <span style="background:#f59e0b"></span>
-                                <span style="background:#10b981"></span>
+                    <!-- Animated Terminal -->
+                    <div class="hero-terminal">
+                        <div class="term-chrome">
+                            <div class="term-dots">
+                                <span class="term-dot term-dot--red"></span>
+                                <span class="term-dot term-dot--yellow"></span>
+                                <span class="term-dot term-dot--green"></span>
                             </div>
-                            <div class="browser-url-bar">edupredict.edu/dashboard</div>
+                            <div class="term-title">terminal</div>
                         </div>
-                        <div class="browser-body">
-                            <!-- mini nav -->
-                            <div class="mb-nav">
-                                <div class="mb-nav-logo">EP</div>
-                                <div class="mb-nav-links">
-                                    <span></span><span></span><span></span>
+                        <div class="term-body" id="term-body">
+                            <div class="term-line"><span class="term-prompt">$</span> <span class="term-cmd" id="term-cmd-1"></span></div>
+                            <div class="term-line term-out" id="term-out-1" style="display:none"><span class="term-arrow">&gt;</span> <span id="term-txt-1"></span></div>
+                            <div class="term-line term-out" id="term-out-2" style="display:none"><span class="term-arrow">&gt;</span> <span id="term-txt-2"></span></div>
+                            <div class="term-line term-out" id="term-out-3" style="display:none"><span class="term-arrow">&gt;</span> <span id="term-txt-3"></span></div>
+                            <div class="term-line term-out" id="term-out-4" style="display:none"><span class="term-arrow">&gt;</span> <span id="term-txt-4"></span></div>
+                            <div class="term-line term-out term-result" id="term-out-5" style="display:none"><span class="term-arrow">&gt;</span> <span id="term-txt-5"></span></div>
+                            <div class="term-cursor" id="term-cursor">▋</div>
+                        </div>
+                        <!-- result card that slides in -->
+                        <div class="term-result-card" id="term-result-card">
+                            <div class="term-result-row">
+                                <div class="term-result-metric">
+                                    <div class="term-result-val">40–50</div>
+                                    <div class="term-result-lbl">Cohort size</div>
+                                </div>
+                                <div class="term-result-metric">
+                                    <div class="term-result-val" style="color:#ea580c">3.4x</div>
+                                    <div class="term-result-lbl">ROI ratio</div>
+                                </div>
+                                <div class="term-result-metric">
+                                    <div class="term-result-val" style="color:#10b981">85%</div>
+                                    <div class="term-result-lbl">Confidence</div>
                                 </div>
                             </div>
-                            <!-- mini metric row -->
-                            <div class="mb-metrics">
-                                <div class="mb-metric mb-metric--blue">
-                                    <div class="mb-metric-val">40–50</div>
-                                    <div class="mb-metric-lbl">Enrollment</div>
-                                </div>
-                                <div class="mb-metric mb-metric--teal">
-                                    <div class="mb-metric-val">3.41x</div>
-                                    <div class="mb-metric-lbl">ROI</div>
-                                </div>
-                                <div class="mb-metric mb-metric--green">
-                                    <div class="mb-metric-val">85%</div>
-                                    <div class="mb-metric-lbl">Confidence</div>
-                                </div>
-                            </div>
-                            <!-- mini chart -->
-                            <div class="mb-chart-area">
-                                <svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                                    <defs>
-                                        <linearGradient id="mb1" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#0052cc" stop-opacity="0.9"/>
-                                            <stop offset="100%" stop-color="#0052cc" stop-opacity="0.5"/>
-                                        </linearGradient>
-                                        <linearGradient id="mb2" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#0891b2" stop-opacity="0.9"/>
-                                            <stop offset="100%" stop-color="#0891b2" stop-opacity="0.5"/>
-                                        </linearGradient>
-                                        <linearGradient id="mb3" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#ea580c" stop-opacity="0.9"/>
-                                            <stop offset="100%" stop-color="#ea580c" stop-opacity="0.5"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <line x1="0" y1="75" x2="300" y2="75" stroke="#e2e8f0" stroke-width="1"/>
-                                    <line x1="0" y1="50" x2="300" y2="50" stroke="#e2e8f0" stroke-width="1"/>
-                                    <line x1="0" y1="25" x2="300" y2="25" stroke="#e2e8f0" stroke-width="1"/>
-                                    <rect x="20"  y="45" width="40" height="30" rx="4" fill="url(#mb1)"/>
-                                    <rect x="75"  y="30" width="40" height="45" rx="4" fill="url(#mb2)"/>
-                                    <rect x="130" y="15" width="40" height="60" rx="4" fill="url(#mb1)"/>
-                                    <rect x="185" y="22" width="40" height="53" rx="4" fill="url(#mb2)"/>
-                                    <rect x="240" y="10" width="40" height="65" rx="4" fill="url(#mb3)"/>
-                                    <text x="40"  y="40" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">40</text>
-                                    <text x="95"  y="25" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">43</text>
-                                    <text x="150" y="10" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">46</text>
-                                    <text x="205" y="17" text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">48</text>
-                                    <text x="260" y="5"  text-anchor="middle" fill="#475569" font-size="8" font-family="Inter,sans-serif" font-weight="700">50</text>
-                                </svg>
-                            </div>
-                            <!-- verdict bar -->
-                            <div class="mb-verdict">STRONG GO — Launch Recommended</div>
+                            <div class="term-verdict">✦ STRONG GO — Launch Recommended</div>
                         </div>
                     </div>
 
@@ -189,16 +163,10 @@
             <div class="intel-body" id="intel-body">
                 <div class="intel-section-title">Official statistical & research inputs</div>
                 <div class="intel-grid-sources" id="intel-sources"></div>
-                <div class="intel-two-col">
-                    <div>
-                        <div class="intel-section-title">Bundled data files (freshness)</div>
-                        <div id="intel-files"></div>
-                        <div id="intel-geo-note" class="intel-meta" style="margin-top:0.5rem;"></div>
-                    </div>
-                    <div>
-                        <div class="intel-section-title">Where to improve next (roadmap)</div>
-                        <ol class="intel-roadmap" id="intel-roadmap"></ol>
-                    </div>
+                <div>
+                    <div class="intel-section-title">Bundled data files (freshness)</div>
+                    <div id="intel-files"></div>
+                    <div id="intel-geo-note" class="intel-meta" style="margin-top:0.5rem;"></div>
                 </div>
                 <div class="research-strip">
                     <div class="intel-section-title">Curated external research (catalog)</div>
@@ -208,6 +176,53 @@
             </div>
         </div>
     </div>
+
+    <!-- HOW IT WORKS -->
+    <section class="hiw-section">
+        <div class="hiw-inner">
+            <div class="hiw-header reveal">
+                <div class="section-kicker" style="color:#ea580c">How it works</div>
+                <h2 class="hiw-title">From inputs to decision in minutes</h2>
+            </div>
+            <div class="hiw-steps">
+                <div class="hiw-step reveal">
+                    <div class="hiw-num">1</div>
+                    <div class="hiw-step-body">
+                        <div class="hiw-step-title">Choose your program</div>
+                        <div class="hiw-step-desc">Select from AI, Cybersecurity, or Both — then pick your state market and launch term.</div>
+                    </div>
+                    <div class="hiw-connector"></div>
+                </div>
+                <div class="hiw-step reveal">
+                    <div class="hiw-num">2</div>
+                    <div class="hiw-step-body">
+                        <div class="hiw-step-title">Set your parameters</div>
+                        <div class="hiw-step-desc">Configure tuition, capacity, and scenario — conservative, baseline, or growth.</div>
+                    </div>
+                    <div class="hiw-connector"></div>
+                </div>
+                <div class="hiw-step reveal">
+                    <div class="hiw-num">3</div>
+                    <div class="hiw-step-body">
+                        <div class="hiw-step-title">Run the forecast</div>
+                        <div class="hiw-step-desc">The model analyzes 453 institutions, BLS labor data, and IPEDS history in seconds.</div>
+                    </div>
+                    <div class="hiw-connector"></div>
+                </div>
+                <div class="hiw-step reveal">
+                    <div class="hiw-num">4</div>
+                    <div class="hiw-step-body">
+                        <div class="hiw-step-title">Export your report</div>
+                        <div class="hiw-step-desc">Get enrollment projections, ROI analysis, and labor market intelligence — export to PDF.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hiw-tip reveal">
+                <span class="hiw-tip-label">PRO TIP</span>
+                Run multiple scenarios back-to-back to compare conservative vs. growth outcomes side by side.
+            </div>
+        </div>
+    </section>
 
     <!-- SOLUTIONS SECTION -->
     <section id="solutions" class="section-wrap">
@@ -448,11 +463,23 @@
             </div>
 
             <div id="results" class="results-section">
+                <!-- PDF-only header -->
+                <div class="print-header">
+                    <div class="print-logo">EduPredict Pro</div>
+                    <div class="print-meta">
+                        <div id="print-title">Forecast Report</div>
+                        <div id="print-date"></div>
+                    </div>
+                </div>
                 <div class="selection-strip" id="selection-strip">
                     <span class="selection-chip" id="chip-program">Program: -</span>
                     <span class="selection-chip" id="chip-market">Market: -</span>
                     <span class="selection-chip" id="chip-launch">Launch: -</span>
                     <span class="selection-chip" id="chip-scenario">Scenario: -</span>
+                    <button class="btn-export-pdf no-print" id="btn-export-pdf" onclick="exportPDF()" title="Export results as PDF">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        Export PDF
+                    </button>
                 </div>
                 <div class="section-divider">Model outputs</div>
                 <!-- Metrics -->
@@ -853,13 +880,6 @@
                     geo.textContent = `Employer map CSV (data/raw or EDUPREDICT_GEO_DATA_DIR): ${e}. ${p}`;
                 }
 
-                const rm = document.getElementById('intel-roadmap');
-                if (rm && Array.isArray(m.roadmap)) {
-                    rm.innerHTML = m.roadmap.map(x =>
-                        `<li><strong>${(x.priority || '').replace(/</g, '')}</strong> ${(x.title || '').replace(/</g, '')} (${(x.effort || '').replace(/</g, '')}) — ${(x.detail || '').replace(/</g, '')}</li>`
-                    ).join('');
-                }
-
                 const resEl = document.getElementById('intel-research');
                 if (resEl) {
                     const lu = m.research_catalog_updated ? `Catalog last updated: ${m.research_catalog_updated}.` : '';
@@ -893,17 +913,58 @@
             }
         }
 
-        // Scroll reveal
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const delay = el.style.getPropertyValue('--delay') || '0s';
-                    setTimeout(() => el.classList.add('visible'), parseFloat(delay) * 1000);
-                    revealObserver.unobserve(el);
-                }
-            });
-        }, { threshold: 0.12 });
+        // ── Motion-powered scroll reveal ────────────────────────────────
+        const { animate, inView, stagger } = Motion;
+
+        // Animate hero left content on load
+        animate('.hero-left', { opacity: [0, 1], x: [-40, 0] },
+            { duration: 0.8, easing: [0.25, 0.1, 0.25, 1] });
+        animate('.hero-right', { opacity: [0, 1], x: [40, 0] },
+            { duration: 0.8, delay: 0.2, easing: [0.25, 0.1, 0.25, 1] });
+        animate('.hero-stats-row', { opacity: [0, 1], y: [20, 0] },
+            { duration: 0.6, delay: 0.5 });
+
+        // Float chips staggered
+        animate('.float-chip', { opacity: [0, 1], scale: [0.8, 1] },
+            { duration: 0.5, delay: stagger(0.15, { start: 0.9 }), easing: 'ease-out' });
+
+        // Scroll-triggered reveals
+        document.querySelectorAll('.reveal').forEach(el => {
+            inView(el, () => {
+                const delay = parseFloat(el.style.getPropertyValue('--delay') || '0');
+                animate(el, { opacity: [0, 1], y: [28, 0] },
+                    { duration: 0.6, delay, easing: [0.25, 0.1, 0.25, 1] });
+                el.classList.add('visible');
+                return false;
+            }, { margin: '0px 0px -40px 0px' });
+        });
+
+        // HIW steps staggered on scroll
+        const hiwStepsEl = document.querySelector('.hiw-steps');
+        if (hiwStepsEl) inView(hiwStepsEl, () => {
+            animate('.hiw-step', { opacity: [0, 1], y: [40, 0] },
+                { duration: 0.6, delay: stagger(0.12), easing: [0.25, 0.1, 0.25, 1] });
+            return false;
+        }, { margin: '0px 0px -40px 0px' });
+
+        // Solution cards staggered on scroll
+        const solGrid = document.querySelector('.solution-grid');
+        if (solGrid) inView(solGrid, () => {
+            animate('.solution-card', { opacity: [0, 1], y: [30, 0], scale: [0.97, 1] },
+                { duration: 0.55, delay: stagger(0.1), easing: [0.25, 0.1, 0.25, 1] });
+            return false;
+        }, { margin: '0px 0px -40px 0px' });
+
+        // Metric cards animate in when results appear
+        function animateResults() {
+            animate('.metric-card', { opacity: [0, 1], y: [20, 0], scale: [0.95, 1] },
+                { duration: 0.45, delay: stagger(0.08), easing: 'ease-out' });
+            animate('.chart-container', { opacity: [0, 1], y: [24, 0] },
+                { duration: 0.5, delay: stagger(0.12, { start: 0.3 }), easing: 'ease-out' });
+        }
+
+        // Fake old observer for compat (reveal class already handled above)
+        const revealObserver = { observe: () => {}, unobserve: () => {} };
 
         // 3D card tilt (only on non-touch devices, only .tilt-card elements)
         function initTilt(el) {
@@ -1055,6 +1116,9 @@
             // Labor Market radar + bars
             const stateCode = (data.inputs.state || 'CT').toUpperCase().slice(0,2);
             renderLaborMarket(stateCode);
+
+            // Animate result cards in
+            setTimeout(animateResults, 120);
 
             // Metrics
             document.getElementById('metric-year1').textContent = f.year1;
@@ -1673,12 +1737,123 @@
             counterObs.observe(el);
         });
 
-        // ── Header dark-on-scroll ───────────────────────────────────────
+        // ── Motion hover on CTA button ──────────────────────────────────
+        const ctaBtn = document.querySelector('.nav-btn--cta');
+        if (ctaBtn) {
+            ctaBtn.addEventListener('mouseenter', () =>
+                animate(ctaBtn, { scale: 1.05 }, { duration: 0.18, easing: 'ease-out' }));
+            ctaBtn.addEventListener('mouseleave', () =>
+                animate(ctaBtn, { scale: 1 }, { duration: 0.18, easing: 'ease-out' }));
+        }
+
+        // ── Header dark-on-scroll + scroll-spy ─────────────────────────
         var _header = document.querySelector('.header');
+        var _navLinks = Array.from(document.querySelectorAll('.top-nav a[href^="#"]'));
+        var _sections = _navLinks.map(function(a) {
+            return document.querySelector(a.getAttribute('href'));
+        });
         window.addEventListener('scroll', function () {
-            if (window.scrollY > 80) _header.classList.add('header--scrolled');
+            var scrollY = window.scrollY;
+            if (scrollY > 80) _header.classList.add('header--scrolled');
             else _header.classList.remove('header--scrolled');
+            // scroll-spy
+            var current = '';
+            _sections.forEach(function(sec) {
+                if (sec && sec.getBoundingClientRect().top <= 100) current = '#' + sec.id;
+            });
+            _navLinks.forEach(function(a) {
+                a.classList.toggle('active', a.getAttribute('href') === current);
+            });
         }, { passive: true });
+
+        // ── Terminal typewriter animation ───────────────────────────────
+        (function() {
+            var sequence = [
+                { type: 'cmd',  el: 'term-cmd-1',  text: 'edupredict analyze --state CT --program AI' },
+                { type: 'out',  outEl: 'term-out-1', txtEl: 'term-txt-1', text: 'Loading 453 institutions...',        delay: 600 },
+                { type: 'out',  outEl: 'term-out-2', txtEl: 'term-txt-2', text: 'Fetching BLS OES labor signals...',  delay: 900 },
+                { type: 'out',  outEl: 'term-out-3', txtEl: 'term-txt-3', text: 'Running enrollment model...',        delay: 700 },
+                { type: 'out',  outEl: 'term-out-4', txtEl: 'term-txt-4', text: 'Calculating ROI & break-even...',    delay: 600 },
+                { type: 'result', outEl: 'term-out-5', txtEl: 'term-txt-5', text: 'Forecast complete. Strong GO ✦',  delay: 800 },
+            ];
+
+            function typeText(el, text, speed, cb) {
+                var i = 0;
+                function tick() {
+                    if (i < text.length) {
+                        el.textContent += text[i++];
+                        setTimeout(tick, speed + Math.random() * 20);
+                    } else if (cb) cb();
+                }
+                tick();
+            }
+
+            function runSequence(idx) {
+                if (idx >= sequence.length) {
+                    // show result card
+                    setTimeout(function() {
+                        var card = document.getElementById('term-result-card');
+                        var cursor = document.getElementById('term-cursor');
+                        if (card) card.classList.add('term-result-card--show');
+                        if (cursor) cursor.style.display = 'none';
+                        // loop after pause
+                        setTimeout(function() {
+                            resetTerminal();
+                        }, 4000);
+                    }, 400);
+                    return;
+                }
+                var step = sequence[idx];
+                if (step.type === 'cmd') {
+                    var el = document.getElementById(step.el);
+                    if (!el) return;
+                    typeText(el, step.text, 38, function() {
+                        setTimeout(function() { runSequence(idx + 1); }, 500);
+                    });
+                } else {
+                    setTimeout(function() {
+                        var outEl = document.getElementById(step.outEl);
+                        var txtEl = document.getElementById(step.txtEl);
+                        if (!outEl || !txtEl) return;
+                        outEl.style.display = 'flex';
+                        typeText(txtEl, step.text, 22, function() {
+                            setTimeout(function() { runSequence(idx + 1); }, 200);
+                        });
+                    }, step.delay);
+                }
+            }
+
+            function resetTerminal() {
+                ['term-cmd-1','term-txt-1','term-txt-2','term-txt-3','term-txt-4','term-txt-5'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.textContent = '';
+                });
+                ['term-out-1','term-out-2','term-out-3','term-out-4','term-out-5'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+                var card = document.getElementById('term-result-card');
+                if (card) card.classList.remove('term-result-card--show');
+                var cursor = document.getElementById('term-cursor');
+                if (cursor) cursor.style.display = 'block';
+                setTimeout(function() { runSequence(0); }, 600);
+            }
+
+            // Start after short delay
+            setTimeout(function() { runSequence(0); }, 800);
+        })();
+
+        // ── PDF Export ─────────────────────────────────────────────────
+        function exportPDF() {
+            // Stamp date on print header
+            var d = new Date();
+            var dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('print-date').textContent = 'Generated ' + dateStr;
+            var prog = document.getElementById('chip-program').textContent;
+            var mkt  = document.getElementById('chip-market').textContent;
+            document.getElementById('print-title').textContent = prog + ' · ' + mkt;
+            window.print();
+        }
     </script>
 </body>
 </html>
