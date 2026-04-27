@@ -6,7 +6,7 @@ No Streamlit. Pure Flask + HTML/CSS/JS.
 Hosted on AWS EC2 with Gunicorn.
 """
 
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response, stream_with_context
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_limiter import Limiter
@@ -19,6 +19,13 @@ import re
 import csv
 from io import BytesIO
 from datetime import datetime
+
+try:
+    import anthropic as _anthropic
+    ANTHROPIC_AVAILABLE = bool(os.environ.get("ANTHROPIC_API_KEY"))
+except ImportError:
+    _anthropic = None
+    ANTHROPIC_AVAILABLE = False
 
 # Email validation regex
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
@@ -460,8 +467,15 @@ def log_activity(user_id, action, details=None):
 @app.route('/')
 @login_required
 def index():
-    """Main dashboard page."""
-    return render_template('index.html',
+    """Landing page."""
+    return render_template('index.html')
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """Forecast dashboard."""
+    return render_template('dashboard.html',
                          programs=PROGRAMS,
                          student_types=STUDENT_TYPES,
                          terms=TERMS,
@@ -1076,6 +1090,94 @@ def api_report():
         mimetype='application/pdf',
         as_attachment=True,
         download_name=f'EduPredict_Report_{state}_{term}_{program.replace(" ", "_")}.pdf'
+    )
+
+
+@app.route('/api/chat', methods=['POST'])
+@login_required
+@limiter.limit("20 per minute")
+def api_chat():
+    """Stream an AI explanation of the current forecast results."""
+    if not ANTHROPIC_AVAILABLE:
+        return jsonify({'error': 'AI chat not configured. Set ANTHROPIC_API_KEY.'}), 503
+
+    body = request.get_json(silent=True) or {}
+    user_message = (body.get('message') or '').strip()
+    context = body.get('context') or {}
+    history = body.get('history') or []
+
+    if not user_message:
+        return jsonify({'error': 'message is required'}), 400
+
+    # Build a rich context block from the forecast data the user already ran
+    def _fmt_context(ctx):
+        if not ctx:
+            return "No forecast has been run yet."
+        inp = ctx.get('inputs', {})
+        fc = ctx.get('forecast', {})
+        roi = ctx.get('roi', {})
+        jm = ctx.get('job_market', {})
+        rec = ctx.get('recommendation', {})
+        return (
+            f"Program: {inp.get('program','?')} | State: {inp.get('state','?')} | "
+            f"Student type: {inp.get('student_type','?')} | Term: {inp.get('term','?')} | "
+            f"Scenario: {inp.get('scenario','?')}\n"
+            f"Enrollment - Year 1: {fc.get('year1','?')}, Year 2: {fc.get('year2','?')}, "
+            f"Year 3: {fc.get('year3','?')} (pool: {fc.get('pool','?')}, "
+            f"confidence: {fc.get('confidence_pct','?')}%, risk: {fc.get('risk_level','?')})\n"
+            f"ROI - ratio: {roi.get('ratio','?')}x, revenue: ${roi.get('revenue','?'):,}, "
+            f"costs: ${roi.get('costs','?'):,}, payback: {roi.get('payback_years','?')} yrs\n"
+            f"Job market - demand: {jm.get('demand_level','?')}, growth: {jm.get('growth_rate','?')}%, "
+            f"open positions: {jm.get('open_positions','?')}, AI exposure: {jm.get('ai_exposure_pct','?')}%\n"
+            f"Recommendation: {rec.get('text','?')} (demand score: {rec.get('demand_score','?')})\n"
+            f"Rationale: {rec.get('rationale','?')}"
+        )
+
+    system_prompt = (
+        "You are EduPredict Advisor, an expert AI assistant embedded in EduPredict Pro - "
+        "a decision-intelligence platform for university deans and academic planners. "
+        "You explain enrollment forecasts, ROI calculations, and labor market signals in plain language. "
+        "Be concise, direct, and data-driven. When numbers are available, reference them. "
+        "Never fabricate data - only use the context provided. "
+        "If the user asks something outside the scope of the current forecast, say so clearly.\n\n"
+        "Current forecast context:\n"
+        f"{_fmt_context(context)}"
+    )
+
+    # Build message list: history + new user message
+    messages = []
+    for turn in history[-10:]:  # cap at 10 prior turns
+        role = turn.get('role')
+        content = turn.get('content', '')
+        if role in ('user', 'assistant') and content:
+            messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": user_message})
+
+    client = _anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+    def generate():
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1024,
+            system=[{
+                "type": "text",
+                "text": system_prompt,
+                "cache_control": {"type": "ephemeral"}
+            }],
+            messages=messages,
+        ) as stream:
+            for text in stream.text_stream:
+                # SSE format
+                yield f"data: {json.dumps({'delta': text})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',
+        }
     )
 
 

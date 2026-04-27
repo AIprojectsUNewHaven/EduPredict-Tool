@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EduPredict Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pro.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js"></script>
+    <style>
+        /* Dashboard-specific overrides */
+        .dash-topbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 2rem;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .dash-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .dash-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .dash-logo-mark {
+            width: 30px; height: 30px;
+            background: #0f172a;
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 800; color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .dash-logo-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px; font-weight: 700;
+            color: #0f172a;
+        }
+        .dash-sep {
+            color: #cbd5e1;
+            font-size: 18px;
+        }
+        .dash-page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .dash-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .dash-nav-link {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .dash-nav-link:hover {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+        .dash-nav-link--admin {
+            color: #ea580c;
+        }
+        .dash-nav-link--signout {
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+        .dash-nav-link--signout:hover {
+            border-color: #cbd5e1;
+        }
+        .dash-version {
+            font-size: 11px;
+            color: #94a3b8;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 2px 8px;
+        }
+        /* Remove the old header from dashboard page */
+        .container { padding-top: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- Dashboard top bar -->
+    <div class="dash-topbar">
+        <div class="dash-topbar-left">
+            <a href="/" class="dash-logo">
+                <div class="dash-logo-mark">EP</div>
+                <span class="dash-logo-name">EduPredict Pro</span>
+            </a>
+            <span class="dash-sep">/</span>
+            <span class="dash-page-title">Forecast Dashboard</span>
+        </div>
+        <div class="dash-topbar-right">
+            <span class="dash-version">v2.2</span>
+            <a href="/" class="dash-nav-link">Home</a>
+            <a href="https://github.com/GaneshMunagala714/Edupredict-Pro" target="_blank" rel="noopener" class="dash-nav-link">GitHub</a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin_users') }}" class="dash-nav-link dash-nav-link--admin">Admin</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="dash-nav-link dash-nav-link--signout">Sign out</a>
+        </div>
+    </div>
+
+    <!-- ── FORECAST TOOL ── -->
+    <div id="app" class="container">
+        <!-- LEFT PANEL: Inputs -->
+        <div class="left-panel">
+            <div class="card filter-card">
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Scenario inputs</span></div>
+
+                <div class="form-group">
+                    <label class="form-label">Program Type</label>
+                    <select class="form-select" id="program">
+                        {% for p in programs %}
+                        <option value="{{ p }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student Type</label>
+                    <select class="form-select" id="student_type">
+                        {% for s in student_types %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Academic Term</label>
+                    <select class="form-select" id="term">
+                        <optgroup label="2026">
+                            <option value="SP26">SP26 (Spring 2026)</option>
+                            <option value="SU26">SU26 (Summer 2026)</option>
+                            <option value="FA26" selected>FA26 (Fall 2026)</option>
+                        </optgroup>
+                        <optgroup label="2027">
+                            <option value="SP27">SP27 (Spring 2027)</option>
+                            <option value="SU27">SU27 (Summer 2027)</option>
+                            <option value="FA27">FA27 (Fall 2027)</option>
+                        </optgroup>
+                        <optgroup label="2028">
+                            <option value="SP28">SP28 (Spring 2028)</option>
+                            <option value="SU28">SU28 (Summer 2028)</option>
+                            <option value="FA28">FA28 (Fall 2028)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Scenario</label>
+                    <select class="form-select" id="scenario">
+                        {% for s in scenarios %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target State</label>
+                    <select class="form-select" id="state">
+                        <option value="CT">CT - Connecticut</option>
+                        <option value="NY">NY - New York</option>
+                        <option value="MA">MA - Massachusetts</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" id="generate-btn" onclick="generateForecast()">
+                    Generate forecast
+                </button>
+
+                <button class="btn-secondary" id="download-btn" onclick="downloadReport()" style="display: none;">
+                    Download PDF report
+                </button>
+
+                <button class="btn-secondary" id="chat-btn" onclick="openChat()" style="display: none;">
+                    Ask AI
+                </button>
+
+                <button class="btn-secondary" onclick="window.print()">
+                    Print this page
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 10v6M12 7h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>About</span></div>
+                <div class="about-text">
+                    <p><strong>EduPredict Pro</strong> helps College Deans make data-driven decisions about launching AI degree programs.</p>
+                    <br>
+                    <p><strong>Features:</strong></p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>3-year enrollment forecasting</li>
+                        <li>AI labor market analysis</li>
+                        <li>ROI calculations with risk flags</li>
+                        <li>Honest GO/NO-GO recommendations</li>
+                    </ul>
+                    <br>
+                    <p><strong>Data:</strong> BLS 2023, Anthropic Economic Index 2026, IPEDS 2023-2024</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 12h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>How to read this</span></div>
+                <div class="about-text">
+                    <ul class="guide-list">
+                        <li><strong>Step 1:</strong> Set program, term, and state, then click <em>Generate forecast</em>.</li>
+                        <li><strong>Step 2:</strong> Check the top KPIs for size (cohort, total) and viability (confidence, ROI).</li>
+                        <li><strong>Step 3:</strong> Read the recommendation card first, then review risks and opportunities.</li>
+                        <li><strong>Step 4:</strong> Use scenario/state charts to stress-test before final decisions.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL: Results -->
+        <div class="center-panel">
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating forecast...</p>
+            </div>
+
+            <div id="welcome" class="card">
+                <div class="welcome-hero">
+                    <h2>Welcome to EduPredict Pro</h2>
+                    <p class="welcome-lead">Choose parameters on the left, then run a forecast to see enrollment, ROI, labor-market context, and geo insights.</p>
+                    <div class="feature-grid">
+                        <div class="feature-tile">
+                            <strong>162 validated combinations</strong>
+                            <span>Program, term, scenario, and state</span>
+                        </div>
+                        <div class="feature-tile">
+                            <strong>Current labor signals</strong>
+                            <span>BLS, Anthropic index, IPEDS context</span>
+                        </div>
+                        <div class="feature-tile">
+                            <strong>Scenario comparison</strong>
+                            <span>Side-by-side stress tests</span>
+                        </div>
+                        <div class="feature-tile">
+                            <strong>ROI and risk framing</strong>
+                            <span>Executive-ready outputs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results" class="results-section">
+                <!-- PDF-only header -->
+                <div class="print-header">
+                    <div class="print-logo">EduPredict Pro</div>
+                    <div class="print-meta">
+                        <div id="print-title">Forecast Report</div>
+                        <div id="print-date"></div>
+                    </div>
+                </div>
+                <div class="selection-strip" id="selection-strip">
+                    <span class="selection-chip" id="chip-program">Program: -</span>
+                    <span class="selection-chip" id="chip-market">Market: -</span>
+                    <span class="selection-chip" id="chip-launch">Launch: -</span>
+                    <span class="selection-chip" id="chip-scenario">Scenario: -</span>
+                    <button class="btn-export-pdf no-print" id="btn-export-pdf" onclick="exportPDF()" title="Export results as PDF">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        Export PDF
+                    </button>
+                </div>
+                <div class="section-divider">Model outputs</div>
+                <!-- Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">COHORT</div>
+                        <div class="metric-value" id="metric-year1">-</div>
+                        <div class="metric-label" id="metric-year1-label">First launch term cohort</div>
+                        <div class="metric-delta" id="metric-year1-range">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">TOTAL</div>
+                        <div class="metric-value" id="metric-pool">-</div>
+                        <div class="metric-label" id="metric-pool-label">3-year enrollment total</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">RISK</div>
+                        <div class="metric-value" id="metric-confidence">-</div>
+                        <div class="metric-label">Confidence</div>
+                        <div class="metric-delta" id="metric-risk">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">ROI</div>
+                        <div class="metric-value" id="metric-roi">-</div>
+                        <div class="metric-label">ROI Ratio</div>
+                    </div>
+                </div>
+                <div class="quick-compare-row">
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Demand score</span>
+                        <span class="quick-compare-value" id="quick-demand">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Growth</span>
+                        <span class="quick-compare-value" id="quick-growth">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Payback</span>
+                        <span class="quick-compare-value" id="quick-payback">-</span>
+                    </div>
+                    <div class="quick-compare-item">
+                        <span class="quick-compare-label">Break-even</span>
+                        <span class="quick-compare-value" id="quick-breakeven">-</span>
+                    </div>
+                </div>
+                <div class="explain-panel">
+                    <div class="explain-title">Metric glossary</div>
+                    <div class="explain-grid">
+                        <div class="explain-item"><strong>Cohort:</strong> Estimated students in your first intake term.</div>
+                        <div class="explain-item"><strong>Total:</strong> Sum of the next 3 yearly intakes.</div>
+                        <div class="explain-item"><strong>Confidence:</strong> Model reliability signal. Higher is better.</div>
+                        <div class="explain-item"><strong>ROI ratio:</strong> Revenue divided by costs. Above 1.0 means positive return.</div>
+                        <div class="explain-item"><strong>Payback:</strong> Estimated time to recover launch costs.</div>
+                        <div class="explain-item"><strong>Break-even:</strong> Student count required to avoid loss.</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Enrollment projection</div>
+                    <p id="enrollment-chart-note" class="chart-subtitle"></p>
+                    <div id="enrollment-chart" style="height: 350px;"></div>
+                </div>
+
+                <div id="warnings-section" style="display: none;">
+                    <div class="warning-box">
+                        <div class="warning-title">Model notes</div>
+                        <div id="warnings-list"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Financial analysis</div>
+                    <p class="chart-subtitle">Revenue, cost, and net outcome for this launch configuration.</p>
+                    <div id="roi-chart" style="height: 300px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Scenario comparison</div>
+                    <p class="chart-subtitle">Compares conservative, baseline, and growth assumptions for first intake.</p>
+                    <div id="scenario-chart" style="height: 400px;"></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">State comparison (CT, NY, MA)</div>
+                    <p class="chart-subtitle">Shows relative enrollment strength by state for the same program inputs.</p>
+                    <div id="state-chart" style="height: 400px;"></div>
+                </div>
+
+                <div class="chart-container lm-card">
+                    <div class="chart-title">Labor Market Intelligence</div>
+                    <p class="chart-subtitle" id="lm-subtitle">State-level demand indicators</p>
+                    <div class="lm-inner">
+                        <div class="lm-radar-wrap">
+                            <div id="lm-radar-svg"></div>
+                            <div class="lm-legend">
+                                <div class="lm-legend-item"><span class="lm-legend-swatch lm-legend-state"></span><span id="lm-legend-state-label">Connecticut</span></div>
+                                <div class="lm-legend-item"><span class="lm-legend-swatch lm-legend-national"></span><span>National Avg</span></div>
+                            </div>
+                        </div>
+                        <div class="lm-bars-wrap" id="lm-bars"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container chart-container--maps">
+                    <div class="chart-title">Employer map</div>
+                    <p id="employer-map-caption" class="chart-subtitle"></p>
+                    <div id="employer-map-chart" style="height: 420px;"></div>
+                </div>
+
+                <div class="chart-container chart-container--maps">
+                    <div class="chart-title">Program coverage map</div>
+                    <p id="institution-map-caption" class="chart-subtitle"></p>
+                    <div id="institution-map-chart" style="height: 360px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Summary -->
+        <div class="right-panel">
+            <div id="summary-results" class="results-section">
+                <div class="section-divider section-divider--right">Interpretation</div>
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Recommendation</span></div>
+                    <div id="recommendation-badge" class="rec-badge rec-go">-</div>
+                    <div id="recommendation-rationale" class="prose-muted text-center">-</div>
+                    <div id="report-timestamp" class="timestamp"></div>
+                    <p class="insight-note">Interpretation: prioritize strong demand + healthy ROI with manageable risk.</p>
+                </div>
+
+                <div class="summary-card insight-card">
+                    <div class="summary-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12M6 12h12M6 17h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Executive summary</span></div>
+                    <div class="summary-grid">
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-year1">-</div>
+                            <div class="summary-label" id="summary-year1-label">First cohort</div>
+                        </div>
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-pool">-</div>
+                            <div class="summary-label">Pool</div>
+                        </div>
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-roi">-</div>
+                            <div class="summary-label">ROI</div>
+                        </div>
+                    </div>
+                    <div id="summary-details" class="prose-muted"></div>
+                </div>
+
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 15V9m5 6V6m5 9v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Workforce outlook</span></div>
+                    <div class="info-box">
+                        <div class="info-row"><span class="info-label">Demand Score:</span><span class="info-value" id="job-demand-score">-</span></div>
+                        <div class="info-row"><span class="info-label">5-Year Growth:</span><span class="info-value" id="job-growth">-</span></div>
+                        <div class="info-row"><span class="info-label">Open Positions:</span><span class="info-value" id="job-openings">-</span></div>
+                        <div class="info-row"><span class="info-label">Demand Level:</span><span class="info-value" id="job-demand-level">-</span></div>
+                    </div>
+                </div>
+
+                <div class="card insight-card">
+                    <div class="card-title"><span class="title-with-icon"><svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 19c.8-3 3-5 6-5s5.2 2 6 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>AI exposure</span></div>
+                    <div class="info-box">
+                        <div class="info-row"><span class="info-label">Observed Exposure:</span><span class="info-value" id="ai-exposure">-</span></div>
+                        <div class="info-row"><span class="info-label">Risk Level:</span><span class="info-value" id="ai-risk">-</span></div>
+                        <div class="info-row"><span class="info-label">Coverage Gap:</span><span class="info-value" id="ai-gap">-</span></div>
+                        <div class="info-row"><span class="info-label">BLS Impact:</span><span class="info-value" id="ai-bls">-</span></div>
+                    </div>
+                    <div id="ai-finding" class="prose-muted" style="margin-top: 0.5rem; font-style: italic;"></div>
+                </div>
+
+                <div id="opportunities-section" style="display: none;">
+                    <div class="opportunity-box">
+                        <div class="opportunity-title">Opportunities</div>
+                        <div id="opportunities-list"></div>
+                    </div>
+                </div>
+
+                <div id="hiring-warning-section" style="display: none;">
+                    <div class="warning-box">
+                        <div class="warning-title">Hiring signal</div>
+                        <div id="hiring-warning-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Sidebar -->
+    <div id="chat-panel" class="chat-panel" role="dialog" aria-label="AI Advisor">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-avatar">EP</div>
+                <div>
+                    <div class="chat-title">EduPredict Advisor</div>
+                    <div class="chat-subtitle">Powered by Claude</div>
+                </div>
+            </div>
+            <button class="chat-close" onclick="closeChat()" aria-label="Close chat">&times;</button>
+        </div>
+        <div id="chat-log" class="chat-log">
+            <div class="chat-msg chat-msg--assistant">
+                <div class="chat-bubble">Hi! I can explain your forecast results - enrollment projections, ROI, risk factors, and labor market signals. What would you like to understand?</div>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <textarea id="chat-input" class="chat-input" rows="2" placeholder="Ask about your results..." onkeydown="chatKeydown(event)"></textarea>
+            <button id="chat-send" class="chat-send" onclick="sendChat()">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+    </div>
+    <div id="chat-overlay" class="chat-overlay" onclick="closeChat()"></div>
+
+    <style>
+        .chat-panel { position: fixed; right: -420px; top: 0; height: 100vh; width: 400px; max-width: 100vw; background: #fff; border-left: 1px solid #e2e8f0; box-shadow: -8px 0 32px rgba(0,0,0,0.12); display: flex; flex-direction: column; z-index: 1000; transition: right 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .chat-panel.open { right: 0; }
+        .chat-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 999; }
+        .chat-panel.open ~ .chat-overlay { display: block; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; background: #0052cc; color: #fff; }
+        .chat-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .chat-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.05em; }
+        .chat-title { font-weight: 600; font-size: 0.95rem; }
+        .chat-subtitle { font-size: 0.75rem; opacity: 0.75; }
+        .chat-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0.25rem; border-radius: 4px; transition: background 0.15s; }
+        .chat-close:hover { background: rgba(255,255,255,0.15); }
+        .chat-log { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; scroll-behavior: smooth; }
+        .chat-msg { display: flex; }
+        .chat-msg--user { justify-content: flex-end; }
+        .chat-msg--assistant { justify-content: flex-start; }
+        .chat-bubble { max-width: 85%; padding: 0.6rem 0.9rem; border-radius: 12px; font-size: 0.875rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+        .chat-msg--user .chat-bubble { background: #0052cc; color: #fff; border-bottom-right-radius: 4px; }
+        .chat-msg--assistant .chat-bubble { background: #f1f5f9; color: #0f172a; border-bottom-left-radius: 4px; }
+        .chat-footer { display: flex; gap: 0.5rem; align-items: flex-end; padding: 0.75rem 1rem; border-top: 1px solid #e2e8f0; background: #f8fafc; }
+        .chat-input { flex: 1; resize: none; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.875rem; font-family: inherit; line-height: 1.4; outline: none; transition: border-color 0.15s; }
+        .chat-input:focus { border-color: #0052cc; }
+        .chat-send { width: 38px; height: 38px; background: #0052cc; color: #fff; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+        .chat-send:hover { background: #003d99; }
+        .chat-send:disabled { background: #94a3b8; cursor: not-allowed; }
+        @media (max-width: 480px) { .chat-panel { width: 100vw; } }
+    </style>
+
+    <script>
+        const CHART_FONT = "'Inter', sans-serif";
+        const CHART = {
+            text:        '#0f172a',
+            muted:       '#64748b',
+            grid:        'rgba(0,0,0,0.06)',
+            line:        'rgba(0,0,0,0.10)',
+            bg:          '#ffffff',
+            paper:       '#ffffff',
+            accent:      '#0052cc',
+            accentLight: 'rgba(0,82,204,0.12)',
+            teal:        '#0891b2',
+            tealLight:   'rgba(8,145,178,0.12)',
+            coral:       '#ea580c',
+            peach:       '#f97316',
+            barMuted:    '#94a3b8',
+            barPos:      '#059669',
+            barNeg:      '#dc2626'
+        };
+        const GEO_BASEMAP = 'open-street-map';
+        const GEO_SECTOR = { AI: '#0052cc', Cybersecurity: '#ea580c', Both: '#0891b2' };
+        const GEO_ROSE_SCALE = [
+            [0,    'rgb(240,244,248)'],
+            [0.25, 'rgb(186,210,240)'],
+            [0.5,  'rgb(59,125,216)'],
+            [0.75, 'rgb(0,82,204)'],
+            [1,    'rgb(15,37,87)']
+        ];
+
+        function parseLaunchTerm(term) {
+            const t = (term || '').trim().toUpperCase();
+            if (t.length < 4) return null;
+            const seasonCode = t.slice(0, 2);
+            const yy = parseInt(t.slice(2), 10);
+            if (isNaN(yy)) return null;
+            const year = yy >= 70 ? 1900 + yy : 2000 + yy;
+            const seasons = { FA: 'Fall', SP: 'Spring', SU: 'Summer' };
+            return { seasonCode, seasonName: seasons[seasonCode] || seasonCode, year };
+        }
+
+        function enrollmentYearLabels(term) {
+            const p = parseLaunchTerm(term);
+            if (!p) return { axis: ['Year 1', 'Year 2', 'Year 3'], firstHuman: 'Year 1', rangeHuman: 'Years 1–3', note: 'Select a launch term to show calendar years on the chart.' };
+            const axis = [0, 1, 2].map(i => `${p.seasonName} ${p.year + i}`);
+            return { axis, firstHuman: axis[0], rangeHuman: `${axis[0]} – ${axis[2]}`, note: `Each point is the next ${p.seasonName} intake: ${axis[0]}, ${axis[1]}, ${axis[2]}.` };
+        }
+
+        function formatLaunchTermSummary(term) {
+            const p = parseLaunchTerm(term);
+            return p ? `${p.seasonName} ${p.year} (${term})` : (term || '—');
+        }
+
+        const { animate, inView, stagger } = Motion;
+
+        function animateResults() {
+            animate('.metric-card', { opacity: [0, 1], y: [20, 0], scale: [0.95, 1] },
+                { duration: 0.45, delay: stagger(0.08), easing: 'ease-out' });
+            animate('.chart-container', { opacity: [0, 1], y: [24, 0] },
+                { duration: 0.5, delay: stagger(0.12, { start: 0.3 }), easing: 'ease-out' });
+        }
+
+        function initTilt(el) {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                el.style.transform = `perspective(900px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg) translateZ(10px) scale(1.02)`;
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'perspective(900px) rotateY(0deg) rotateX(0deg) translateZ(0) scale(1)';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                document.querySelectorAll('.tilt-card').forEach(initTilt);
+            }
+            const progSel = document.getElementById('program');
+            if (progSel) {
+                progSel.addEventListener('change', () => {
+                    const results = document.getElementById('results');
+                    if (results && results.classList.contains('active')) renderGeoSections();
+                });
+            }
+        });
+
+        async function downloadReport() {
+            if (!window.lastForecastData) { alert('Please generate a forecast first'); return; }
+            const inputs = window.lastForecastData.inputs;
+            const btn = document.getElementById('download-btn');
+            const orig = btn.textContent;
+            btn.textContent = '⏳ Generating PDF...';
+            btn.disabled = true;
+            try {
+                const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputs) });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = `EduPredict_Report_${inputs.state}_${inputs.term}.pdf`;
+                    document.body.appendChild(a); a.click();
+                    window.URL.revokeObjectURL(url); document.body.removeChild(a);
+                } else { alert('Error generating PDF. Please try again.'); }
+            } catch (e) { alert('Error generating PDF. Please try again.'); }
+            finally { btn.textContent = orig; btn.disabled = false; }
+        }
+
+        async function generateForecast() {
+            const btn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading');
+            const welcome = document.getElementById('welcome');
+            const results = document.getElementById('results');
+            const summaryResults = document.getElementById('summary-results');
+            const inputs = {
+                program: document.getElementById('program').value,
+                student_type: document.getElementById('student_type').value,
+                term: document.getElementById('term').value,
+                scenario: document.getElementById('scenario').value,
+                state: document.getElementById('state').value
+            };
+            btn.disabled = true;
+            welcome.style.display = 'none';
+            loading.style.display = 'block';
+            results.classList.remove('active');
+            summaryResults.classList.remove('active');
+            try {
+                const response = await fetch('/api/forecast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputs) });
+                const data = await response.json();
+                if (data.success) {
+                    displayResults(data);
+                    results.classList.add('active');
+                    summaryResults.classList.add('active');
+                    document.getElementById('download-btn').style.display = 'block';
+                    window.lastForecastData = data;
+                    document.getElementById('chat-btn').style.display = 'inline-flex';
+                }
+            } catch (e) { alert('Error generating forecast. Please try again.'); }
+            finally { loading.style.display = 'none'; btn.disabled = false; }
+        }
+
+        function displayResults(data) {
+            const f = data.forecast, r = data.roi, j = data.job_market, rec = data.recommendation;
+            const yl = enrollmentYearLabels(data.inputs.term);
+            renderLaborMarket((data.inputs.state || 'CT').toUpperCase().slice(0, 2));
+            setTimeout(animateResults, 120);
+
+            document.getElementById('metric-year1').textContent = f.year1;
+            document.getElementById('metric-year1-label').textContent = `Students (${yl.firstHuman})`;
+            document.getElementById('metric-year1-range').textContent = `Range: ${f.year1_low}-${f.year1_high}`;
+            document.getElementById('metric-pool').textContent = f.pool;
+            document.getElementById('metric-pool-label').textContent = `Total (${yl.rangeHuman})`;
+            document.getElementById('metric-confidence').textContent = f.confidence_pct + '%';
+            document.getElementById('metric-risk').textContent = f.risk_level.toUpperCase();
+            document.getElementById('metric-roi').textContent = r.ratio.toFixed(2) + 'x';
+            document.getElementById('quick-demand').textContent = `${j.demand_score}/100`;
+            document.getElementById('quick-growth').textContent = `${j.growth_rate}%`;
+            document.getElementById('quick-payback').textContent = `${r.payback_years} yrs`;
+            document.getElementById('quick-breakeven').textContent = `${r.break_even} students`;
+
+            document.getElementById('chip-program').textContent = `Program: ${data.inputs.program}`;
+            document.getElementById('chip-market').textContent = `Market: ${data.inputs.state} | ${data.inputs.student_type}`;
+            document.getElementById('chip-launch').textContent = `Launch: ${formatLaunchTermSummary(data.inputs.term)}`;
+            document.getElementById('chip-scenario').textContent = `Scenario: ${data.inputs.scenario}`;
+
+            document.getElementById('recommendation-badge').textContent = rec.text;
+            document.getElementById('recommendation-badge').className = 'rec-badge rec-' + rec.class;
+            document.getElementById('recommendation-rationale').textContent = rec.rationale;
+            const now = new Date();
+            document.getElementById('report-timestamp').textContent = `Generated: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`;
+
+            document.getElementById('summary-year1').textContent = f.year1;
+            document.getElementById('summary-year1-label').textContent = yl.axis[0];
+            document.getElementById('summary-pool').textContent = f.pool;
+            document.getElementById('summary-roi').textContent = r.ratio.toFixed(2) + 'x';
+            document.getElementById('summary-details').innerHTML = `<strong>${data.inputs.program}</strong><br>${data.inputs.student_type} Students<br>Launch: ${formatLaunchTermSummary(data.inputs.term)}<br>Location: ${data.inputs.state}<br>Scenario: ${data.inputs.scenario}`;
+
+            document.getElementById('job-demand-score').textContent = j.demand_score + '/100';
+            document.getElementById('job-growth').textContent = j.growth_rate + '%';
+            document.getElementById('job-openings').textContent = '~' + j.open_positions.toLocaleString();
+            document.getElementById('job-demand-level').textContent = j.demand_level;
+            document.getElementById('ai-exposure').textContent = j.ai_exposure_pct + '%';
+            document.getElementById('ai-risk').textContent = j.risk_level.toUpperCase();
+            document.getElementById('ai-gap').textContent = Math.round(j.coverage_gap * 100) + '%';
+            document.getElementById('ai-bls').textContent = j.bls_impact.toFixed(1) + 'pp';
+            document.getElementById('ai-finding').textContent = j.key_finding;
+
+            const warningsSection = document.getElementById('warnings-section');
+            if (f.warning_flags && f.warning_flags.length > 0) {
+                warningsSection.style.display = 'block';
+                document.getElementById('warnings-list').innerHTML = f.warning_flags.map(w => `<div class="warning-item">• ${w}</div>`).join('');
+            } else { warningsSection.style.display = 'none'; }
+
+            const oppSection = document.getElementById('opportunities-section');
+            if (rec.opportunities && rec.opportunities.length > 0) {
+                oppSection.style.display = 'block';
+                document.getElementById('opportunities-list').innerHTML = rec.opportunities.map(o => `<div class="opportunity-item">${o}</div>`).join('');
+            } else { oppSection.style.display = 'none'; }
+
+            const hiringSection = document.getElementById('hiring-warning-section');
+            if (j.young_worker_impact < -0.10) {
+                hiringSection.style.display = 'block';
+                document.getElementById('hiring-warning-text').innerHTML = `<div class="warning-text">Anthropic 2026 research shows a <strong>${Math.abs(Math.round(j.young_worker_impact * 100))}% drop</strong> in hiring for workers aged 22-25 in this field. Consider targeting experienced professionals or emphasizing unique human skills in curriculum.</div>`;
+            } else { hiringSection.style.display = 'none'; }
+
+            renderEnrollmentChart(f, data.inputs);
+            renderROIChart(r);
+            renderScenariosChart(data.inputs);
+            renderStatesChart(data.inputs);
+            renderGeoSections();
+        }
+
+        function renderEnrollmentChart(forecast, inputs) {
+            const yl = enrollmentYearLabels(inputs.term);
+            const noteEl = document.getElementById('enrollment-chart-note');
+            if (noteEl) noteEl.textContent = yl.note;
+            const yVals = [forecast.year1, forecast.year2, forecast.year3];
+            const barColors = yVals.map((v, i) => i === 0 ? '#ea580c' : i === 1 ? '#f97316' : '#fb923c');
+            Plotly.newPlot('enrollment-chart', [{
+                x: yl.axis, y: yVals, type: 'bar',
+                marker: { color: barColors, line: { color: 'rgba(0,0,0,0.08)', width: 1 }, cornerradius: 8 },
+                text: yVals.map(v => `<b>${v}</b> students`), textposition: 'outside',
+                textfont: { size: 13, color: CHART.text, family: CHART_FONT },
+                hovertemplate: '<b>%{x}</b><br>%{y} students<extra></extra>'
+            }], {
+                font: { family: CHART_FONT, color: CHART.text },
+                title: { text: `${inputs.program} — ${inputs.scenario} (${yl.rangeHuman})`, font: { size: 15 } },
+                xaxis: { title: { text: 'Intake cohort', font: { size: 12 } }, gridcolor: 'rgba(0,0,0,0)', linecolor: CHART.line, tickfont: { size: 13 } },
+                yaxis: { title: { text: 'Students', font: { size: 12 } }, gridcolor: CHART.grid, linecolor: CHART.line, zerolinecolor: CHART.line, range: [0, Math.max(...yVals) * 1.25] },
+                plot_bgcolor: CHART.bg, paper_bgcolor: CHART.paper,
+                margin: { t: 52, b: 64, l: 52, r: 28 }, bargap: 0.45
+            }, { responsive: true, displayModeBar: false });
+        }
+
+        function renderROIChart(roi) {
+            const net = roi.revenue - roi.costs;
+            const fmt = v => `$${(v/1000000).toFixed(2)}M`;
+            Plotly.newPlot('roi-chart', [{
+                x: ['Total Revenue', 'Total Costs', 'Net Profit'],
+                y: [roi.revenue, roi.costs, net], type: 'bar',
+                marker: { color: ['#ea580c', '#94a3b8', net >= 0 ? '#10b981' : '#ef4444'], cornerradius: 8, line: { color: 'rgba(0,0,0,0.06)', width: 1 } },
+                text: [fmt(roi.revenue), fmt(roi.costs), fmt(net)], textposition: 'outside',
+                textfont: { size: 12, color: CHART.text, family: CHART_FONT, weight: '700' },
+                hovertemplate: '<b>%{x}</b><br>%{text}<extra></extra>'
+            }], {
+                font: { family: CHART_FONT, color: CHART.text },
+                title: { text: `ROI ${roi.ratio.toFixed(2)}x return · Payback ${roi.payback_years} yrs`, font: { size: 14 } },
+                yaxis: { tickformat: '$,.0f', gridcolor: CHART.grid, linecolor: CHART.line, zerolinecolor: CHART.line, range: [0, Math.max(roi.revenue, roi.costs, net) * 1.2] },
+                xaxis: { linecolor: CHART.line, tickfont: { size: 12 } },
+                plot_bgcolor: CHART.bg, paper_bgcolor: CHART.paper,
+                margin: { t: 52, b: 52, l: 80, r: 28 }, bargap: 0.45, showlegend: false,
+                annotations: [{ text: `Break-even: ${roi.break_even} students`, x: 0.5, y: -0.13, xref: 'paper', yref: 'paper', showarrow: false, font: { size: 11, color: CHART.muted, family: CHART_FONT } }]
+            }, { responsive: true, displayModeBar: false });
+        }
+
+        async function renderScenariosChart(inputs) {
+            try {
+                const data = await (await fetch('/api/scenarios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputs) })).json();
+                const scenarios = data.scenarios, yl = enrollmentYearLabels(inputs.term);
+                const names = scenarios.map(s => s.scenario), values = scenarios.map(s => s.year1);
+                const dotColors = ['#f97316', '#ea580c', '#94a3b8'];
+                Plotly.newPlot('scenario-chart', [{
+                    x: names, y: values, type: 'scatter', mode: 'markers',
+                    marker: { color: dotColors, size: 18, line: { color: '#fff', width: 2 } },
+                    error_y: { type: 'data', array: values, arrayminus: values, symmetric: false, color: 'rgba(0,0,0,0.12)', thickness: 3, width: 0 },
+                    text: values.map(v => `<b>${v}</b> students`), textposition: 'top center',
+                    textfont: { family: CHART_FONT, size: 12, color: CHART.text },
+                    hovertemplate: '<b>%{x}</b><br>%{y} students<extra></extra>'
+                }], {
+                    font: { family: CHART_FONT, color: CHART.text },
+                    title: { text: `First cohort (${yl.firstHuman}) by scenario`, font: { size: 14 } },
+                    xaxis: { linecolor: CHART.line, tickfont: { size: 13 } },
+                    yaxis: { title: { text: 'Students', font: { size: 12 } }, gridcolor: CHART.grid, linecolor: CHART.line, range: [0, Math.max(...values) * 1.3] },
+                    shapes: names.map((n, i) => ({ type: 'line', x0: n, x1: n, y0: 0, y1: values[i], line: { color: dotColors[i], width: 3 } })),
+                    paper_bgcolor: CHART.paper, plot_bgcolor: CHART.bg, showlegend: false,
+                    margin: { t: 52, b: 48, l: 56, r: 24 }
+                }, { responsive: true, displayModeBar: false });
+            } catch (e) { console.error('renderScenariosChart', e); }
+        }
+
+        async function renderStatesChart(inputs) {
+            try {
+                const data = await (await fetch('/api/states', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputs) })).json();
+                const states = data.states, yl = enrollmentYearLabels(inputs.term);
+                const mkTrace = (yr, name, color, opacity) => ({
+                    y: states.map(s => s.state), x: states.map(s => s[yr]), name,
+                    type: 'bar', orientation: 'h',
+                    marker: { color, opacity },
+                    text: states.map(s => s[yr]), textposition: 'outside',
+                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
+                });
+                Plotly.newPlot('state-chart', [
+                    mkTrace('year1', yl.axis[0], '#ea580c', 0.95),
+                    mkTrace('year2', yl.axis[1], '#f97316', 0.85),
+                    mkTrace('year3', yl.axis[2], '#fb923c', 0.75)
+                ], {
+                    font: { family: CHART_FONT, color: CHART.text },
+                    title: { text: `Enrollment by state (${yl.rangeHuman})`, font: { size: 14 } },
+                    barmode: 'group',
+                    xaxis: { title: { text: 'Students per cohort' }, gridcolor: CHART.grid, linecolor: CHART.line },
+                    yaxis: { linecolor: CHART.line, tickfont: { size: 13 }, automargin: true },
+                    paper_bgcolor: CHART.paper, plot_bgcolor: CHART.bg,
+                    legend: { orientation: 'h', y: -0.18, font: { family: CHART_FONT, size: 11 } },
+                    margin: { t: 48, b: 64, l: 60, r: 60 }, bargap: 0.25, bargroupgap: 0.1
+                }, { responsive: true, displayModeBar: false });
+            } catch (e) { console.error('renderStatesChart', e); }
+        }
+
+        async function renderGeoSections() {
+            try {
+                const program = document.getElementById('program') ? document.getElementById('program').value : 'MS in AI';
+                const data = await (await fetch('/api/geo-insights?program=' + encodeURIComponent(program))).json();
+
+                const capEmp = document.getElementById('employer-map-caption');
+                if (capEmp) {
+                    const shown = data.employers_shown != null ? data.employers_shown : (data.employers || []).length;
+                    const tot = data.employers_total != null ? data.employers_total : shown;
+                    capEmp.innerHTML = `<strong>${(data.program || program).replace(/</g,'')}</strong> &middot; Showing <strong>${shown}</strong> of <strong>${tot}</strong> employers. ${(data.employer_filter_note || '').replace(/</g,'')}`;
+                }
+                const capInst = document.getElementById('institution-map-caption');
+                if (capInst) capInst.textContent = (data.institution_map_note || '').replace(/</g,'');
+
+                const employers = data.employers || [];
+                if (employers.length === 0) {
+                    document.getElementById('employer-map-chart').innerHTML = '<div class="chart-empty">No employers match this program filter, or shared folder data is missing.</div>';
+                } else {
+                    const traces = ['AI','Cybersecurity','Both'].map(sec => {
+                        const rows = employers.filter(e => (e.sector || 'AI') === sec);
+                        if (!rows.length) return null;
+                        return { type: 'scattermapbox', name: sec === 'Cybersecurity' ? 'Cyber' : sec, mode: 'markers', lat: rows.map(r => r.lat), lon: rows.map(r => r.lng), marker: { size: 15, color: GEO_SECTOR[sec] || GEO_SECTOR.AI, opacity: 0.92, line: { color: '#ffffff', width: 2 } }, text: rows.map(r => `<b>${r.company_name}</b><br>${r.city}, ${r.state}<br>${r.company_type || ''}<br>New grads: ${r.hires_new_grads || 'Unknown'}`), hovertemplate: '%{text}<extra></extra>' };
+                    }).filter(Boolean);
+                    Plotly.newPlot('employer-map-chart', traces, { font: { family: CHART_FONT }, mapbox: { style: GEO_BASEMAP, center: { lat: 42.0, lon: -73.5 }, zoom: 5.65 }, margin: { t: 8, b: 8, l: 8, r: 8 }, paper_bgcolor: 'rgba(255,255,255,0)', legend: { orientation: 'h', y: 1.03, x: 0.5, xanchor: 'center', font: { size: 11 }, bgcolor: 'rgba(255,255,255,0.88)' } }, { responsive: true });
+                }
+
+                const stateData = data.programs_by_state || {};
+                const centers = { CT: { lat: 41.6, lon: -72.7 }, NY: { lat: 42.9, lon: -75.5 }, MA: { lat: 42.3, lon: -71.8 } };
+                const sts = ['CT','NY','MA'], vals = sts.map(s => stateData[s] || { total: 0, ready: 0 });
+                const maxReady = Math.max(...vals.map(v => v.ready), 1);
+                Plotly.newPlot('institution-map-chart', [{ type: 'scattermapbox', mode: 'markers+text', lat: sts.map(s => centers[s].lat), lon: sts.map(s => centers[s].lon), text: sts.map((s, i) => `${s}: ${vals[i].ready}/${vals[i].total}`), textposition: 'top center', textfont: { family: CHART_FONT, size: 13, color: '#5f57cc' }, marker: { size: vals.map(v => 26 + Math.min(v.total * 1.2, 28)), color: vals.map(v => v.ready), colorscale: GEO_ROSE_SCALE, cmin: 0, cmax: maxReady, opacity: 0.88, line: { color: '#ffffff', width: 2 }, colorbar: { title: { text: 'Ready count', font: { size: 11 } }, tickfont: { size: 10 }, len: 0.85 } }, hovertemplate: sts.map((s, i) => `<b>${s}</b><br>Ready: ${vals[i].ready}<br>Total: ${vals[i].total}<extra></extra>`) }], { font: { family: CHART_FONT }, mapbox: { style: GEO_BASEMAP, center: { lat: 42.1, lon: -73.4 }, zoom: 5.45 }, margin: { t: 8, b: 8, l: 8, r: 8 }, paper_bgcolor: 'rgba(255,255,255,0)' }, { responsive: true });
+            } catch (e) { console.error('renderGeoSections', e); }
+        }
+
+        const LM_DATA = {
+            CT: { name: 'Connecticut',    radar: [0.75, 0.82, 0.80, 0.65, 0.70], posting: 33, salary: '$138K', salaryPct: 69, aiRisk: 25, competition: 67 },
+            NY: { name: 'New York',       radar: [0.90, 0.95, 0.92, 0.30, 0.75], posting: 28, salary: '$165K', salaryPct: 82, aiRisk: 22, competition: 85 },
+            MA: { name: 'Massachusetts',  radar: [0.85, 0.90, 0.85, 0.55, 0.80], posting: 31, salary: '$152K', salaryPct: 76, aiRisk: 28, competition: 72 }
+        };
+        const LM_NATIONAL = [0.55, 0.60, 0.55, 0.50, 0.55];
+        const LM_LABELS   = ['Job Growth', 'Salary Level', 'Market Demand', 'Low Competition', 'AI Safety'];
+
+        function renderLaborMarket(state) {
+            const d = LM_DATA[state] || LM_DATA.CT;
+            const cx = 130, cy = 125, R = 85, N = 5;
+            const angs = Array.from({length: N}, (_, i) => -Math.PI/2 + (2*Math.PI/N)*i);
+            const pts = vals => vals.map((v, i) => `${(cx + v*R*Math.cos(angs[i])).toFixed(1)},${(cy + v*R*Math.sin(angs[i])).toFixed(1)}`).join(' ');
+            let grid = '';
+            [0.2,0.4,0.6,0.8,1.0].forEach(lvl => {
+                const gp = Array.from({length:N}, (_,i) => `${(cx+lvl*R*Math.cos(angs[i])).toFixed(1)},${(cy+lvl*R*Math.sin(angs[i])).toFixed(1)}`).join(' ');
+                grid += `<polygon points="${gp}" fill="${lvl===1?'rgba(234,88,12,0.03)':'none'}" stroke="#e4e4e4" stroke-width="${lvl===1?1.5:0.8}"/>`;
+            });
+            const spokes = angs.map(a => `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(a)).toFixed(1)}" y2="${(cy+R*Math.sin(a)).toFixed(1)}" stroke="#e4e4e4" stroke-width="0.8"/>`).join('');
+            const lbls = LM_LABELS.map((lbl, i) => { const lr = R+20, lx = cx+lr*Math.cos(angs[i]), ly = cy+lr*Math.sin(angs[i]); return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#6b6b6b" font-size="9.5" font-family="DM Sans,sans-serif" font-weight="600">${lbl}</text>`; }).join('');
+            document.getElementById('lm-radar-svg').innerHTML = `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:0 auto;">${grid}${spokes}<polygon points="${pts(LM_NATIONAL)}" fill="rgba(180,180,180,0.12)" stroke="#c0c0c0" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round"/><polygon points="${pts(d.radar)}" fill="rgba(10,10,10,0.12)" stroke="#0a0a0a" stroke-width="2.2" stroke-linejoin="round"/>${lbls}</svg>`;
+            document.getElementById('lm-legend-state-label').textContent = d.name;
+            document.getElementById('lm-subtitle').textContent = `State-level demand indicators — ${d.name}`;
+            document.getElementById('lm-bars').innerHTML = `
+                <div class="lm-bar-item"><div class="lm-bar-header"><span>Job Posting Growth</span><span class="lm-bar-val" style="color:#059669">+${d.posting}%</span></div><div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.posting*2.5}%;background:#059669"></div></div></div>
+                <div class="lm-bar-item"><div class="lm-bar-header"><span>Median Salary Trend</span><span class="lm-bar-val" style="color:#0a0a0a">${d.salary}</span></div><div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.salaryPct}%;background:#0a0a0a"></div></div></div>
+                <div class="lm-bar-item"><div class="lm-bar-header"><span>AI Exposure Risk</span><span class="lm-bar-val" style="color:#ea580c">${d.aiRisk}%</span></div><div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.aiRisk*3}%;background:#ea580c"></div></div></div>
+                <div class="lm-bar-item"><div class="lm-bar-header"><span>Regional Competition</span><span class="lm-bar-val" style="color:#dc2626">${d.competition}%</span></div><div class="lm-bar-track"><div class="lm-bar-fill" style="width:${d.competition}%;background:#dc2626"></div></div></div>`;
+        }
+
+        // ── PDF Export ──────────────────────────────────────────────────
+        function exportPDF() {
+            const d = new Date();
+            document.getElementById('print-date').textContent = 'Generated ' + d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('print-title').textContent = document.getElementById('chip-program').textContent + ' · ' + document.getElementById('chip-market').textContent;
+            window.print();
+        }
+
+        // ── AI Chat ─────────────────────────────────────────────────────
+        const chatState = { open: false, history: [], streaming: false };
+
+        function openChat() {
+            chatState.open = true;
+            document.getElementById('chat-panel').classList.add('open');
+            document.getElementById('chat-input').focus();
+        }
+
+        function closeChat() {
+            chatState.open = false;
+            document.getElementById('chat-panel').classList.remove('open');
+        }
+
+        function chatKeydown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+        }
+
+        function appendMessage(role, text, streaming) {
+            const log = document.getElementById('chat-log');
+            const div = document.createElement('div');
+            div.className = 'chat-msg chat-msg--' + role;
+            if (streaming) div.id = 'chat-streaming';
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble';
+            bubble.textContent = text;
+            div.appendChild(bubble);
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+            return bubble;
+        }
+
+        async function sendChat() {
+            if (chatState.streaming) return;
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            input.value = '';
+            appendMessage('user', msg);
+            chatState.history.push({ role: 'user', content: msg });
+            chatState.streaming = true;
+            document.getElementById('chat-send').disabled = true;
+            const bubble = appendMessage('assistant', '', true);
+            let full = '';
+            try {
+                const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, context: window.lastForecastData || {}, history: chatState.history.slice(-10) }) });
+                if (!res.ok) { const err = await res.json().catch(() => ({})); bubble.textContent = err.error || 'Error - please try again.'; chatState.history.pop(); return; }
+                const reader = res.body.getReader(), decoder = new TextDecoder();
+                let buf = '';
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buf += decoder.decode(value, { stream: true });
+                    const lines = buf.split('\n');
+                    buf = lines.pop();
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const payload = line.slice(6).trim();
+                        if (payload === '[DONE]') break;
+                        try { const { delta } = JSON.parse(payload); full += delta; bubble.textContent = full; document.getElementById('chat-log').scrollTop = document.getElementById('chat-log').scrollHeight; } catch (_) {}
+                    }
+                }
+                chatState.history.push({ role: 'assistant', content: full });
+            } catch (err) { bubble.textContent = 'Network error - please try again.'; chatState.history.pop(); }
+            finally {
+                const el = document.getElementById('chat-streaming');
+                if (el) el.removeAttribute('id');
+                chatState.streaming = false;
+                document.getElementById('chat-send').disabled = false;
+                input.focus();
+            }
+        }
+    </script>
+</body>
+</html>
