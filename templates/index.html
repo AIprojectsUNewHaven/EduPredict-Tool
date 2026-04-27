@@ -1226,118 +1226,103 @@
             const noteEl = document.getElementById('enrollment-chart-note');
             if (noteEl) noteEl.textContent = yl.note;
 
+            const yVals = [forecast.year1, forecast.year2, forecast.year3];
+            const barColors = yVals.map((v, i) =>
+                i === 0 ? '#ea580c' : i === 1 ? '#f97316' : '#fb923c'
+            );
+
             const trace = {
                 x: yl.axis,
-                y: [forecast.year1, forecast.year2, forecast.year3],
-                type: 'scatter',
-                mode: 'lines+markers',
-                line: {
-                    color: CHART.accent,
-                    width: 3,
-                    shape: 'spline'
-                },
+                y: yVals,
+                type: 'bar',
                 marker: {
-                    size: 14,
-                    color: CHART.accent,
-                    line: { color: '#fff', width: 2 }
+                    color: barColors,
+                    line: { color: 'rgba(0,0,0,0.08)', width: 1 },
+                    cornerradius: 8
                 },
-                fill: 'tozeroy',
-                fillcolor: CHART.accentLight,
-                text: [forecast.year1.toString(), forecast.year2.toString(), forecast.year3.toString()],
-                textposition: 'top center',
-                textfont: { size: 13, color: CHART.text, family: CHART_FONT, weight: '600' }
+                text: yVals.map(v => `<b>${v}</b> students`),
+                textposition: 'outside',
+                textfont: { size: 13, color: CHART.text, family: CHART_FONT },
+                hovertemplate: '<b>%{x}</b><br>%{y} students<extra></extra>'
             };
 
             const layout = {
                 font: { family: CHART_FONT, color: CHART.text },
                 title: {
-                    text: `${inputs.program} - ${inputs.scenario} (${yl.rangeHuman})`,
+                    text: `${inputs.program} — ${inputs.scenario} (${yl.rangeHuman})`,
                     font: { size: 15, color: CHART.text, family: CHART_FONT }
                 },
                 xaxis: {
-                    title: { text: 'Cohort (calendar year)', font: { size: 12 } },
+                    title: { text: 'Intake cohort', font: { size: 12 } },
+                    gridcolor: 'rgba(0,0,0,0)',
+                    linecolor: CHART.line,
+                    tickfont: { size: 13, color: CHART.text }
+                },
+                yaxis: {
+                    title: { text: 'Students', font: { size: 12 } },
                     gridcolor: CHART.grid,
                     linecolor: CHART.line,
                     zerolinecolor: CHART.line,
-                    tickangle: -25
-                },
-                yaxis: {
-                    title: { text: 'Enrollment (students)', font: { size: 12 } },
-                    gridcolor: CHART.grid,
-                    linecolor: CHART.line,
-                    zerolinecolor: CHART.line
+                    range: [0, Math.max(...yVals) * 1.25]
                 },
                 plot_bgcolor: CHART.bg,
                 paper_bgcolor: CHART.paper,
-                margin: { t: 48, b: 72, l: 58, r: 28 }
+                margin: { t: 52, b: 64, l: 52, r: 28 },
+                bargap: 0.45
             };
 
-            Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
+            Plotly.newPlot('enrollment-chart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
         // ROI Chart - Clear bar chart comparing Revenue, Costs, Net
         function renderROIChart(roi) {
             const net = roi.revenue - roi.costs;
-            const netColor = net >= 0 ? CHART.barPos : CHART.barNeg;
-            
+            const fmt = v => `$${(v/1000000).toFixed(2)}M`;
+
             const trace = {
                 x: ['Total Revenue', 'Total Costs', 'Net Profit'],
                 y: [roi.revenue, roi.costs, net],
                 type: 'bar',
                 marker: {
-                    color: [CHART.accent, CHART.barMuted, netColor],
-                    line: {
-                        color: [CHART.accent, '#64748b', net >= 0 ? CHART.barPos : CHART.barNeg],
-                        width: 1
-                    }
+                    color: ['#ea580c', '#94a3b8', net >= 0 ? '#10b981' : '#ef4444'],
+                    cornerradius: 8,
+                    line: { color: 'rgba(0,0,0,0.06)', width: 1 }
                 },
-                text: [
-                    `$${(roi.revenue/1000000).toFixed(2)}M`,
-                    `$${(roi.costs/1000000).toFixed(2)}M`,
-                    `$${(net/1000000).toFixed(2)}M`
-                ],
+                text: [fmt(roi.revenue), fmt(roi.costs), fmt(net)],
                 textposition: 'outside',
-                textfont: {
-                    size: 12,
-                    color: CHART.text,
-                    family: CHART_FONT,
-                    weight: '600'
-                }
+                textfont: { size: 12, color: CHART.text, family: CHART_FONT, weight: '700' },
+                hovertemplate: '<b>%{x}</b><br>%{text}<extra></extra>'
             };
 
             const layout = {
                 font: { family: CHART_FONT, color: CHART.text },
                 title: {
-                    text: `ROI: ${roi.ratio.toFixed(2)}x return | Payback: ${roi.payback_years} years`,
+                    text: `ROI ${roi.ratio.toFixed(2)}x return · Payback ${roi.payback_years} yrs`,
                     font: { size: 14, color: CHART.text, family: CHART_FONT }
                 },
                 yaxis: {
-                    title: { text: 'Amount ($)', font: { size: 12 } },
                     tickformat: '$,.0f',
                     gridcolor: CHART.grid,
                     linecolor: CHART.line,
-                    zerolinecolor: CHART.line
+                    zerolinecolor: CHART.line,
+                    range: [0, Math.max(roi.revenue, roi.costs, net) * 1.2]
                 },
-                xaxis: {
-                    linecolor: CHART.line,
-                    tickfont: { size: 11 }
-                },
+                xaxis: { linecolor: CHART.line, tickfont: { size: 12 } },
                 plot_bgcolor: CHART.bg,
                 paper_bgcolor: CHART.paper,
-                margin: { t: 48, b: 52, l: 72, r: 28 },
+                margin: { t: 52, b: 52, l: 80, r: 28 },
+                bargap: 0.45,
                 showlegend: false,
                 annotations: [{
                     text: `Break-even: ${roi.break_even} students`,
-                    x: 0.5,
-                    y: -0.15,
-                    xref: 'paper',
-                    yref: 'paper',
+                    x: 0.5, y: -0.13,
+                    xref: 'paper', yref: 'paper',
                     showarrow: false,
                     font: { size: 11, color: CHART.muted, family: CHART_FONT }
                 }]
             };
 
-            Plotly.newPlot('roi-chart', [trace], layout, {responsive: true});
+            Plotly.newPlot('roi-chart', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
         // Scenarios comparison chart
@@ -1352,33 +1337,54 @@
 
                 const scenarios = data.scenarios;
                 const yl = enrollmentYearLabels(inputs.term);
-                const trace = {
-                    x: scenarios.map(s => s.scenario),
-                    y: scenarios.map(s => s.year1),
-                    type: 'bar',
-                    marker: {
-                        color: [CHART.peach, CHART.coral, CHART.accent],
-                        line: { color: CHART.text, width: 1 }
+                const names  = scenarios.map(s => s.scenario);
+                const values = scenarios.map(s => s.year1);
+                const dotColors = ['#f97316', '#ea580c', '#94a3b8'];
+
+                // Lollipop = scatter dots + error bars as stems
+                const stems = {
+                    x: names, y: values,
+                    type: 'scatter', mode: 'markers',
+                    marker: { color: dotColors, size: 18, line: { color: '#fff', width: 2 } },
+                    error_y: {
+                        type: 'data',
+                        array: values,
+                        arrayminus: values,
+                        symmetric: false,
+                        color: 'rgba(0,0,0,0.12)',
+                        thickness: 3,
+                        width: 0
                     },
-                    text: scenarios.map(s => s.year1.toString()),
-                    textposition: 'outside',
-                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
+                    text: values.map(v => `<b>${v}</b> students`),
+                    textposition: 'top center',
+                    textfont: { family: CHART_FONT, size: 12, color: CHART.text },
+                    hovertemplate: '<b>%{x}</b><br>%{y} students<extra></extra>'
                 };
+
+                // Stem lines drawn as shapes
+                const shapes = names.map((n, i) => ({
+                    type: 'line',
+                    x0: n, x1: n, y0: 0, y1: values[i],
+                    line: { color: dotColors[i], width: 3, dash: 'solid' }
+                }));
 
                 const layout = {
                     font: { family: CHART_FONT, color: CHART.text },
-                    title: {
-                        text: `First cohort (${yl.firstHuman}) by scenario`,
-                        font: { size: 14, family: CHART_FONT }
+                    title: { text: `First cohort (${yl.firstHuman}) by scenario`, font: { size: 14, family: CHART_FONT } },
+                    xaxis: { linecolor: CHART.line, tickfont: { size: 13 } },
+                    yaxis: {
+                        title: { text: 'Students', font: { size: 12 } },
+                        gridcolor: CHART.grid, linecolor: CHART.line,
+                        range: [0, Math.max(...values) * 1.3]
                     },
-                    xaxis: { title: { text: 'Scenario' }, linecolor: CHART.line, gridcolor: CHART.grid },
-                    yaxis: { title: { text: `Students (${yl.firstHuman})` }, gridcolor: CHART.grid, linecolor: CHART.line },
-                    paper_bgcolor: '#ffffff',
-                    plot_bgcolor: '#f8fafc',
-                    margin: { t: 48, b: 48, l: 56, r: 24 }
+                    shapes,
+                    paper_bgcolor: CHART.paper,
+                    plot_bgcolor: CHART.bg,
+                    showlegend: false,
+                    margin: { t: 52, b: 48, l: 56, r: 24 }
                 };
 
-                Plotly.newPlot('scenario-chart', [trace], layout, {responsive: true});
+                Plotly.newPlot('scenario-chart', [stems], layout, { responsive: true, displayModeBar: false });
             } catch (e) {
                 console.error('Error loading scenarios:', e);
             }
@@ -1397,46 +1403,52 @@
                 const states = data.states;
                 const yl = enrollmentYearLabels(inputs.term);
 
+                // Horizontal grouped bars — states on Y axis, years as groups
                 const trace1 = {
-                    x: states.map(s => s.state),
-                    y: states.map(s => s.year1),
+                    y: states.map(s => s.state),
+                    x: states.map(s => s.year1),
                     name: yl.axis[0],
-                    type: 'bar',
-                    marker: { color: '#746bf0' }
+                    type: 'bar', orientation: 'h',
+                    marker: { color: '#ea580c', opacity: 0.95 },
+                    text: states.map(s => s.year1),
+                    textposition: 'outside',
+                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
                 };
-
                 const trace2 = {
-                    x: states.map(s => s.state),
-                    y: states.map(s => s.year2),
+                    y: states.map(s => s.state),
+                    x: states.map(s => s.year2),
                     name: yl.axis[1],
-                    type: 'bar',
-                    marker: { color: CHART.accent }
+                    type: 'bar', orientation: 'h',
+                    marker: { color: '#f97316', opacity: 0.85 },
+                    text: states.map(s => s.year2),
+                    textposition: 'outside',
+                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
                 };
-
                 const trace3 = {
-                    x: states.map(s => s.state),
-                    y: states.map(s => s.year3),
+                    y: states.map(s => s.state),
+                    x: states.map(s => s.year3),
                     name: yl.axis[2],
-                    type: 'bar',
-                    marker: { color: '#ffd5a8' }
+                    type: 'bar', orientation: 'h',
+                    marker: { color: '#fb923c', opacity: 0.75 },
+                    text: states.map(s => s.year3),
+                    textposition: 'outside',
+                    textfont: { family: CHART_FONT, size: 11, color: CHART.text }
                 };
 
                 const layout = {
                     font: { family: CHART_FONT, color: CHART.text },
-                    title: {
-                        text: `Enrollment by state (${yl.rangeHuman})`,
-                        font: { size: 14, family: CHART_FONT }
-                    },
+                    title: { text: `Enrollment by state (${yl.rangeHuman})`, font: { size: 14, family: CHART_FONT } },
                     barmode: 'group',
-                    xaxis: { title: { text: 'State' }, linecolor: CHART.line },
-                    yaxis: { title: { text: 'Students per cohort' }, gridcolor: CHART.grid, linecolor: CHART.line },
-                    paper_bgcolor: '#ffffff',
-                    plot_bgcolor: '#f8fafc',
-                    legend: { orientation: 'h', y: -0.22, font: { family: CHART_FONT, size: 11 } },
-                    margin: { t: 48, b: 72, l: 56, r: 24 }
+                    xaxis: { title: { text: 'Students per cohort' }, gridcolor: CHART.grid, linecolor: CHART.line },
+                    yaxis: { linecolor: CHART.line, tickfont: { size: 13 }, automargin: true },
+                    paper_bgcolor: CHART.paper,
+                    plot_bgcolor: CHART.bg,
+                    legend: { orientation: 'h', y: -0.18, font: { family: CHART_FONT, size: 11 } },
+                    margin: { t: 48, b: 64, l: 60, r: 60 },
+                    bargap: 0.25, bargroupgap: 0.1
                 };
 
-                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {responsive: true});
+                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, { responsive: true, displayModeBar: false });
             } catch (e) {
                 console.error('Error loading states:', e);
             }
